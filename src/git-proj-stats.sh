@@ -174,6 +174,23 @@ done
 
 cat << EOF >> ${TEMPLATE}
 <div style='color:#660066'><h3>Help</h3></div>
+<b>Version Naming Conventions:</b>
+<p>
+A project version is used to identify a specific instance of the project. The version will be in one of the following formats:
+<pre>
+      x.y
+      x.y.z
+      x.y.z.h
+</pre>
+Where:
+<pre>
+      x is the major release version.
+      y is the minor release version.
+      z is the patch level.
+      h is the commit identifier of the last change.
+</pre>
+</p>
+<b>Branch Naming Conventions:</b>
 <p>
 A project's repository contains multiple branches which are used to organize the
 development process.  Bindle Binaries uses the following convention for branch
