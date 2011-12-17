@@ -37,20 +37,20 @@ for REPO in ${REPOLIST};do
    PROJNAME=`basename ${SRC} |sed -e 's/.git$//g'`
    PROJDIR="${DOMAINDIR}/${PROJNAME}"
    SRCLIST="${SRCLIST} ${PROJDIR}"
-#   if test ! -d ${PROJDIR};then
-#      echo "Creating ${DOMAINDIR}/${PROJNAME}..."
-#      mkdir -p ${DOMAINDIR} || exit 1
-#      cd ${DOMAINDIR} || exit 1
-#      git clone ${REPO} || exit 1
-#      cd ${PROJDIR} || exit 1
-#      git branch master origin/master > /dev/null 2>&1
-#      git branch next   origin/next   > /dev/null 2>&1
-#      git branch pu     origin/pu     > /dev/null 2>&1
-#   fi
-#   cp ${REPO}/description ${PROJDIR}/.git/description
-#   cd ${PROJDIR} > /dev/null || exit 1
-#   git checkout pu > /dev/null 2>&1
-#   git pull > /dev/null || exit 1
+   if test ! -d ${PROJDIR};then
+      echo "Creating ${DOMAINDIR}/${PROJNAME}..."
+      mkdir -p ${DOMAINDIR} || exit 1
+      cd ${DOMAINDIR} || exit 1
+      git clone ${REPO} || exit 1
+      cd ${PROJDIR} || exit 1
+      git branch master origin/master > /dev/null 2>&1
+      git branch next   origin/next   > /dev/null 2>&1
+      git branch pu     origin/pu     > /dev/null 2>&1
+   fi
+   cp ${REPO}/description ${PROJDIR}/.git/description
+   cd ${PROJDIR} > /dev/null || exit 1
+   git checkout pu > /dev/null 2>&1
+   git pull > /dev/null || exit 1
 done
 
 
