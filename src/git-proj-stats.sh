@@ -120,12 +120,12 @@ for PROJDIR in ${STATLIST};do
       PROJVER=`git describe |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
-      echo "<i>for ${PROJCLIENT}</i><br/>"                       >> ${TEMPLATE}
+      echo "Client: <i>${PROJCLIENT}</i><br/>"                   >> ${TEMPLATE}
       if test "x${PROJVER}" != "x";then
-         echo "<i>Version ${PROJVER}</i><br/>"                   >> ${TEMPLATE}
+         echo "Version: <i>${PROJVER}</i><br/>"                  >> ${TEMPLATE}
       fi
       if test -f ${PROJDIR}/.git/description;then
-         echo -n "<i>"                                           >> ${TEMPLATE}
+         echo -n "Description: <i>"                              >> ${TEMPLATE}
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
          echo "</i>"                                             >> ${TEMPLATE}
       fi
