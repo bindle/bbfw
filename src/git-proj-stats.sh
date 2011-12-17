@@ -40,6 +40,7 @@ SRCDIR=/pub/src
 
 TEMPLATE=/tmp/mail-project-stats.$$
 DATE=`date +%Y-%m-%d`
+TIMELIMIT=30
 
 
 # tests configuration
@@ -92,7 +93,7 @@ done
 echo "generating list of active projects..."
 for PROJDIR in ${SRCLIST};do
    cd ${PROJDIR};
-   DATA=`git diff --stat $(git rev-list -n1 --before="31 day ago" pu 2> /dev/null) 2> /dev/null`
+   DATA=`git diff --stat $(git rev-list -n1 --before="${TIMELIMIT} day ago" pu 2> /dev/null) 2> /dev/null`
    if test "x${DATA}" != "x";then
       STATLIST="${STATLIST} ${PROJDIR}"
    fi
@@ -102,13 +103,13 @@ done
 cat << EOF > ${TEMPLATE}
 To: @EMAIL_ADDRESS@
 From: "David M. Syzdek" <syzdek@bindlebinaries.com>
-Subject: Bindle Binaries Active Projects (${DATE})
+Subject: Bindle Binaries Project Activity (${DATE})
 Content-Type: text/html; charset=ISO-8859-1
 
 EOF
 
 
-echo '<div style="color:#660066"><h3>Recent Project Activity (30 days)</h3></div>'   >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Active Projects Active (Last ${TIMELIMIT} days)</h3></div>'   >> ${TEMPLATE}
 for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
    PROJCLIENT=`dirname ${PROJDIR}`
