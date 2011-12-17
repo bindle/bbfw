@@ -171,20 +171,20 @@ cat << EOF >> ${TEMPLATE}
 <div style='color:#660066'><h3>Help</h3></div>
 <p>
 A project's repository contains multiple branches which are used to organize the
-development process.  Bindle Binaries uses the following standards for branch
-information:
+development process.  Bindle Binaries uses the following convention for branch
+naming:
 <pre>
       master - Current release of packages.
       next   - changes staged for next release
       pu     - proposed updates for next release
       xx/yy+ - branch for testing new changes before merging to 'pu' branch
 </pre>
-Active development occurrs either directly or indirectly on the 'pu' branch.  Once
-modifications are considered stable, they are merged from the 'pu' branch into the
-'next' branch. The modifications are not merged into the 'master' branch until a
-new public release (aka version) of the project is published. As such, information
-in this message is generated from the 'pu' branch of a project rather than the
-'next' or 'master' branches which are much less frequently updated.
+Active development occurrs either directly on the 'pu' branch or on topic branches.
+Once modifications are considered stable, they are merged from the 'pu' branch
+into the 'next' branch. The modifications are not merged into the 'master' branch
+until a new public release (aka version) of the project is published. As such,
+information in this message is generated from the 'pu' branch of a project rather
+than the 'next' or 'master' branches which are much less frequently updated.
 <p>
 <b><i>The information in this message was generated using Ohcount and Git.</i></b>
 
