@@ -109,7 +109,7 @@ Content-Type: text/html; charset=ISO-8859-1
 EOF
 
 
-echo '<div style="color:#660066"><h3>Active Projects Active (Last ${TIMELIMIT} days)</h3></div>'   >> ${TEMPLATE}
+echo "<div style='color:#660066'><h3>Active Projects (Last ${TIMELIMIT} days)</h3></div>"   >> ${TEMPLATE}
 for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
    PROJCLIENT=`dirname ${PROJDIR}`
