@@ -41,6 +41,7 @@ SRCDIR=/pub/src
 TEMPLATE=/tmp/mail-project-stats.$$
 DATE=`date +%Y-%m-%d`
 TIMELIMIT=30
+TIMEINTERVALS="1 7 14 30 90 365"
 
 
 # tests configuration
@@ -137,7 +138,7 @@ for REPO in ${STATLIST};do
       echo -n "<p>"                                             >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
 
-      for NUM in 1 7 14 30 60 90;do
+      for NUM in ${TIMEINTERVALS};do
          STAT=`git diff --stat $(git rev-list -n1 --before="${NUM} day ago" pu) |grep 'files changed, '`
          if test "x${STAT}" != "x";then
             echo "<br/>Changes to pu branch in last  ${NUM} day(s): ${STAT}" >> ${TEMPLATE}
