@@ -116,9 +116,14 @@ for PROJDIR in ${STATLIST};do
    PROJCLIENT=`dirname ${PROJDIR}`
    PROJCLIENT=`basename ${PROJCLIENT}`
    if test -d ${PROJDIR};then
+      cd ${PROJDIR}
+      PROJVER=`git describe |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b>"                                  >> ${TEMPLATE}
-      echo "<i>(${PROJCLIENT})</i><br/>"                         >> ${TEMPLATE}
+      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
+      echo "<i>for ${PROJCLIENT}</i><br/>"                       >> ${TEMPLATE}
+      if test "x${PROJVER}" != "x";then
+         echo "<i>Version ${PROJVER}</i><br/>"                   >> ${TEMPLATE}
+      fi
       if test -f ${PROJDIR}/.git/description;then
          echo -n "<i>"                                           >> ${TEMPLATE}
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
