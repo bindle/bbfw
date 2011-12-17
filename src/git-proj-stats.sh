@@ -108,7 +108,7 @@ Content-Type: text/html; charset=ISO-8859-1
 EOF
 
 
-echo '<div style="text-align:center"><h3>Active Projects</h3></div>'   >> ${TEMPLATE}
+echo '<div style="text-align:center"><h3>Recent Project Activity (30 days)</h3></div>'   >> ${TEMPLATE}
 for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
    PROJCLIENT=`dirname ${PROJDIR}`
