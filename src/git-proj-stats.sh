@@ -1,64 +1,129 @@
 #!/bin/sh
 
+REPODIR=/pub/scm
+SRCDIR=/pub/src
+
 TEMPLATE=/tmp/mail-template.$$
 DATE=`date +%Y-%m-%d`
+
+
+# tests configuration
+if test ! -d ${REPODIR};then
+   echo "${0}: ${REPODIR}: repository prefix does not exist" 1>&2
+   exit 1
+fi
+if test ! -d ${SRCDIR};then
+   echo "${0}: ${SRCDIR}: source prefix does not exist" 1>&2
+   exit 1
+fi
+
+
+echo "Generating list of repositories..."
+for DOMAIN in `ls ${REPODIR}`;do
+   if test -d ${REPODIR}/${DOMAIN};then
+      for REPO in `ls -d ${REPODIR}/${DOMAIN}/*.git 2> /dev/null`;do
+         if test -d ${REPO};then
+            REPOLIST="${REPOLIST} ${REPO}"
+         fi
+      done
+   fi
+done
+
+
+echo "creating directory structure..."
+for REPO in ${REPOLIST};do
+   SRC=`echo ${REPO} |sed -e "s,${REPODIR},${SRCDIR},g"`
+   DOMAINDIR=`dirname ${SRC}`
+   PROJNAME=`basename ${SRC} |sed -e 's/.git$//g'`
+   PROJDIR="${DOMAINDIR}/${PROJNAME}"
+   SRCLIST="${SRCLIST} ${PROJDIR}"
+#   if test ! -d ${PROJDIR};then
+#      echo "Creating ${DOMAINDIR}/${PROJNAME}..."
+#      mkdir -p ${DOMAINDIR} || exit 1
+#      cd ${DOMAINDIR} || exit 1
+#      git clone ${REPO} || exit 1
+#      cd ${PROJDIR} || exit 1
+#      git branch master origin/master > /dev/null 2>&1
+#      git branch next   origin/next   > /dev/null 2>&1
+#      git branch pu     origin/pu     > /dev/null 2>&1
+#   fi
+#   cp ${REPO}/description ${PROJDIR}/.git/description
+#   cd ${PROJDIR} > /dev/null || exit 1
+#   git checkout pu > /dev/null 2>&1
+#   git pull > /dev/null || exit 1
+done
+
+
+echo "generating list of active projects..."
+for PROJDIR in ${SRCLIST};do
+   cd ${PROJDIR};
+   DATA=`git diff --stat $(git rev-list -n1 --before="31 day ago" pu 2> /dev/null) 2> /dev/null`
+   if test "x${DATA}" != "x";then
+      STATLIST="${STATLIST} ${PROJDIR}"
+   fi
+done
+
 
 cat << EOF > ${TEMPLATE}
 To: @EMAIL_ADDRESS@
 From: "David M. Syzdek" <syzdek@bindlebinaries.com>
-Subject: Bindle Binaries Projects Summary (${DATE})
+Subject: Bindle Binaries Active Projects (${DATE})
 Content-Type: text/html; charset=ISO-8859-1
+
 EOF
 
-echo "Updating local copies of repositories..."
-for REPO in `ls /pub/src/`;do
-   if test -d /pub/src/${REPO};then
-      echo "Updating ${REPO}..."
-      cd /pub/src/${REPO} && git pull > /dev/null 2>&1
-   fi
-done
 
-echo '<div style="text-align:center"><h3>Project Descriptions</h3></div>'   >> ${TEMPLATE}
-for REPO in `ls /pub/src/`;do
-   if test -d /pub/src/${REPO};then
-      if test -f /pub/src/${REPO}/.git/description;then
-         echo -n "<p>"                                           >> ${TEMPLATE}
-         echo "<b>${REPO}</b><br/>"                              >> ${TEMPLATE}
-         echo -n "<i>"                                           >> ${TEMPLATE}
-         cat /pub/src/${REPO}/.git/description                   >> ${TEMPLATE}
-         echo "</i>"                                             >> ${TEMPLATE}
-         echo "</p>"                                             >> ${TEMPLATE}
-      fi
-   fi
-done
-
-echo '<div style="text-align:center"><h3>Summary of Changes</h3></div>'   >> ${TEMPLATE}
-for REPO in `ls /pub/src/`;do
-   if test -d /pub/src/${REPO};then
-      echo "running git diff on ${REPO}..."
-      cd /pub/src/${REPO}
+echo '<div style="text-align:center"><h3>Active Projects</h3></div>'   >> ${TEMPLATE}
+for PROJDIR in ${STATLIST};do
+   PROJNAME=`basename ${PROJDIR}`
+   PROJCLIENT=`dirname ${PROJDIR}`
+   PROJCLIENT=`basename ${PROJCLIENT}`
+   if test -d ${PROJDIR};then
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<b>${REPO}</b>"                                 >> ${TEMPLATE}
-      echo "<br/>Changes to pu branch in last  1 day:  "                       >> ${TEMPLATE}
-      git diff --stat $(git rev-list -n1 --before="1 day ago" pu) |grep 'files changed, ' >> ${TEMPLATE}
-      echo "<br/>Changes to pu branch in last  7 day:  "                       >> ${TEMPLATE}
-      git diff --stat $(git rev-list -n1 --before="7 day ago" pu) |grep 'files changed, ' >> ${TEMPLATE}
-      echo "<br/>Changes to pu branch in last 30 day:  "                       >> ${TEMPLATE}
-      git diff --stat $(git rev-list -n1 --before="30 day ago" pu) |grep 'files changed, ' >> ${TEMPLATE}
+      echo "<b>${PROJNAME}</b>"                                  >> ${TEMPLATE}
+      echo "<i>(${PROJCLIENT})</i><br/>"                         >> ${TEMPLATE}
+      if test -f ${PROJDIR}/.git/description;then
+         echo -n "<i>"                                           >> ${TEMPLATE}
+         cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
+         echo "</i>"                                             >> ${TEMPLATE}
+      fi
+     echo "</p>"                                                 >> ${TEMPLATE}
+   fi
+done
+
+
+echo '<div style="text-align:center"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
+for REPO in ${STATLIST};do
+   PROJNAME=`basename ${REPO}`
+   if test -d ${REPO};then
+      echo "running git diff on ${REPO}..."
+      cd ${REPO}
+      echo -n "<p>"                                             >> ${TEMPLATE}
+      echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
+
+      for NUM in 1 7 14 30 60 90;do
+         STAT=`git diff --stat $(git rev-list -n1 --before="${NUM} day ago" pu) |grep 'files changed, '`
+         if test "x${STAT}" != "x";then
+            echo "<br/>Changes to pu branch in last  ${NUM} day(s): ${STAT}" >> ${TEMPLATE}
+         fi
+      done
+
       echo "</p>"                                                >> ${TEMPLATE}
    fi
 done
 
+
 echo "running ohcount..."
 echo '<div style="text-align:center"><h3>Project Information</h3></div>'   >> ${TEMPLATE}
-for REPO in `ls /pub/src/`;do
-   if test -d /pub/src/${REPO};then
+for REPO in ${STATLIST};do
+   PROJNAME=`basename ${REPO}`
+   if test -d ${REPO};then
       echo "running ohcount on ${REPO}..."
-      cd /pub/src/${REPO}
+      cd ${REPO}
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<b>${REPO}</b><br/>"                                 >> ${TEMPLATE}
+      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
-      /usr/local/bin/ohcount /pub/src/${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
+      /usr/local/bin/ohcount ${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
       echo -n "</pre>"                                           >> ${TEMPLATE}
       echo "</p>"                                                >> ${TEMPLATE}
    fi
