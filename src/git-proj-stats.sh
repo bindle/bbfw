@@ -18,6 +18,20 @@ for REPO in `ls /pub/src/`;do
    fi
 done
 
+echo '<div style="text-align:center"><h3>Project Descriptions</h3></div>'   >> ${TEMPLATE}
+for REPO in `ls /pub/src/`;do
+   if test -d /pub/src/${REPO};then
+      if test -f /pub/src/${REPO}/.git/description;then
+         echo -n "<p>"                                           >> ${TEMPLATE}
+         echo "<b>${REPO}</b><br/>"                              >> ${TEMPLATE}
+         echo -n "<i>"                                           >> ${TEMPLATE}
+         cat /pub/src/${REPO}/.git/description                   >> ${TEMPLATE}
+         echo "</i>"                                             >> ${TEMPLATE}
+         echo "</p>"                                             >> ${TEMPLATE}
+      fi
+   fi
+done
+
 echo '<div style="text-align:center"><h3>Summary of Changes</h3></div>'   >> ${TEMPLATE}
 for REPO in `ls /pub/src/`;do
    if test -d /pub/src/${REPO};then
@@ -43,17 +57,14 @@ for REPO in `ls /pub/src/`;do
       cd /pub/src/${REPO}
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<b>${REPO}</b><br/>"                                 >> ${TEMPLATE}
-      if test -f /pub/src/${REPO}/.git/description;then
-         echo -n "<i>"                                           >> ${TEMPLATE}
-         cat /pub/src/${REPO}/.git/description                   >> ${TEMPLATE}
-         echo "</i>"                                              >> ${TEMPLATE}
-      fi
       echo -n "<pre>"                                            >> ${TEMPLATE}
       /usr/local/bin/ohcount /pub/src/${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
       echo -n "</pre>"                                           >> ${TEMPLATE}
       echo "</p>"                                                >> ${TEMPLATE}
    fi
 done
+
+echo "<b><i>The information in this message was generated using Ohcount and Git.</i></b>" >> ${TEMPLATE}
 
 SENTRESULTS=NO
 for ADDR in $@;do
