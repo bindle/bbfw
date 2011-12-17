@@ -129,7 +129,7 @@ for PROJDIR in ${STATLIST};do
 done
 
 
-echo '<div style="color:#660066"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Project Statistics</h3></div>'   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
@@ -151,7 +151,7 @@ done
 
 
 echo "running ohcount..."
-echo '<div style="color:#660066"><h3>Project Information</h3></div>'   >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Project Summaries</h3></div>'   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
@@ -166,7 +166,26 @@ for REPO in ${STATLIST};do
    fi
 done
 
-echo "<b><i>The information in this message was generated using Ohcount and Git.</i></b>" >> ${TEMPLATE}
+
+cat << EOF >> ${TEMPLATE}
+<div style='color:#660066'><h3>Help</h3></div>
+<p>
+Branch Information:<br/>
+A project's repository contains multiple branches which are used to organize the
+development process.  Bindle Binaries uses the following standards for branch
+information:
+<pre>
+      master - Current release of packages.
+      next   - changes staged for next release
+      pu     - proposed updates for next release
+      xx/yy+ - branch for testing new changes before merging to 'pu' branch
+</pre>
+Active development occurrs either directly or indirectly on the 'pu' branch.  As such, information is generated from the 'pu' branch of a project rather than the 'next' or 'master' branch which are less frequently updated.
+<p>
+<b><i>The information in this message was generated using Ohcount and Git.</i></b>
+
+EOF
+
 
 SENTRESULTS=NO
 for ADDR in $@;do
