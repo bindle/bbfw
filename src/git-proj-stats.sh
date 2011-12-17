@@ -108,7 +108,7 @@ Content-Type: text/html; charset=ISO-8859-1
 EOF
 
 
-echo '<div style="text-align:center"><h3>Recent Project Activity (30 days)</h3></div>'   >> ${TEMPLATE}
+echo '<div style="color:#6600FF"><h3>Recent Project Activity (30 days)</h3></div>'   >> ${TEMPLATE}
 for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
    PROJCLIENT=`dirname ${PROJDIR}`
@@ -127,7 +127,7 @@ for PROJDIR in ${STATLIST};do
 done
 
 
-echo '<div style="text-align:center"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
+echo '<div style="color:#6600FF"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
@@ -149,7 +149,7 @@ done
 
 
 echo "running ohcount..."
-echo '<div style="text-align:center"><h3>Project Information</h3></div>'   >> ${TEMPLATE}
+echo '<div style="color:#6600FF"><h3>Project Information</h3></div>'   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
