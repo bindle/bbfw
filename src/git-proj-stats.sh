@@ -35,6 +35,19 @@
 #   git-proj-stats.sh - script for generating development stats on active projects
 #
 
+for FLAG in ${@};do
+   if test "x${FLAG}" == "x--help";then
+      echo "Usage: ${0} <address> <address> ... <address>"
+      exit 0
+   fi
+done
+for FLAG in ${@};do
+   if test "x${FLAG}" == "x--version";then
+      echo "${0} does not have a version"
+      exit 0
+   fi
+done
+
 REPODIR=/pub/scm
 SRCDIR=/pub/src
 
