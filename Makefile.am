@@ -63,6 +63,7 @@ noinst_LTLIBRARIES			=
 noinst_HEADERS				=
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
+bin_SCRIPTS				= src/git-proj-stats.sh
 
 
 # substitution routine
@@ -106,7 +107,8 @@ XFAIL_TESTS				=
 EXTRA_MANS				=
 EXTRA_DIST				= build-aux/autogen.sh \
 					  build-aux/git-package-version \
-					  build-aux/git-package-version.sh
+					  build-aux/git-package-version.sh \
+					  src/git-proj-stats.sh
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
