@@ -226,10 +226,10 @@ A project's repository contains multiple branches which are used to organize the
 development process.  Bindle Binaries uses the following convention for branch
 naming:
 <pre>
-      master - Current release of packages.
-      next   - changes staged for next release
-      pu     - proposed updates for next release
-      xx/yy+ - branch for testing new changes before merging to 'pu' branch
+      <i>master</i> - Current release of packages.
+      <i>next</i>   - changes staged for next release
+      <i>pu</i>     - proposed updates for next release
+      <i>xx/yy+</i> - branch for testing new changes before merging to 'pu' branch
 </pre>
 Active development occurrs either directly on the 'pu' branch or on topic branches.
 Once modifications are considered stable, they are merged from the 'pu' branch
