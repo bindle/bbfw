@@ -108,16 +108,21 @@ EXTRA_MANS				=
 EXTRA_DIST				= build-aux/autogen.sh \
 					  build-aux/git-package-version \
 					  build-aux/git-package-version.sh \
-					  src/git-proj-stats.sh
+					  src/git-proj-stats.sh.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
 					  config.h.in~ $(srcdir)/config.h.in~ \
 					  $(man_MANS) \
+					  $(bin_SCRIPTS) \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.zip
 DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
 
+
+# script targets
+src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
+	@$(do_subst_fn)
 
 # custom targets
 .PHONY: autoreconf update gitclean build-aux/git-package-version
