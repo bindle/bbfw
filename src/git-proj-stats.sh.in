@@ -201,16 +201,23 @@ cat << EOF >> ${TEMPLATE}
 <p>
 A project version is used to identify a specific instance of the project. The version will be in one of the following formats:
 <pre>
-      x.y
-      x.y.z
-      x.y.z.h
-</pre>
-Where:
-<pre>
-      x is the major release version.
-      y is the minor release version.
-      z is the patch level.
-      h is the commit identifier of the last change.
+  Managed Projects:
+  x.y
+  x.y.z
+  x.y.z.c
+
+  Unmanaged Projects:
+  yyyy.mm.dd
+  yyyy.mm.dd.c
+
+  Where:
+  <i>x</i>    is the major release version.
+  <i>y</i>    is the minor release version.
+  <i>z</i>    is the patch level.
+  <i>c</i>    is the commit identifier of the last change.
+  <i>yyyy</i> is the year of the release.
+  <i>mm</i>   is the month of the release.
+  <i>dd</i>   is the day of the release.
 </pre>
 </p>
 <b>Branch Naming Conventions:</b>
