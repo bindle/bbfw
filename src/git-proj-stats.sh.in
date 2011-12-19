@@ -133,6 +133,27 @@ From: "David M. Syzdek" <syzdek@bindlebinaries.com>
 Subject: Bindle Binaries Project Activity (${DATE})
 Content-Type: text/html; charset=ISO-8859-1
 
+<style type="text/css">
+a:link
+{
+   color:		#000000;
+   text-decoration:	none;
+}
+a:visited
+{
+   color:		#000000;
+   text-decoration:	none;
+}
+a:hover
+{
+   color:		red;
+}
+a:active
+{
+   color:		#000000;
+   text-decoration:	none;
+}
+</style>
 EOF
 
 
