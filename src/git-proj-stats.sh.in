@@ -151,9 +151,9 @@ for PROJDIR in ${STATLIST};do
       if test -f ${PROJDIR}/.git/description;then
          echo -n "<i>"                                           >> ${TEMPLATE}
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
-         echo "</i></br/>"                                       >> ${TEMPLATE}
+         echo "</i>"                                             >> ${TEMPLATE}
       fi
-      echo "<a href='${PROJURL}'><font color='#000000'>project source code</font></a><br/>"   >> ${TEMPLATE}
+      echo "<br/><a href='${PROJURL}'><font color='#000000'>project source code</font></a>"   >> ${TEMPLATE}
      echo "</p>"                                                 >> ${TEMPLATE}
    fi
 done
