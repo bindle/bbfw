@@ -55,7 +55,7 @@ for FLAG in ${@};do
    if test "x${FLAG}" == "x--help";then
       echo "Usage: ${0} <address> <address> ... <address>"
       exit 0
-   elsif test "x${FLAG}" == "x--version";then
+   elif test "x${FLAG}" == "x--version";then
 cat << EOF
 git-proj-stats.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}
 Written by David M. Syzdek.
