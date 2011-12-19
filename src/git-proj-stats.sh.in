@@ -133,12 +133,12 @@ From: "David M. Syzdek" <syzdek@bindlebinaries.com>
 Subject: Bindle Binaries Project Activity (${DATE})
 Content-Type: text/html; charset=ISO-8859-1
 
-<style type="text/css">
+<div style='
 a:link    { color: #5b8fbe; text-decoration: none; }
 a:visited { color: #5b8fbe; text-decoration: none; }
 a:active  { color: #5b8fbe; text-decoration: none; }
 a:hover   { color: #5b8fbe; text-decoration: underline; }
-</style>
+'>
 EOF
 
 
@@ -262,7 +262,7 @@ information in this message is generated from the 'pu' branch of a project rathe
 than the 'next' or 'master' branches which are much less frequently updated.
 <p>
 <b><i>The information in this message was generated using Ohcount and Git.</i></b>
-
+</div>
 EOF
 
 
