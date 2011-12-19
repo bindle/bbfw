@@ -64,7 +64,7 @@ SRCDIR=/pub/src
 
 TEMPLATE=/tmp/mail-project-stats.$$
 DATE=`date +%Y-%m-%d`
-TIMELIMIT=30
+TIMELIMIT=14
 TIMEINTERVALS="1 7 14 30 90 365"
 
 
