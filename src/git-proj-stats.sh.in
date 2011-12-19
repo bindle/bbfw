@@ -35,6 +35,15 @@
 #   git-proj-stats.sh - script for generating development stats on active projects
 #
 
+# configuration information
+REPODIR=/pub/scm
+SRCDIR=/pub/src
+TEMPLATE=/tmp/mail-project-stats.$$
+DATE=`date '+%a %Y-%m-%d'`
+TIMELIMIT=14
+TIMEINTERVALS="1 7 14 30 60 90 120 365 730"
+
+
 PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
@@ -58,14 +67,6 @@ EOF
       exit 0
    fi
 done
-
-REPODIR=/pub/scm
-SRCDIR=/pub/src
-
-TEMPLATE=/tmp/mail-project-stats.$$
-DATE=`date '+%a %Y-%m-%d'`
-TIMELIMIT=14
-TIMEINTERVALS="1 7 14 30 60 90 120 365 730"
 
 
 # tests configuration
