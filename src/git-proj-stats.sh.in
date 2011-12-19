@@ -142,11 +142,13 @@ for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
    PROJCLIENT=`dirname ${PROJDIR}`
    PROJCLIENT=`basename ${PROJCLIENT}`
+   PROJURL="http://flatbox.office.bindlebinaries.com/pub/scm/${PROJCLIENT}/${PROJNAME}.git"
    if test -d ${PROJDIR};then
       cd ${PROJDIR}
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<a name='Active_${PROJNAME}'></a>"                   >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b> <i>(${PROJCLIENT})</i><br/>"      >> ${TEMPLATE}
+      echo "<a href='${PROJURL}'>${PROJURL}</a><br/>"            >> ${TEMPLATE}
       if test -f ${PROJDIR}/.git/description;then
          echo -n "<i>"                                           >> ${TEMPLATE}
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
