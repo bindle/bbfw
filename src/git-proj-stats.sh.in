@@ -148,7 +148,7 @@ for PROJDIR in ${STATLIST};do
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<a name='Active_${PROJNAME}'></a>"                   >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b> <i>(${PROJCLIENT})</i><br/>"      >> ${TEMPLATE}
-      echo "<a href='${PROJURL}'>${PROJURL}</a><br/>"            >> ${TEMPLATE}
+      echo "<a href='${PROJURL}'>Project Source Code</a><br/>"   >> ${TEMPLATE}
       if test -f ${PROJDIR}/.git/description;then
          echo -n "<i>"                                           >> ${TEMPLATE}
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
