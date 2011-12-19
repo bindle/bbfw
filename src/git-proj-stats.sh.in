@@ -50,6 +50,13 @@ PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
 
 
+# sets style
+LINKSTYLE="${LINKSTYLE} a:link    { color: #5b8fbe; text-decoration: none; }"
+LINKSTYLE="${LINKSTYLE} a:visited { color: #5b8fbe; text-decoration: none; }"
+LINKSTYLE="${LINKSTYLE} a:active  { color: #5b8fbe; text-decoration: none; }"
+LINKSTYLE="${LINKSTYLE} a:hover   { color: #5b8fbe; text-decoration: underline; }"
+
+
 # parses CLI arguments
 for FLAG in ${@};do
    if test "x${FLAG}" == "x--help";then
@@ -133,12 +140,6 @@ From: "David M. Syzdek" <syzdek@bindlebinaries.com>
 Subject: Bindle Binaries Project Activity (${DATE})
 Content-Type: text/html; charset=ISO-8859-1
 
-<div style='
-a:link    { color: #5b8fbe; text-decoration: none; }
-a:visited { color: #5b8fbe; text-decoration: none; }
-a:active  { color: #5b8fbe; text-decoration: none; }
-a:hover   { color: #5b8fbe; text-decoration: underline; }
-'>
 EOF
 
 
@@ -154,7 +155,7 @@ for PROJDIR in ${STATLIST};do
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<a name='Active_${PROJNAME}'></a>"                   >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b> <i>(${PROJCLIENT})</i><br/>"      >> ${TEMPLATE}
-      echo "<a href='${PROJURL}'>Project Source Code</a><br/>"   >> ${TEMPLATE}
+      echo "<a style='${LINKSTYLE}' href='${PROJURL}'>Project Source Code</a><br/>"   >> ${TEMPLATE}
       if test -f ${PROJDIR}/.git/description;then
          echo -n "<i>"                                           >> ${TEMPLATE}
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
@@ -262,7 +263,6 @@ information in this message is generated from the 'pu' branch of a project rathe
 than the 'next' or 'master' branches which are much less frequently updated.
 <p>
 <b><i>The information in this message was generated using Ohcount and Git.</i></b>
-</div>
 EOF
 
 
