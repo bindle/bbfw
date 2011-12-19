@@ -63,7 +63,7 @@ REPODIR=/pub/scm
 SRCDIR=/pub/src
 
 TEMPLATE=/tmp/mail-project-stats.$$
-DATE=`date +%Y-%m-%d`
+DATE=`date '+%a %Y-%m-%d'`
 TIMELIMIT=14
 TIMEINTERVALS="1 7 14 30 60 90 120 365 730"
 
