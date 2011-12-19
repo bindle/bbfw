@@ -44,10 +44,13 @@ TIMELIMIT=14
 TIMEINTERVALS="1 7 14 30 60 90 120 365 730"
 
 
+# sets script/package information
 PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
 
+
+# parses CLI arguments
 for FLAG in ${@};do
    if test "x${FLAG}" == "x--help";then
       echo "Usage: ${0} <address> <address> ... <address>"
