@@ -177,7 +177,7 @@ for REPO in ${STATLIST};do
          STAT=`git diff --stat $(git rev-list -n1 --before="${NUM} day ago" ${HEAD}) |grep 'files changed, '`
          if test "x${STAT}" != "x${OLDSTAT}";then
             if test "x${STAT}" != "x";then
-               echo "<br/>Changes to ${HEAD} branch in last  ${NUM} day(s): ${STAT}" >> ${TEMPLATE}
+               echo "<br/>Changes to ${HEAD} branch within last  ${NUM} day(s): ${STAT}" >> ${TEMPLATE}
             fi
             OLDSTAT="${STAT}"
          fi
