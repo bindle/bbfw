@@ -51,10 +51,10 @@ PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
 
 
 # sets style
-LINKSTYLE="${LINKSTYLE} a:link    { color: #5b8fbe; text-decoration: none; }"
-LINKSTYLE="${LINKSTYLE} a:visited { color: #5b8fbe; text-decoration: none; }"
-LINKSTYLE="${LINKSTYLE} a:active  { color: #5b8fbe; text-decoration: none; }"
-LINKSTYLE="${LINKSTYLE} a:hover   { color: #5b8fbe; text-decoration: underline; }"
+LINKSTYLE="${LINKSTYLE} a:link    { color: #5b8fbe; text-decoration: none; };"
+LINKSTYLE="${LINKSTYLE} a:visited { color: #5b8fbe; text-decoration: none; };"
+LINKSTYLE="${LINKSTYLE} a:active  { color: #5b8fbe; text-decoration: none; };"
+LINKSTYLE="${LINKSTYLE} a:hover   { color: #5b8fbe; text-decoration: underline; };"
 
 
 # parses CLI arguments
