@@ -120,7 +120,7 @@ echo "generating list of active projects..."
 for PROJDIR in ${SRCLIST};do
    cd ${PROJDIR};
    HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-   DATA=`git diff --stat $(git rev-list --after="${TIMELIMIT} day ago" ${HEAD} |tail -1) 2> /dev/null`
+   DATA=`git diff --stat $(git rev-list -n1 --before="${TIMELIMIT} day ago" ${HEAD} 2> /dev/null) 2> /dev/null`
    if test "x${DATA}" != "x";then
       STATLIST="${STATLIST} ${PROJDIR}"
    fi
@@ -176,7 +176,7 @@ for REPO in ${STATLIST};do
       fi
 
       for NUM in ${TIMEINTERVALS};do
-         STAT=`git diff --stat $(git rev-list --after="${NUM} day ago" ${HEAD} |tail -1) |grep 'files changed, '`
+         STAT=`git diff --stat $(git rev-list -n1 --before="${NUM} day ago" ${HEAD}) |grep 'files changed, '`
          if test "x${STAT}" != "x${OLDSTAT}";then
             if test "x${STAT}" != "x";then
                echo "<br/>Changes to ${HEAD} branch within last  ${NUM} day(s): ${STAT}" >> ${TEMPLATE}
