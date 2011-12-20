@@ -142,7 +142,7 @@ for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
    PROJCLIENT=`dirname ${PROJDIR}`
    PROJCLIENT=`basename ${PROJCLIENT}`
-   PROJURL="http://flatbox.office.bindlebinaries.com/pub/scm/${PROJCLIENT}/${PROJNAME}.git"
+   PROJURL="http://scm.office.bindlebinaries.com/pub/scm/${PROJCLIENT}/${PROJNAME}.git"
    if test -d ${PROJDIR};then
       cd ${PROJDIR}
       echo -n "<p>"                                              >> ${TEMPLATE}
