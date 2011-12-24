@@ -32,7 +32,7 @@
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_END@
 #
-#   server-sync-etc.sh - syncs auth files to servers and LXC containers
+#   slackware-sync-auth.sh - syncs auth files to servers and LXC containers
 #
 
 # list of files to sync
