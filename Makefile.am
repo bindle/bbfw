@@ -63,8 +63,9 @@ noinst_LTLIBRARIES			=
 noinst_HEADERS				=
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
-bin_SCRIPTS				= src/git-proj-stats.sh
-sbin_SCRIPTS				= src/server-sync-admin.sh
+bin_SCRIPTS				=
+sbin_SCRIPTS				= src/git-proj-stats.sh \
+					  src/server-sync-admin.sh
 
 
 # substitution routine
