@@ -1,0 +1,30 @@
+#!/bin/sh
+
+#for REPO in /pub/scm/com.bindlebinaries/iOSPorts.git /pub/scm/com.bindlebinaries/iPhoneOS/openldap.git;do
+#   echo "Updating `basename ${REPO}` on github..."
+#   /usr/bin/git --git-dir=${REPO} push  github master:master next:next pu:pu 2>&1
+#   /usr/bin/git --git-dir=${REPO} fetch github master:master next:next pu:pu 2>&1
+#   echo " "
+#   sleep 2
+#done
+
+update_remote()
+{
+   REMOTE=`echo $1 | sed -e 's/\/$//g'`
+   echo "Updating ${REMOTE} ..."
+   date
+   /usr/bin/rsync -e ssh --numeric-ids --delete -apv --exclude /linux/ /pub/ ${REMOTE}    2>&1
+   echo " "
+}
+
+if test "x${1}" == "x";then
+   for REMOTE in root@salmon.bindlebinaries.com:/pub root@roasted.bindlebinaries.com:/pub;do
+      update_remote ${REMOTE}
+      sleep 2
+   done
+else
+   update_remote "${1}"
+fi
+
+
+# end of script
