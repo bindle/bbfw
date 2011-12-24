@@ -64,6 +64,7 @@ noinst_HEADERS				=
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				= src/git-proj-stats.sh
+sbin_SCRIPTS				= src/server-sync-admin.sh
 
 
 # substitution routine
@@ -108,13 +109,15 @@ EXTRA_MANS				=
 EXTRA_DIST				= build-aux/autogen.sh \
 					  build-aux/git-package-version \
 					  build-aux/git-package-version.sh \
-					  src/git-proj-stats.sh.in
+					  src/git-proj-stats.sh.in \
+					  src/server-sync-admin.sh.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
 					  config.h.in~ $(srcdir)/config.h.in~ \
 					  $(man_MANS) \
 					  $(bin_SCRIPTS) \
+					  $(sbin_SCRIPTS) \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.zip
 DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
@@ -122,6 +125,9 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
 
 # script targets
 src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
+	@$(do_subst_fn)
+
+src/server-sync-admin.sh: Makefile src/server-sync-admin.sh.in
 	@$(do_subst_fn)
 
 # custom targets

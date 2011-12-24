@@ -1,0 +1,115 @@
+#!/bin/sh
+#
+#   Bindle Binaries Tools
+#   Copyright (C) 2011 Bindle Binaries <syzdek@bindlebinaries.com>.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_START@
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of Bindle Binaries nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BINDLE BINARIES BE LIABLE FOR
+#   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_END@
+#
+#   server-sync-etc.sh - syncs auth files to servers and LXC containers
+#
+
+# list of files to sync
+ETCFILES="${ETCFILES} /etc/group"
+ETCFILES="${ETCFILES} /etc/passwd"
+ETCFILES="${ETCFILES} /etc/shadow"
+ETCFILES="${ETCFILES} /etc/suauth"
+ETCFILES="${ETCFILES} /etc/sudoers"
+
+
+# sets script/package information
+PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+
+
+# parses CLI arguments
+for FLAG in ${@};do
+   if test "x${FLAG}" == "x--help";then
+      echo "Usage: ${0}"
+      exit 0
+   elif test "x${FLAG}" == "x--version";then
+cat << EOF
+server-sync-admin.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}
+Written by David M. Syzdek.
+
+Copyright 2011 Bindle Binaries <${PACKAGE_BUGREPORT}>.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+EOF
+      exit 0
+   fi
+done
+
+
+# verifies that script is running on slackware
+if test ! -f /etc/slackware-version;then
+   echo "$0: must be run on a Slackware host." 1>&2
+   exit 1
+fi
+
+
+# verifies script is run as root
+if test "x${UID}" != "x0";then
+   echo "${0}: must run as root." 1>&2
+   exit 1
+fi
+
+
+# syncs files to servers in list
+if test -f /etc/servers.list;then
+   for SERVER in `cut -d# -f1 /etc/servers.list`;do
+      echo "Updating server: ${SERVER}..."
+      /usr/bin/rsync -a -e ssh \
+         ${ETCFILES} \
+         root@${SERVER}:/etc/
+      if test -d /opt/bindle/;then
+         /usr/bin/rsync -ra -e ssh \
+            /opt/bindle/ \
+            root@${SERVER}:/opt/bindle
+      fi
+   done
+fi
+
+
+# syncs files to LXC containers
+if test -d /var/lib/lxc/;then
+   for LXC in `ls /var/lib/lxc/`;do
+      LXCETCDIR=/var/lib/lxc/${LXC}/rootfs/etc/
+      if test -d ${LXCETCDIR};then
+         echo "Updating LXC: ${LXC}..."
+         /usr/bin/rsync -a \
+            ${ETCFILES} \
+            ${LXCETCDIR}
+      fi
+   done
+fi
+
+
+# end of script
