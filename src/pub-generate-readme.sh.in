@@ -1,0 +1,46 @@
+#!/bin/sh
+
+if test "x${1}" == "x";then
+   echo "Usage: ${0} <dir>" 1>&2
+   exit 1
+fi
+
+if test ! -d "${1}";then
+   echo "${0}: directory does not exist" 1>&2
+   exit 1
+fi
+
+cd ${1} || exit 1
+
+DIRDESC="Edit this line to add description of directory."
+if test -f ./00-README;then
+   DIRDESC=`head -1 ./00-README`
+fi
+
+DIRPATH=`pwd`
+
+rm -f ./00-README
+cat << EOF > ./00-README || exit 1
+${DIRDESC}
+
+Directory:
+   ${DIRPATH}
+
+Directory Contents:
+EOF
+
+printf "   ./%-45s - %s\n" "00-README" "This File" >> ./00-README || exit 1
+
+for DIR in `ls |grep -v "^00-README$"`;do
+   echo "creating entry for ${DIRPATH}/${DIR}..."
+   DESC="Description Not Available"
+   if test -f "./${DIR}/description";then
+      DESC=`head -1 "./${DIR}/description"`
+   elif test -f "./${DIR}/00-README";then
+      DESC=`head -1 "./${DIR}/00-README"`
+      ${0} "${DIR}"
+   fi
+   printf "   ./%-45s - %s\n" "${DIR}" "${DESC}" >> ./00-README
+done
+
+# end of script
