@@ -65,7 +65,7 @@ noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 sbin_SCRIPTS				= src/git-proj-stats.sh \
-					  src/server-sync-admin.sh
+					  src/slackware-sync-admin.sh
 
 
 # substitution routine
@@ -111,7 +111,7 @@ EXTRA_DIST				= build-aux/autogen.sh \
 					  build-aux/git-package-version \
 					  build-aux/git-package-version.sh \
 					  src/git-proj-stats.sh.in \
-					  src/server-sync-admin.sh.in
+					  src/slackware-sync-admin.sh.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -128,7 +128,7 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
 src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
 	@$(do_subst_fn)
 
-src/server-sync-admin.sh: Makefile src/server-sync-admin.sh.in
+src/slackware-sync-admin.sh: Makefile src/slackware-sync-admin.sh.in
 	@$(do_subst_fn)
 
 # custom targets
