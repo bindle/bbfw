@@ -1,0 +1,15 @@
+#!/bin/sh
+
+mkdir -p /pub/linux/slackware/ || exit 1
+
+echo "slackware.mirrors.tds.net::slackware/slackware-13.37/ ..."
+rsync -a --exclude source ${@} \
+	slackware.mirrors.tds.net::slackware/slackware-13.37/  \
+	/pub/linux/slackware/slackware-13.37 \
+	|| exit 1
+
+echo "slackware.mirrors.tds.net::slackware/slackware64-13.37/ ..."
+rsync -a --exclude source ${@} \
+	slackware.mirrors.tds.net::slackware/slackware64-13.37/  \
+	/pub/linux/slackware/slackware64-13.37 \
+	|| exit 1
