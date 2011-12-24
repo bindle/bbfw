@@ -65,7 +65,7 @@ noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 sbin_SCRIPTS				= src/git-proj-stats.sh \
-					  src/slackware-sync-admin.sh \
+					  src/slackware-sync-auth.sh \
 					  src/slackware-update-mirrors.sh
 
 
@@ -112,7 +112,7 @@ EXTRA_DIST				= build-aux/autogen.sh \
 					  build-aux/git-package-version \
 					  build-aux/git-package-version.sh \
 					  src/git-proj-stats.sh.in \
-					  src/slackware-sync-admin.sh.in \
+					  src/slackware-sync-auth.sh.in \
 					  src/slackware-update-mirrors.sh.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
@@ -130,7 +130,7 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
 src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
 	@$(do_subst_fn)
 
-src/slackware-sync-admin.sh: Makefile src/slackware-sync-admin.sh.in
+src/slackware-sync-auth.sh: Makefile src/slackware-sync-auth.sh.in
 	@$(do_subst_fn)
 
 src/slackware-update-mirrors.sh: Makefile src/slackware-update-mirrors.sh.in
