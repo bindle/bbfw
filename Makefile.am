@@ -66,6 +66,7 @@ bin_PROGRAMS				=
 bin_SCRIPTS				=
 sbin_SCRIPTS				= src/git-proj-stats.sh \
 					  src/pub-generate-readme.sh \
+					  src/pub-rsync-remotes.sh \
 					  src/slackware-sync-auth.sh \
 					  src/slackware-update-mirrors.sh
 
@@ -114,6 +115,7 @@ EXTRA_DIST				= build-aux/autogen.sh \
 					  build-aux/git-package-version.sh \
 					  src/git-proj-stats.sh.in \
 					  src/pub-generate-readme.sh.in \
+					  src/pub-rsync-remotes.sh.in \
 					  src/slackware-sync-auth.sh.in \
 					  src/slackware-update-mirrors.sh.in
 CLEANFILES				= \
@@ -133,6 +135,9 @@ src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
 	@$(do_subst_fn)
 
 src/pub-generate-readme.sh: Makefile src/pub-generate-readme.sh.in
+	@$(do_subst_fn)
+
+src/pub-rsync-remotes.sh: Makefile src/pub-rsync-remotes.sh.in
 	@$(do_subst_fn)
 
 src/slackware-sync-auth.sh: Makefile src/slackware-sync-auth.sh.in
