@@ -1,5 +1,25 @@
 #!/bin/sh
 
+# parses CLI arguments
+for FLAG in ${@};do
+   if test "x${FLAG}" == "x--help";then
+      echo "Usage: ${0}"
+      echo "Usage: ${0} user@server:/path"
+      exit 0
+   elif test "x${FLAG}" == "x--version";then
+cat << EOF
+server-sync-admin.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}
+Written by David M. Syzdek.
+
+Copyright 2011 Bindle Binaries <${PACKAGE_BUGREPORT}>.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+EOF
+      exit 0
+   fi
+done
+
+
 if test "x${1}" == "x";then
    echo "Usage: ${0} <dir>" 1>&2
    exit 1
