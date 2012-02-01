@@ -159,8 +159,8 @@ for PROJDIR in ${STATLIST};do
 done
 
 
-echo "<a name='Statistics'></a>"                                      >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Statistics</h3></div>'   >> ${TEMPLATE}
+echo "<a name='Changes'></a>"                                      >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
@@ -169,7 +169,7 @@ for REPO in ${STATLIST};do
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
       PROJVER=`git describe |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
       echo -n "<p>"                                             >> ${TEMPLATE}
-      echo "<a name='Statistics_${PROJNAME}'></a>"              >> ${TEMPLATE}
+      echo "<a name='Changes_${PROJNAME}'></a>"                 >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
       if test "x${PROJVER}" != "x";then
          echo "<br/>Version: ${PROJVER}"                        >> ${TEMPLATE}
@@ -191,15 +191,15 @@ done
 
 
 echo "running ohcount..."
-echo "<a name='Summaries'></a>"                                      >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Summaries</h3></div>'   >> ${TEMPLATE}
+echo "<a name='Statistics'></a>"                                     >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Project Statistics</h3></div>'  >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
       echo "running ohcount on ${REPO}..."
       cd ${REPO}
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<a name='Summaries_${PROJNAME}'></a>"                >> ${TEMPLATE}
+      echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
       /usr/local/bin/ohcount ${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
