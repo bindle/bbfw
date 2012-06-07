@@ -226,6 +226,7 @@ for REPO in ${STATLIST};do
       echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
+      HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
       git log --oneline -n20  --after="${TIMELIMIT} day ago" ${HEAD} >> ${TEMPLATE}
       echo -n "</pre>"                                           >> ${TEMPLATE}
       echo "</p>"                                                >> ${TEMPLATE}
