@@ -172,7 +172,7 @@ for REPO in ${STATLIST};do
       echo "running git diff on ${REPO}..."
       cd ${REPO}
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-      PROJVER=`git describe |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
+      PROJVER=`git describe 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
       echo -n "<p>"                                             >> ${TEMPLATE}
       echo "<a name='Changes_${PROJNAME}'></a>"                 >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
