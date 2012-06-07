@@ -117,12 +117,14 @@ done
 
 
 echo "generating list of active projects..."
+STATCOUNT=0
 for PROJDIR in ${SRCLIST};do
    cd ${PROJDIR};
    HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
    DATA=`git diff --stat $(git rev-list -n1 --before="${TIMELIMIT} day ago" ${HEAD} 2> /dev/null) 2> /dev/null`
    if test "x${DATA}" != "x";then
       STATLIST="${STATLIST} ${PROJDIR}"
+      STATCOUNT=$((${STATCOUNT}+1))
    fi
 done
 
@@ -135,7 +137,7 @@ fi
 cat << EOF > ${TEMPLATE}
 To: @EMAIL_ADDRESS@
 From: "David M. Syzdek" <syzdek@bindlebinaries.com>
-Subject: Bindle Binaries Project Activity (${DATE})
+Subject: Bindle Binaries Project Activity (${DATE} / ${STATCOUNT} projects)
 Content-Type: text/html; charset=ISO-8859-1
 
 EOF
