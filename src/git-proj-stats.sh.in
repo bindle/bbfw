@@ -195,25 +195,6 @@ for REPO in ${STATLIST};do
 done
 
 
-echo "running ohcount..."
-echo "<a name='Statistics'></a>"                                     >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Statistics</h3></div>'  >> ${TEMPLATE}
-for REPO in ${STATLIST};do
-   PROJNAME=`basename ${REPO}`
-   if test -d ${REPO};then
-      echo "running ohcount on ${REPO}..."
-      cd ${REPO}
-      echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
-      echo -n "<pre>"                                            >> ${TEMPLATE}
-      /usr/local/bin/ohcount ${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
-      echo -n "</pre>"                                           >> ${TEMPLATE}
-      echo "</p>"                                                >> ${TEMPLATE}
-   fi
-done
-
-
 echo "generating project log..."
 echo "<a name='Logs'></a>"                                       >> ${TEMPLATE}
 echo '<div style="color:#660066"><h3>Project Logs</h3></div>'    >> ${TEMPLATE}
@@ -228,6 +209,25 @@ for REPO in ${STATLIST};do
       echo -n "<pre>"                                            >> ${TEMPLATE}
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
       git log --oneline -n20  --after="${TIMELIMIT} day ago" ${HEAD} >> ${TEMPLATE}
+      echo -n "</pre>"                                           >> ${TEMPLATE}
+      echo "</p>"                                                >> ${TEMPLATE}
+   fi
+done
+
+
+echo "running ohcount..."
+echo "<a name='Statistics'></a>"                                     >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Project Statistics</h3></div>'  >> ${TEMPLATE}
+for REPO in ${STATLIST};do
+   PROJNAME=`basename ${REPO}`
+   if test -d ${REPO};then
+      echo "running ohcount on ${REPO}..."
+      cd ${REPO}
+      echo -n "<p>"                                              >> ${TEMPLATE}
+      echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
+      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
+      echo -n "<pre>"                                            >> ${TEMPLATE}
+      /usr/local/bin/ohcount ${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
       echo -n "</pre>"                                           >> ${TEMPLATE}
       echo "</p>"                                                >> ${TEMPLATE}
    fi
