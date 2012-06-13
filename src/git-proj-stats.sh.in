@@ -170,13 +170,14 @@ for PROJDIR in ${STATLIST};do
       cd ${PROJDIR}
       echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b> <i>(${PROJCLIENT})</i><br/>"      >> ${TEMPLATE}
+      echo "<b>${PROJNAME}</b><br/>"      >> ${TEMPLATE}
       if test -f ${PROJDIR}/.git/description;then
-         echo -n "<i>"                                           >> ${TEMPLATE}
+         echo -n "<i><b>"                                           >> ${TEMPLATE}
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
-         echo "</i>"                                             >> ${TEMPLATE}
+         echo "</b></i>"                                             >> ${TEMPLATE}
       fi
-      echo "<br/>Last Updated:<i>"                               >> ${TEMPLATE}
+      echo "<br/>Client: <i>${PROJCLIENT}</i>"      >> ${TEMPLATE}
+      echo "<br/>Last Activity:<i>"                               >> ${TEMPLATE}
       git ${GITDIR} log -n1 --quiet --date=short --pretty="format:%ad" ${HEAD}^..${HEAD} >> ${TEMPLATE}
       echo "</i>"                                                >> ${TEMPLATE}
       echo "<br/>Project Links:<i>"                               >> ${TEMPLATE}
@@ -202,14 +203,17 @@ for REPO in ${STATLIST};do
    if test -d ${REPO};then
       echo "   running git diff on ${REPO}..."
       cd ${REPO}
-      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
+      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"               >> ${TEMPLATE}
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-      PROJVER=`git describe 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
       echo -n "<p>"                                             >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
-      if test "x${PROJVER}" != "x";then
-         echo "<br/>Version: ${PROJVER}"                        >> ${TEMPLATE}
-      fi
+
+      for BRANCH in pu next master;do
+         PROJVER=`git describe origin/${BRANCH} 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
+         if test "x${PROJVER}" != "x";then
+            echo "<br/>Version (${BRANCH}): <i>${PROJVER}</i>"           >> ${TEMPLATE}
+         fi
+      done
 
       for NUM in ${TIMEINTERVALS};do
          STAT=`git diff --stat $(git rev-list -n1 --before="${NUM} day ago" ${HEAD}) |grep 'files changed, '`
