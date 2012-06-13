@@ -100,7 +100,7 @@ for REPO in ${REPOLIST};do
    PROJDIR="${DOMAINDIR}/${PROJNAME}"
    SRCLIST="${SRCLIST} ${PROJDIR}"
    if test ! -d ${PROJDIR};then
-      echo "Creating ${DOMAINDIR}/${PROJNAME}..."
+      echo "   Creating ${DOMAINDIR}/${PROJNAME}..."
       mkdir -p ${DOMAINDIR} || exit 1
       cd ${DOMAINDIR} || exit 1
       git clone ${REPO} || exit 1
@@ -119,6 +119,7 @@ done
 echo "generating list of active projects..."
 STATCOUNT=0
 for PROJDIR in ${SRCLIST};do
+   PROJNAME=`basename ${PROJDIR}`
    cd ${PROJDIR};
    HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
    DATA=`git rev-list -n1 --after="${TIMELIMIT} day ago" ${HEAD} 2> /dev/null`
@@ -145,29 +146,29 @@ Content-Type: text/html; charset=ISO-8859-1
 EOF
 
 
-# E-mail Section: Table of Contents
-echo "<div style='color:#660066'><h3>Contents</h3></div>"   >> ${TEMPLATE}
-echo "<ol>"                                                 >> ${TEMPLATE}
-for ANCHOR in Active_Projects Project_Changes Project_Line_Counts Project_Commit_Logs Help;do
-   TITLE=`echo ${ANCHOR} |sed 's/_/ /g'`
-   echo "<li><a href=#${ANCHOR} style='color:#660066;text-decoration:none;'><b>${TITLE}</b></a></li>"          >> ${TEMPLATE}
-done
-echo "</ol>"                                                >> ${TEMPLATE}
-echo -e "\n\n" >> ${TEMPLATE}
+# create list of anchors
+PROJANCHORS="Project_Changes Project_Line_Counts Project_Commit_Logs"
+ANCHORS="Active_Projects ${PROJANCHORS} Help"
 
 
 # E-mail Section: Active Projects
-echo "<a name='Active_Projects'></a>"                                                       >> ${TEMPLATE} 
-echo "<div style='color:#660066'><h3>Active Projects (Last ${TIMELIMIT} days)</h3></div>"   >> ${TEMPLATE}
+ANCHOR=Active_Projects
+TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
+echo "generating project summary..."
+echo "<a name='${ANCHOR}'></a>"                                                       >> ${TEMPLATE} 
+echo "<div style='color:#660066'><h3>${TITLE} (Last ${TIMELIMIT} days)</h3></div>"   >> ${TEMPLATE}
 for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
+   PROJANCHOR="${ANCHOR}_${PROJNAME}"
    PROJCLIENT=`dirname ${PROJDIR}`
    PROJCLIENT=`basename ${PROJCLIENT}`
    PROJURL="http://scm.office.bindlebinaries.com/pub/scm/${PROJCLIENT}/${PROJNAME}.git"
    HEAD=`git --git-dir=${PROJDIR}/.git branch |egrep '^\* '|awk '{print$2}'`
    GITDIR="--git-dir=${PROJDIR}/.git"
    if test -d ${PROJDIR};then
+      echo "   generating project summary for ${PROJDIR}..."
       cd ${PROJDIR}
+      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b> <i>(${PROJCLIENT})</i><br/>"      >> ${TEMPLATE}
       if test -f ${PROJDIR}/.git/description;then
@@ -178,7 +179,12 @@ for PROJDIR in ${STATLIST};do
       echo "<br/>Last Updated:<i>"                               >> ${TEMPLATE}
       git ${GITDIR} log -n1 --quiet --date=short --pretty="format:%ad" ${HEAD}^..${HEAD} >> ${TEMPLATE}
       echo "</i>"                                                >> ${TEMPLATE}
-      echo "<br/><a href='${PROJURL}' style='color:#222244'>project source code</a>"   >> ${TEMPLATE}
+      echo "<br/>Project Links:<i>"                               >> ${TEMPLATE}
+      for LINK in ${PROJANCHORS};do
+         TITLE=`echo ${LINK} |sed -e 's/_/ /g' -e 's/Project //g'`
+         echo "<a href='#${LINK}_${PROJNAME}' style='color:#440044;text-decoration:none;'>${TITLE}</a>,"   >> ${TEMPLATE}
+      done
+      echo "<a href='${PROJURL}' style='color:#440044;text-decoration:none;'>Source Code</a>"   >> ${TEMPLATE}
      echo "</p>"                                                 >> ${TEMPLATE}
    fi
 done
@@ -186,13 +192,17 @@ echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Diff Statistics
-echo "<a name='Project_Changes'></a>"                              >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
+ANCHOR=Project_Changes
+TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
+echo "running git diff..."
+echo "<a name='${ANCHOR}'></a>"                              >> ${TEMPLATE}
+echo "<div style='color:#660066'><h3>${TITLE}</h3></div>"   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
-      echo "running git diff on ${REPO}..."
+      echo "   running git diff on ${REPO}..."
       cd ${REPO}
+      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
       PROJVER=`git describe 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
       echo -n "<p>"                                             >> ${TEMPLATE}
@@ -218,14 +228,17 @@ echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Line Counts
+ANCHOR=Project_Line_Counts
+TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
 echo "running ohcount..."
-echo "<a name='Project_Line_Counts'></a>"                             >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Line Counts</h3></div>'  >> ${TEMPLATE}
+echo "<a name='${ANCHOR}'></a>"                             >> ${TEMPLATE}
+echo "<div style='color:#660066'><h3>${TITLE}</h3></div>"  >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
-      echo "running ohcount on ${REPO}..."
+      echo "   running ohcount on ${REPO}..."
       cd ${REPO}
+      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
@@ -238,14 +251,17 @@ echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Commit Logs
+ANCHOR=Project_Commit_Logs
+TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
 echo "generating project log..."
-echo "<a name='Project_Commit_Logs'></a>"                               >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Commit Logs</h3></div>'    >> ${TEMPLATE}
+echo "<a name='${ANCHOR}'></a>"                               >> ${TEMPLATE}
+echo "<div style='color:#660066'><h3>${TITLE}</h3></div>"    >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
-      echo "generating logs for ${REPO}..."
+      echo "   generating logs for ${REPO}..."
       cd ${REPO}
+      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
       echo -n "<p>"                                              >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
@@ -259,9 +275,11 @@ echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Help
+ANCHOR=Help
+TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
 cat << EOF >> ${TEMPLATE}
-<a name='Help'></a>
-<div style='color:#660066'><h3>Help</h3></div>
+<a name='${ANCHOR}'></a>
+<div style='color:#660066'><h3>${TITLE}</h3></div>
 <b>Version Naming Conventions:</b>
 <p>
 A project version is used to identify a specific instance of the project. The version will be in one of the following formats:
