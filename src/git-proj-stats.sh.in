@@ -145,8 +145,19 @@ Content-Type: text/html; charset=ISO-8859-1
 EOF
 
 
+# E-mail Section: Table of Contents
+echo "<div style='color:#660066'><h3>Contents</h3></div>"   >> ${TEMPLATE}
+echo "<ol>"                                                 >> ${TEMPLATE}
+for ANCHOR in Active_Projects Project_Changes Project_Line_Counts Project_Commit_Logs Help;do
+   TITLE=`echo ${ANCHOR} |sed 's/_/ /g'`
+   echo "<li><a href=#${ANCHOR} style='color:#660066;text-decoration:none;'><b>${TITLE}</b></a></li>"          >> ${TEMPLATE}
+done
+echo "</ol>"                                                >> ${TEMPLATE}
+echo -e "\n\n" >> ${TEMPLATE}
+
+
 # E-mail Section: Active Projects
-echo "<a name='Active'></a>"                                                                >> ${TEMPLATE}
+echo "<a name='Active_Projects'></a>"                                                       >> ${TEMPLATE} 
 echo "<div style='color:#660066'><h3>Active Projects (Last ${TIMELIMIT} days)</h3></div>"   >> ${TEMPLATE}
 for PROJDIR in ${STATLIST};do
    PROJNAME=`basename ${PROJDIR}`
@@ -156,7 +167,6 @@ for PROJDIR in ${STATLIST};do
    if test -d ${PROJDIR};then
       cd ${PROJDIR}
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<a name='Active_${PROJNAME}'></a>"                   >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b> <i>(${PROJCLIENT})</i><br/>"      >> ${TEMPLATE}
       if test -f ${PROJDIR}/.git/description;then
          echo -n "<i>"                                           >> ${TEMPLATE}
@@ -167,10 +177,11 @@ for PROJDIR in ${STATLIST};do
      echo "</p>"                                                 >> ${TEMPLATE}
    fi
 done
+echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Diff Statistics
-echo "<a name='Changes'></a>"                                      >> ${TEMPLATE}
+echo "<a name='Project_Changes'></a>"                              >> ${TEMPLATE}
 echo '<div style="color:#660066"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
@@ -180,7 +191,6 @@ for REPO in ${STATLIST};do
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
       PROJVER=`git describe 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
       echo -n "<p>"                                             >> ${TEMPLATE}
-      echo "<a name='Changes_${PROJNAME}'></a>"                 >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
       if test "x${PROJVER}" != "x";then
          echo "<br/>Version: ${PROJVER}"                        >> ${TEMPLATE}
@@ -199,11 +209,12 @@ for REPO in ${STATLIST};do
       echo "</p>"                                                >> ${TEMPLATE}
    fi
 done
+echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Line Counts
 echo "running ohcount..."
-echo "<a name='Statistics'></a>"                                     >> ${TEMPLATE}
+echo "<a name='Project_Line_Counts'></a>"                             >> ${TEMPLATE}
 echo '<div style="color:#660066"><h3>Project Line Counts</h3></div>'  >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
@@ -211,7 +222,6 @@ for REPO in ${STATLIST};do
       echo "running ohcount on ${REPO}..."
       cd ${REPO}
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
       /usr/local/bin/ohcount ${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
@@ -219,11 +229,12 @@ for REPO in ${STATLIST};do
       echo "</p>"                                                >> ${TEMPLATE}
    fi
 done
+echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Commit Logs
 echo "generating project log..."
-echo "<a name='Logs'></a>"                                       >> ${TEMPLATE}
+echo "<a name='Project_Commit_Logs'></a>"                               >> ${TEMPLATE}
 echo '<div style="color:#660066"><h3>Project Commit Logs</h3></div>'    >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
@@ -231,7 +242,6 @@ for REPO in ${STATLIST};do
       echo "generating logs for ${REPO}..."
       cd ${REPO}
       echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
@@ -240,13 +250,13 @@ for REPO in ${STATLIST};do
       echo "</p>"                                                >> ${TEMPLATE}
    fi
 done
+echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Help
 cat << EOF >> ${TEMPLATE}
 <a name='Help'></a>
 <div style='color:#660066'><h3>Help</h3></div>
-<a name='Help_Version'></a>
 <b>Version Naming Conventions:</b>
 <p>
 A project version is used to identify a specific instance of the project. The version will be in one of the following formats:
@@ -270,7 +280,6 @@ A project version is used to identify a specific instance of the project. The ve
   <i>dd</i>   is the day of the release.
 </pre>
 </p>
-<a name='Help_Branch'></a>
 <b>Branch Naming Conventions:</b>
 <p>
 A project's repository contains multiple branches which are used to organize the
@@ -291,6 +300,7 @@ than the 'next' or 'master' branches which are much less frequently updated.
 <p>
 <b><i>The information in this message was generated using Ohcount and Git.</i></b>
 EOF
+echo -e "\n\n" >> ${TEMPLATE}
 
 
 # sends e-mail messages
