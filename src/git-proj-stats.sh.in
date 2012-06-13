@@ -164,6 +164,8 @@ for PROJDIR in ${STATLIST};do
    PROJCLIENT=`dirname ${PROJDIR}`
    PROJCLIENT=`basename ${PROJCLIENT}`
    PROJURL="http://scm.office.bindlebinaries.com/pub/scm/${PROJCLIENT}/${PROJNAME}.git"
+   HEAD=`git --git-dir=${PROJDIR}/.git branch |egrep '^\* '|awk '{print$2}'`
+   GITDIR="--git-dir=${PROJDIR}/.git"
    if test -d ${PROJDIR};then
       cd ${PROJDIR}
       echo -n "<p>"                                              >> ${TEMPLATE}
@@ -173,6 +175,9 @@ for PROJDIR in ${STATLIST};do
          cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
          echo "</i>"                                             >> ${TEMPLATE}
       fi
+      echo "<br/>Last Updated:<i>"                               >> ${TEMPLATE}
+      git ${GITDIR} log -n1 --quiet --date=short --pretty="format:%ad" ${HEAD}^..${HEAD} >> ${TEMPLATE}
+      echo "</i>"                                                >> ${TEMPLATE}
       echo "<br/><a href='${PROJURL}' style='color:#222244'>project source code</a>"   >> ${TEMPLATE}
      echo "</p>"                                                 >> ${TEMPLATE}
    fi
