@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #   Bindle Binaries Tools
-#   Copyright (C) 2011 Bindle Binaries <syzdek@bindlebinaries.com>.
+#   Copyright (C) 2011,2012 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@
 #
@@ -121,7 +121,7 @@ STATCOUNT=0
 for PROJDIR in ${SRCLIST};do
    cd ${PROJDIR};
    HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-   DATA=`git diff --stat $(git rev-list -n1 --before="${TIMELIMIT} day ago" ${HEAD} 2> /dev/null) 2> /dev/null`
+   DATA=`git rev-list -n1 --after="${TIMELIMIT} day ago" ${HEAD} 2> /dev/null`
    if test "x${DATA}" != "x";then
       STATLIST="${STATLIST} ${PROJDIR}"
       STATCOUNT=$((${STATCOUNT}+1))
@@ -129,7 +129,8 @@ for PROJDIR in ${SRCLIST};do
 done
 
 
-if test "x${SRCLIST}" == "x";then
+# exits if there is no recent activity
+if test "x${STATLIST}" == "x";then
    exit 0;
 fi
 
