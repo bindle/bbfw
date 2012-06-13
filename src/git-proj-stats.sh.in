@@ -135,6 +135,7 @@ if test "x${STATLIST}" == "x";then
 fi
 
 
+# Creates e-mail headers
 cat << EOF > ${TEMPLATE}
 To: @EMAIL_ADDRESS@
 From: "David M. Syzdek" <syzdek@bindlebinaries.com>
@@ -144,6 +145,7 @@ Content-Type: text/html; charset=ISO-8859-1
 EOF
 
 
+# E-mail Section: Active Projects
 echo "<a name='Active'></a>"                                                                >> ${TEMPLATE}
 echo "<div style='color:#660066'><h3>Active Projects (Last ${TIMELIMIT} days)</h3></div>"   >> ${TEMPLATE}
 for PROJDIR in ${STATLIST};do
@@ -167,6 +169,7 @@ for PROJDIR in ${STATLIST};do
 done
 
 
+# E-mail Section: Project Diff Statistics
 echo "<a name='Changes'></a>"                                      >> ${TEMPLATE}
 echo '<div style="color:#660066"><h3>Project Changes</h3></div>'   >> ${TEMPLATE}
 for REPO in ${STATLIST};do
@@ -198,29 +201,10 @@ for REPO in ${STATLIST};do
 done
 
 
-echo "generating project log..."
-echo "<a name='Logs'></a>"                                       >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Logs</h3></div>'    >> ${TEMPLATE}
-for REPO in ${STATLIST};do
-   PROJNAME=`basename ${REPO}`
-   if test -d ${REPO};then
-      echo "generating logs for ${REPO}..."
-      cd ${REPO}
-      echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
-      echo -n "<pre>"                                            >> ${TEMPLATE}
-      HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-      git log --oneline -n20  --after="${TIMELIMIT} day ago" ${HEAD} >> ${TEMPLATE}
-      echo -n "</pre>"                                           >> ${TEMPLATE}
-      echo "</p>"                                                >> ${TEMPLATE}
-   fi
-done
-
-
+# E-mail Section: Project Line Counts
 echo "running ohcount..."
 echo "<a name='Statistics'></a>"                                     >> ${TEMPLATE}
-echo '<div style="color:#660066"><h3>Project Statistics</h3></div>'  >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Project Line Counts</h3></div>'  >> ${TEMPLATE}
 for REPO in ${STATLIST};do
    PROJNAME=`basename ${REPO}`
    if test -d ${REPO};then
@@ -237,6 +221,28 @@ for REPO in ${STATLIST};do
 done
 
 
+# E-mail Section: Project Commit Logs
+echo "generating project log..."
+echo "<a name='Logs'></a>"                                       >> ${TEMPLATE}
+echo '<div style="color:#660066"><h3>Project Commit Logs</h3></div>'    >> ${TEMPLATE}
+for REPO in ${STATLIST};do
+   PROJNAME=`basename ${REPO}`
+   if test -d ${REPO};then
+      echo "generating logs for ${REPO}..."
+      cd ${REPO}
+      echo -n "<p>"                                              >> ${TEMPLATE}
+      echo "<a name='Statistics_${PROJNAME}'></a>"               >> ${TEMPLATE}
+      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
+      echo -n "<pre>"                                            >> ${TEMPLATE}
+      HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
+      git log --oneline --after="${TIMELIMIT} day ago" ${HEAD}   >> ${TEMPLATE}
+      echo -n "</pre>"                                           >> ${TEMPLATE}
+      echo "</p>"                                                >> ${TEMPLATE}
+   fi
+done
+
+
+# E-mail Section: Help
 cat << EOF >> ${TEMPLATE}
 <a name='Help'></a>
 <div style='color:#660066'><h3>Help</h3></div>
@@ -287,6 +293,7 @@ than the 'next' or 'master' branches which are much less frequently updated.
 EOF
 
 
+# sends e-mail messages
 SENTRESULTS=NO
 for ADDR in $@;do
    echo "sending results to ${ADDR}..."
@@ -298,6 +305,8 @@ if test "x${SENTRESULTS}" == "xNO";then
    cat ${TEMPLATE}
 fi
 
+
+# removes e-mail template
 rm -f /tmp/mail-project-stats.*
 
 # end of script
