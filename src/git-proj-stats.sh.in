@@ -271,7 +271,9 @@ for REPO in ${STATLIST};do
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-      git log --quiet --date=short --pretty="format:%ad %h %s" --after="${HISTORYLIMIT} day ago" ${HEAD}   >> ${TEMPLATE}
+      LINKDIR=`echo ${REPO} |sed -e 's/$/.git/g' -e 's/\/pub\/src\//\/pub\/scm\//g' -e 's/\//\\\\\//g'`
+      git log --quiet --date=short --pretty="format:%ad %h %s" --after="${HISTORYLIMIT} day ago" ${HEAD} \
+         |sed -e "s/^\([[:digit:]]\{4\}\(-[[:digit:]]\{2\}\)\{2\}\) \([[:xdigit:]]\{1,\}\) /\1 <a href='http:\/\/scm.office.bindlebinaries.com${LINKDIR}\?a=commit;h=\3' style='color:#440044;text-decoration:none;'>\3<\/a> /g"  >> ${TEMPLATE}
       echo -n "</pre>"                                           >> ${TEMPLATE}
       echo "</p>"                                                >> ${TEMPLATE}
    fi
