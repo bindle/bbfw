@@ -168,19 +168,19 @@ for PROJDIR in ${STATLIST};do
    if test -d ${PROJDIR};then
       echo "   generating project summary for ${PROJDIR}..."
       cd ${PROJDIR}
-      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
-      echo -n "<p>"                                              >> ${TEMPLATE}
+      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                       >> ${TEMPLATE}
+      echo -n "<p>"                                                     >> ${TEMPLATE}
       echo "<b>${PROJNAME}</b><br/>"      >> ${TEMPLATE}
       if test -f ${PROJDIR}/.git/description;then
-         echo -n "<i><b>"                                           >> ${TEMPLATE}
-         cat ${PROJDIR}/.git/description                         >> ${TEMPLATE}
-         echo "</b></i>"                                             >> ${TEMPLATE}
+         echo -n "<i><b>"                                               >> ${TEMPLATE}
+         cat ${PROJDIR}/.git/description                                >> ${TEMPLATE}
+         echo "</b></i>"                                                >> ${TEMPLATE}
       fi
-      echo "<br/>Client: <i>${PROJCLIENT}</i>"      >> ${TEMPLATE}
-      echo "<br/>Last Activity:<i>"                               >> ${TEMPLATE}
-      git ${GITDIR} log -n1 --quiet --date=short --pretty="format:%ad" ${HEAD}^..${HEAD} >> ${TEMPLATE}
-      echo "</i>"                                                >> ${TEMPLATE}
-      echo "<br/>Project Links:<i>"                               >> ${TEMPLATE}
+      echo "<br/>Client: <i>${PROJCLIENT}</i>"                          >> ${TEMPLATE}
+      FIRSTACTIVITY=`git log --quiet --date=short --pretty="format:%ad" --reverse ${HEAD} |head -1`
+      LASTACTIVITY=`git ${GITDIR} log -n1 --quiet --date=short --pretty="format:%ad" ${HEAD}^..${HEAD}`
+      echo "<br/>Active: <i>${FIRSTACTIVITY} to ${LASTACTIVITY}</i>"  >> ${TEMPLATE}
+      echo "<br/>Project Links:<i>"                                     >> ${TEMPLATE}
       for LINK in ${PROJANCHORS};do
          TITLE=`echo ${LINK} |sed -e 's/_/ /g' -e 's/Project //g'`
          echo "<a href='#${LINK}_${PROJNAME}' style='color:#440044;text-decoration:none;'>${TITLE}</a>,"   >> ${TEMPLATE}
