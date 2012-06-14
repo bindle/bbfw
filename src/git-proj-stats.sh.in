@@ -184,9 +184,9 @@ for PROJDIR in ${STATLIST};do
       echo "<br/>Project Links:<i>"                                     >> ${TEMPLATE}
       for LINK in ${PROJANCHORS};do
          TITLE=`echo ${LINK} |sed -e 's/_/ /g' -e 's/Project //g'`
-         echo "<a href='#${LINK}_${PROJNAME}' style='color:#440044;text-decoration:none;'>${TITLE}</a>,"   >> ${TEMPLATE}
+         echo "<a href='#${LINK}_${PROJNAME}' style='color:#660066;text-decoration:none;'>${TITLE}</a>,"   >> ${TEMPLATE}
       done
-      echo "<a href='${PROJURL}' style='color:#440044;text-decoration:none;'>Source Code</a>"   >> ${TEMPLATE}
+      echo "<a href='${PROJURL}' style='color:#660066;text-decoration:none;'>Source Code</a>"   >> ${TEMPLATE}
      echo "</p>"                                                 >> ${TEMPLATE}
    fi
 done
@@ -273,7 +273,7 @@ for REPO in ${STATLIST};do
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
       LINKDIR=`echo ${REPO} |sed -e 's/$/.git/g' -e 's/\/pub\/src\//\/pub\/scm\//g' -e 's/\//\\\\\//g'`
       git log --quiet --date=short --pretty="format:%ad %h %s" --after="${HISTORYLIMIT} day ago" ${HEAD} \
-         |sed -e "s/^\([[:digit:]]\{4\}\(-[[:digit:]]\{2\}\)\{2\}\) \([[:xdigit:]]\{1,\}\) /\1 <a href='http:\/\/scm.office.bindlebinaries.com${LINKDIR}\?a=commit;h=\3' style='color:#440044;text-decoration:none;'>\3<\/a> /g"  >> ${TEMPLATE}
+         |sed -e "s/^\([[:digit:]]\{4\}\(-[[:digit:]]\{2\}\)\{2\}\) \([[:xdigit:]]\{1,\}\) /\1 <a href='http:\/\/scm.office.bindlebinaries.com${LINKDIR}\?a=commit;h=\3' style='color:#660066;text-decoration:none;'>\3<\/a> /g"  >> ${TEMPLATE}
       echo -n "</pre>"                                           >> ${TEMPLATE}
       echo "</p>"                                                >> ${TEMPLATE}
    fi
