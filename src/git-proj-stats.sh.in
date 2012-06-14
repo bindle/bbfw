@@ -147,7 +147,7 @@ EOF
 
 
 # create list of anchors
-PROJANCHORS="Project_Changes Project_Line_Counts Project_Commit_Logs"
+PROJANCHORS="Project_Statistics Project_Line_Counts Project_ChangeLog"
 ANCHORS="Active_Projects ${PROJANCHORS} Help"
 
 
@@ -193,7 +193,7 @@ echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Diff Statistics
-ANCHOR=Project_Changes
+ANCHOR=Project_Statistics
 TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
 echo "running git diff..."
 echo "<a name='${ANCHOR}'></a>"                              >> ${TEMPLATE}
@@ -255,7 +255,7 @@ echo -e "\n\n" >> ${TEMPLATE}
 
 
 # E-mail Section: Project Commit Logs
-ANCHOR=Project_Commit_Logs
+ANCHOR=Project_ChangeLog
 TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
 echo "generating project log..."
 echo "<a name='${ANCHOR}'></a>"                               >> ${TEMPLATE}
