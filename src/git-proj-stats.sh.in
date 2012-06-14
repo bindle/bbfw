@@ -40,7 +40,8 @@ REPODIR=/pub/scm
 SRCDIR=/pub/src
 TEMPLATE=/tmp/mail-project-stats.$$
 DATE=`date '+%a %Y-%m-%d'`
-TIMELIMIT=14
+TIMELIMIT=7
+HISTORYLIMIT=14
 TIMEINTERVALS="1 2 3 4 5 6 7 14 30 60 90 120 365 730"
 
 
@@ -270,7 +271,7 @@ for REPO in ${STATLIST};do
       echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
       echo -n "<pre>"                                            >> ${TEMPLATE}
       HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-      git log --quiet --date=short --pretty="format:%ad %h %s" --after="${TIMELIMIT} day ago" ${HEAD}   >> ${TEMPLATE}
+      git log --quiet --date=short --pretty="format:%ad %h %s" --after="${HISTORYLIMIT} day ago" ${HEAD}   >> ${TEMPLATE}
       echo -n "</pre>"                                           >> ${TEMPLATE}
       echo "</p>"                                                >> ${TEMPLATE}
    fi
