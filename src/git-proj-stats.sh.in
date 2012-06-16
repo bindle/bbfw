@@ -210,7 +210,7 @@ for REPO in ${STATLIST};do
       echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
 
       for BRANCH in pu next master;do
-         PROJVER=`git describe origin/${BRANCH} 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
+         PROJVER=`git describe --long origin/${BRANCH} 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
          if test "x${PROJVER}" != "x";then
             echo "<br/>Version: <i>${PROJVER} (${BRANCH})</i>"           >> ${TEMPLATE}
          fi
