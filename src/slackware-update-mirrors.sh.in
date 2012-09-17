@@ -2,29 +2,18 @@
 
 mkdir -p /pub/linux/slackware/ || exit 1
 
+SLACK_MIRROR="mirrors1.kernel.org::slackware"
 RSYNC_FLAGS="-a --delete --exclude source"
 
-#echo "slackware.mirrors.tds.net::slackware/slackware-13.37/ ..."
-#rsync -a --exclude source ${@} \
-#	slackware.mirrors.tds.net::slackware/slackware-13.37/  \
-#	/pub/linux/slackware/slackware-13.37 \
-#	|| exit 1
+#SUBDIRS=("${SUBDIRS[@]}" "slackware-13.37")
+SUBDIRS=("${SUBDIRS[@]}" "slackware64-13.37")
+SUBDIRS=("${SUBDIRS[@]}" "slackware-current")
+SUBDIRS=("${SUBDIRS[@]}" "slackware64-current")
 
-echo "slackware.mirrors.tds.net::slackware/slackware64-13.37/ ..."
-rsync ${RSYNC_FLAGS} ${@} \
-	slackware.mirrors.tds.net::slackware/slackware64-13.37/  \
-	/pub/linux/slackware/slackware64-13.37 \
-	|| exit 1
-
-echo "slackware.mirrors.tds.net::slackware/slackware-current/ ..."
-rsync ${RSYNC_FLAGS} ${@} \
-	slackware.mirrors.tds.net::slackware/slackware-current/  \
-	/pub/linux/slackware/slackware-current \
-	|| exit 1
-
-echo "slackware.mirrors.tds.net::slackware/slackware64-current/ ..."
-rsync ${RSYNC_FLAGS} ${@} \
-	slackware.mirrors.tds.net::slackware/slackware64-current/  \
-	/pub/linux/slackware/slackware64-current \
-	|| exit 1
-
+for SUBDIR in ${SUBDIRS[@]}; do
+   echo "${SLACK_MIRROR}/${SUBDIR}/ ..."
+   rsync ${RSYNC_FLAGS} ${@} \
+      ${SLACK_MIRROR}/${SUBDIR}/  \
+      /pub/linux/slackware/${SUBDIR} \
+      || exit 1
+done
