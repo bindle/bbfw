@@ -42,6 +42,7 @@ ETCFILES="${ETCFILES} /etc/shadow"
 ETCFILES="${ETCFILES} /etc/suauth"
 ETCFILES="${ETCFILES} /etc/sudoers"
 ETCFILES="${ETCFILES} /etc/hosts"
+ETCFILES="${ETCFILES} /etc/networks"
 
 
 # sets script/package information
