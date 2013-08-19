@@ -12,6 +12,8 @@
 	<dict>
 		<key>C45DC694-24BB-4257-8025-63A2E3120BBC</key>
 		<string>syzdek@flatbox.office.bindlebinaries.com:/pub/scm/com.bindlebinaries/bindleadmin.git</string>
+		<key>F4E86893-3519-40A6-A0F1-AE4133C9FE27</key>
+		<string>git://github.com/bindle/bindletools.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>bindleadmin.xcodeproj/project.xcworkspace</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>C45DC694-24BB-4257-8025-63A2E3120BBC</key>
 		<string>../..</string>
+		<key>F4E86893-3519-40A6-A0F1-AE4133C9FE27</key>
+		<string>../../contrib/bindletools</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>syzdek@flatbox.office.bindlebinaries.com:/pub/scm/com.bindlebinaries/bindleadmin.git</string>
@@ -35,6 +39,14 @@
 			<string>C45DC694-24BB-4257-8025-63A2E3120BBC</string>
 			<key>IDESourceControlWCCName</key>
 			<string>bindleadmin</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F4E86893-3519-40A6-A0F1-AE4133C9FE27</string>
+			<key>IDESourceControlWCCName</key>
+			<string>bindletools</string>
 		</dict>
 	</array>
 </dict>

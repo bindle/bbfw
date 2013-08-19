@@ -6,7 +6,18 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		A0D52C9A17C2E43D001352CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A01156E9175B0118008E66FA;
+			remoteInfo = bindle;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bindletools.xcodeproj; path = bindletools/bindletools.xcodeproj; sourceTree = "<group>"; };
 		A0EC36A81365466E008F3CC7 /* autogen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = autogen.sh; sourceTree = "<group>"; };
 		A0EC36A91365466E008F3CC7 /* git-package-version.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "git-package-version.sh"; sourceTree = "<group>"; };
 		A0EC36AA1365470C008F3CC7 /* acinclude.m4 */ = {isa = PBXFileReference; explicitFileType = text.script; path = acinclude.m4; sourceTree = "<group>"; };
@@ -16,11 +27,27 @@
 		A0EC36AE1365470C008F3CC7 /* NEWS */ = {isa = PBXFileReference; lastKnownFileType = text; path = NEWS; sourceTree = "<group>"; };
 		A0EC36AF1365470C008F3CC7 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		A0EC36B013654903008F3CC7 /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
-		A0EC36B11365494C008F3CC7 /* ChangeLog */ = {isa = PBXFileReference; path = ChangeLog; sourceTree = "<group>"; };
+		A0EC36B11365494C008F3CC7 /* ChangeLog */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 		A0EC36B313654CB6008F3CC7 /* bindle.m4 */ = {isa = PBXFileReference; explicitFileType = text.script; path = bindle.m4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		A0D52C9217C2E41D001352CA /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */,
+			);
+			path = contrib;
+			sourceTree = "<group>";
+		};
+		A0D52C9417C2E43C001352CA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A0D52C9B17C2E43D001352CA /* libbindle.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A0EC3697136543FC008F3CC7 = {
 			isa = PBXGroup;
 			children = (
@@ -29,6 +56,7 @@
 				A0EC36A613654636008F3CC7 /* build-aux */,
 				A0EC36B11365494C008F3CC7 /* ChangeLog */,
 				A0EC36AC1365470C008F3CC7 /* configure.ac */,
+				A0D52C9217C2E41D001352CA /* contrib */,
 				A0EC36B013654903008F3CC7 /* COPYING */,
 				A0EC36B213654C75008F3CC7 /* m4 */,
 				A0EC36AD1365470C008F3CC7 /* Makefile.am */,
@@ -62,7 +90,7 @@
 			attributes = {
 				ORGANIZATIONNAME = "Bindle Binaries";
 			};
-			buildConfigurationList = A0EC369C136543FC008F3CC7 /* Build configuration list for PBXProject "bindletools" */;
+			buildConfigurationList = A0EC369C136543FC008F3CC7 /* Build configuration list for PBXProject "bindleadmin" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -71,11 +99,27 @@
 			);
 			mainGroup = A0EC3697136543FC008F3CC7;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A0D52C9417C2E43C001352CA /* Products */;
+					ProjectRef = A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A0D52C9B17C2E43D001352CA /* libbindle.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libbindle.a;
+			remoteRef = A0D52C9A17C2E43D001352CA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin XCBuildConfiguration section */
 		A0EC369E136543FC008F3CC7 /* Debug */ = {
@@ -93,7 +137,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A0EC369C136543FC008F3CC7 /* Build configuration list for PBXProject "bindletools" */ = {
+		A0EC369C136543FC008F3CC7 /* Build configuration list for PBXProject "bindleadmin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A0EC369E136543FC008F3CC7 /* Debug */,
