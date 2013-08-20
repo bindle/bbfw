@@ -18,7 +18,7 @@
 
 /* Begin PBXFileReference section */
 		A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bindletools.xcodeproj; path = bindletools/bindletools.xcodeproj; sourceTree = "<group>"; };
-		A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "git-proj-stats.sh.in"; sourceTree = "<group>"; };
+		A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */ = {isa = PBXFileReference; explicitFileType = text.script.sh; path = "git-proj-stats.sh.in"; sourceTree = "<group>"; };
 		A0D52C9F17C2E486001352CA /* pub-generate-readme.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pub-generate-readme.sh.in"; sourceTree = "<group>"; };
 		A0D52CA017C2E486001352CA /* pub-rsync-remotes.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pub-rsync-remotes.sh.in"; sourceTree = "<group>"; };
 		A0D52CA117C2E486001352CA /* slackware-sync-auth.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slackware-sync-auth.sh.in"; sourceTree = "<group>"; };

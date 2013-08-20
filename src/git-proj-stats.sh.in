@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #   Bindle Binaries Tools
 #   Copyright (C) 2011,2012 Bindle Binaries <syzdek@bindlebinaries.com>.
@@ -35,20 +35,237 @@
 #   git-proj-stats.sh - script for generating development stats on active projects
 #
 
-# configuration information
-REPODIR=/pub/scm
-SRCDIR=/pub/src
-TEMPLATE=/tmp/mail-project-stats.$$
+# default configuration information
+test "x${REPORT_PREFIXDIR}"     == "x" && REPORT_PREFIXDIR="/pub"
+test "x${REPORT_REPODIR}"       == "x" && REPORT_REPODIR="${REPORT_PREFIXDIR}/scm"
+test "x${REPORT_SRCDIR}"        == "x" && REPORT_SRCDIR="${REPORT_PREFIXDIR}/src"
+test "x${REPORT_TMPDIR}"        == "x" && REPORT_TMPDIR="/tmp/reports"
+test "x${REPORT_HTMLDIR}"       == "x" && REPORT_HTMLDIR="${REPORT_PREFIXDIR}/reports"
+test "x${REPORT_TIMELIMIT}"     == "x" && REPORT_TIMELIMIT=7
+test "x${REPORT_HISTORYLIMIT}"  == "x" && REPORT_HISTORYLIMIT=14
+test "x${REPORT_TIMEINTERVALS}" == "x" && REPORT_TIMEINTERVALS="1 2 3 4 5 6 7 14 30 60 90 120 365 730"
+
+
+# sets local variables
+PREFIXDIR="${REPORT_PREFIXDIR}"
+REPODIR="${REPORT_REPODIR}"
+SRCDIR="${REPORT_SRCDIR}"
+TMPDIR="${REPORT_TMPDIR}"
+HTMLDIR="${REPORT_HTMLDIR}"
+TIMELIMIT="${REPORT_TIMELIMIT}"
+HISTORYLIMIT="${REPORT_HISTORYLIMIT}"
+TIMEINTERVALS="${REPORT_TIMEINTERVALS}"
+
+
+# generated variables
+rm -Rf "${TMPDIR}/report"*
+TMPDIR="${TMPDIR}/report$$"
+DATADIR="${TMPDIR}/data"
+TEMPLATEDIR="${TMPDIR}/templates"
 DATE=`date '+%a %Y-%m-%d'`
-TIMELIMIT=7
-HISTORYLIMIT=14
-TIMEINTERVALS="1 2 3 4 5 6 7 14 30 60 90 120 365 730"
+HOST=`hostname`
 
 
 # sets script/package information
 PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+
+
+# functions
+report_set_project_vars()
+{
+   REPO=${1}
+   PROJNAME=`basename ${1}`
+   PROJSRCDIR="${SRCDIR}/${1}"
+   PROJANCHOR="${ANCHOR}_${PROJNAME}"
+   DOMAINSRCDIR=`dirname ${PROJSRCDIR}`
+   PROJURL="http://scm.office.bindlebinaries.com/pub/scm/${1}.git"
+   GITDIR="${REPODIR}/${1}.git"
+   HEAD=""
+   for BRANCH in master next pu;do
+      git --git-dir="${GITDIR}" branch| egrep " ${BRANCH}$" > /dev/null 2>&1
+      test $? == 0 && HEAD=${BRANCH}
+   done
+   if test "x${HEAD}" == "x";then
+      HEAD=`git --git-dir="${GITDIR}" branch |egrep '^\* '|awk '{print$2}'`
+   fi
+}
+
+
+report_generate()
+{
+   REPORT=${1}
+   echo "<div style='color:#660066'><i>Report was generated on ${DATE} from ${HOST}.</i></div>"
+   for SECTION in summary stats linecount changelog;do
+      if test -f "${TEMPLATEDIR}/section-header-${SECTION}.html";then
+         cat "${TEMPLATEDIR}/section-header-${SECTION}.html"
+      fi
+      for PROJ in `grep "${REPORT}" "${TMPDIR}/project-list.txt"`;do
+         if test -f "${DATADIR}/${PROJ}/report.${SECTION}";then
+            cat "${DATADIR}/${PROJ}/report.${SECTION}"
+         fi
+      done
+   done
+   cat "${TEMPLATEDIR}/section-help.html"
+}
+
+
+report_generate_project_changelog()
+{
+   report_set_project_vars "${1}"
+   echo "   generating logs for ${REPO}..." 1>&2
+   echo "<a name='${ANCHOR}_${PROJNAME}'></a>"
+   echo -n "<p>"
+   echo "<b>${PROJNAME}</b><br/>"
+   echo -n "<pre>"
+   LINKDIR=`echo ${REPO} |sed -e 's/$/.git/g' -e 's/\/pub\/src\//\/pub\/scm\//g' -e 's/\//\\\\\//g'`
+   git --git-dir="${GITDIR}" log --quiet --date=short --pretty="format:%ad %h %s" --after="${HISTORYLIMIT} day ago" ${HEAD} \
+      |sed -e "s/^\([[:digit:]]\{4\}\(-[[:digit:]]\{2\}\)\{2\}\) \([[:xdigit:]]\{1,\}\) /\1 <a href='http:\/\/scm.office.bindlebinaries.com${LINKDIR}\?a=commit;h=\3' style='color:#660066;text-decoration:none;'>\3<\/a> /g"
+   echo -n "</pre>"
+   echo "</p>"
+}
+
+
+report_generate_project_line_counts()
+{
+   report_set_project_vars "${1}"
+   echo "   running ohcount on ${REPO}..." 1>&2
+   if test -d "${SRCDIR}/${REPO}";then
+      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"
+      echo -n "<p>"
+      echo "<b>${PROJNAME}</b><br/>"
+      echo -n "<pre>"
+      /usr/local/bin/ohcount "${SRCDIR}/${REPO}" |egrep -v '^$|Examining|Ohloh'
+      echo -n "</pre>"
+      echo "</p>"
+   fi
+}
+
+
+report_generate_project_statistics()
+{
+   report_set_project_vars "${1}"
+   echo "   running git diff on ${REPO}..." 1>&2
+   echo "<a name='${ANCHOR}_${PROJNAME}'></a>"
+   echo -n "<p>"
+   echo "<b>${PROJNAME}</b>"
+
+   for BRANCH in pu next master;do
+      PROJVER=`git --git-dir="${GITDIR}" describe --long ${BRANCH} 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
+      if test "x${PROJVER}" != "x";then
+         echo "<br/>Version: <i>${PROJVER} (${BRANCH})</i>"
+      fi
+   done
+
+   for NUM in ${TIMEINTERVALS};do
+      STAT=`git --git-dir="${GITDIR}" diff --stat $(git --git-dir="${GITDIR}" rev-list -n1 --before="${NUM} day ago" ${HEAD})..${HEAD} |grep 'files changed, '`
+      if test "x${STAT}" != "x${OLDSTAT}";then
+         if test "x${STAT}" != "x";then
+            echo "<br/>Changes to ${HEAD} branch within last  ${NUM} day(s): ${STAT}"
+         fi
+         OLDSTAT="${STAT}"
+      fi
+   done
+
+   echo "</p>"
+}
+
+
+report_generate_project_summary()
+{
+   report_set_project_vars "${1}"
+   echo "   generating project summary for ${REPO}..." 1>&2
+   PROJCLIENT=`dirname ${REPO}`
+   PROJDESC=""
+   PROJDESC=`cat "${GITDIR}/description"`
+   test "x${PROJDESC}" != "x" && PROJDESC="<i><b>${PROJDESC}</b></i><br/>"
+   FIRSTACTIVITY=`git --git-dir="${GITDIR}" log --quiet --date=short --pretty="format:%ad" --reverse ${HEAD} |head -1`
+   LASTACTIVITY=`git --git-dir="${GITDIR}"  log --quiet --date=short --pretty="format:%ad" -n1 ${HEAD}^..${HEAD}`
+   PROJANCHORS="Project_Statistics Project_Line_Counts Project_ChangeLog"
+   LINKS=""
+   for LINK in ${PROJANCHORS};do
+      TITLE=`echo ${LINK} |sed -e 's/_/ /g' -e 's/Project //g'`
+      LINKS="${LINKS} <a href='#${LINK}_${PROJNAME}' style='color:#660066;text-decoration:none;'>${TITLE}</a>,"
+   done
+   cat << EOF |sed -e 's/^ {1,}//g'
+      <a name='${ANCHOR}_${PROJNAME}'></a>
+      <p>
+      <b>${PROJNAME}</b><br/>
+      ${PROJDESC}
+      Client: <i>${PROJCLIENT}</i>
+      <br/>Active: <i>${FIRSTACTIVITY} to ${LASTACTIVITY}</i>
+      <br/>Project Links:<i>
+      ${LINKS}
+      <a href='${PROJURL}' style='color:#660066;text-decoration:none;'>Source Code</a>
+      </p>
+EOF
+}
+
+
+report_generate_section_help()
+{
+   ANCHOR=Help
+   TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
+   cat << EOF |sed -e 's/^      //g'
+      <a name='${ANCHOR}'></a>
+      <div style='color:#660066'><h3>${TITLE}</h3></div>
+      <b>Version Naming Conventions:</b>
+      <p>
+      A project version is used to identify a specific instance of the project. The version will be in one of the following formats:
+      <pre>
+        <b>Managed Projects:</b>
+        <i>x.y</i>
+        <i>x.y.z</i>
+        <i>x.y.z.c</i>
+
+        <b>Unmanaged Projects:</b>
+        <i>yyyy.mm.dd</i>
+        <i>yyyy.mm.dd.c</i>
+
+        <b>Where:</b>
+        <i>x</i>    is the major release version.
+        <i>y</i>    is the minor release version.
+        <i>z</i>    is the patch level.
+        <i>c</i>    is the commit identifier of the last change.
+        <i>yyyy</i> is the year of the release.
+        <i>mm</i>   is the month of the release.
+        <i>dd</i>   is the day of the release.
+      </pre>
+      </p>
+      <b>Branch Naming Conventions:</b>
+      <p>
+      A project's repository contains multiple branches which are used to organize the
+      development process.  Bindle Binaries uses the following convention for branch
+      naming:
+      <pre>
+        <i>master</i> - Current release of packages.
+        <i>next</i>   - changes staged for next release
+        <i>pu</i>     - proposed updates for next release
+        <i>xx/yy+</i> - branch for testing new changes before merging to 'pu' branch
+      </pre>
+      Active development occurrs either directly on the 'pu' branch or on topic branches.
+      Once modifications are considered stable, they are merged from the 'pu' branch
+      into the 'next' branch. The modifications are not merged into the 'master' branch
+      until a new public release (aka version) of the project is published. As such,
+      information in this message is generated from the 'pu' branch of a project rather
+      than the 'next' or 'master' branches which are much less frequently updated.
+      <p>
+      <b><i>The information in this message was generated using Ohcount and Git.</i></b>
+EOF
+   echo -e "\n\n"
+}
+
+
+report_generate_section_title()
+{
+   TITLE=${2}
+   if test "x${TITLE}" == "x";then
+      TITLE=`echo ${1} |sed -e 's/_/ /g'`
+   fi
+   echo "<a name='${1}'></a>"
+   echo "<div style='color:#660066'><h3>${TITLE}</h3></div>"
+}
 
 
 # parses CLI arguments
@@ -59,11 +276,8 @@ for FLAG in ${@};do
    elif test "x${FLAG}" == "x--version";then
 cat << EOF
 git-proj-stats.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}
-Written by David M. Syzdek.
+Copyright 2013 Bindle Binaries <${PACKAGE_BUGREPORT}>.
 
-Copyright 2011 Bindle Binaries <${PACKAGE_BUGREPORT}>.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 EOF
       exit 0
    fi
@@ -79,53 +293,69 @@ if test ! -d ${SRCDIR};then
    echo "${0}: ${SRCDIR}: source prefix does not exist" 1>&2
    exit 1
 fi
+if test ! -d ${HTMLDIR};then
+   echo "${0}: ${HTMLDIR}: html prefix does not exist" 1>&2
+   exit 1
+fi
 
 
+# makes report directory
+mkdir -p "${DATADIR}"      || exit 1
+mkdir -p "${TEMPLATEDIR}"  || exit 1
+
+
+# generate list of repositories
 echo "Generating list of repositories..."
-for DOMAIN in `ls ${REPODIR}`;do
-   if test -d ${REPODIR}/${DOMAIN};then
-      for REPO in `ls -d ${REPODIR}/${DOMAIN}/*.git 2> /dev/null`;do
-         if test -d ${REPO};then
-            REPOLIST="${REPOLIST} ${REPO}"
-         fi
-      done
+for REPO in `find "${REPODIR}" ! -path "*.git/*" -type d |egrep '[A-Za-z0-9].git$' |sed -e "s,^${REPODIR}/,,g" -e 's/.git$//g' 2> /dev/null`;do
+   if test -d "${REPODIR}/${REPO}.git";then
+      REPOLIST="${REPOLIST} ${REPO}"
    fi
 done
 
 
+# generate list of reports
+echo "Generating list of reports..."
+for REPORT in ` find "${REPODIR}"  -type f ! -path "*.git/*" |egrep '/.reports$' |sed -e "s,^${REPODIR}/,,g"`;do
+   REPORT=`dirname ${REPORT}`
+   REPORTLIST="${REPORTLIST} ${REPORT}"
+done
+
+
+# clones repositories into working directory
 echo "creating directory structure..."
 for REPO in ${REPOLIST};do
-   SRC=`echo ${REPO} |sed -e "s,${REPODIR},${SRCDIR},g"`
-   DOMAINDIR=`dirname ${SRC}`
-   PROJNAME=`basename ${SRC} |sed -e 's/.git$//g'`
-   PROJDIR="${DOMAINDIR}/${PROJNAME}"
-   SRCLIST="${SRCLIST} ${PROJDIR}"
-   if test ! -d ${PROJDIR};then
-      echo "   Creating ${DOMAINDIR}/${PROJNAME}..."
-      mkdir -p ${DOMAINDIR} || exit 1
-      cd ${DOMAINDIR} || exit 1
-      git clone ${REPO} || exit 1
-      cd ${PROJDIR} || exit 1
-      git branch master origin/master > /dev/null 2>&1
-      git branch next   origin/next   > /dev/null 2>&1
+   report_set_project_vars ${REPO}
+   if test ! -d "${PROJSRCDIR}";then
+      echo "   Creating ${DOMAINSRCDIR}/${PROJNAME}..."
+      mkdir -p ${DOMAINSRCDIR}                  || exit 1
+      cd ${DOMAINSRCDIR}                        || exit 1
+      git clone "${REPODIR}/${REPO}.git"        || exit 1
+      cd ${PROJSRCDIR}                          || exit 1
       git branch pu     origin/pu     > /dev/null 2>&1
+      git branch next   origin/next   > /dev/null 2>&1
+      git branch master origin/master > /dev/null 2>&1
    fi
-   cp ${REPO}/description ${PROJDIR}/.git/description
-   cd ${PROJDIR} > /dev/null || exit 1
-   git checkout pu > /dev/null 2>&1
-   git pull > /dev/null || exit 1
+   test -f "${SRCDIR}/${REPO}.git/description" \
+      && cp "${SRCDIR}/${REPO}.git/description" "${PROJSRCDIR}/.git/description"
+   cd "${PROJSRCDIR}"         > /dev/null || exit 1
+   git checkout pu         > /dev/null 2>&1 \
+      || git checkout next > /dev/null 2>&1
+   git pull                > /dev/null || exit 1
 done
 
 
+# generates list of active projects
 echo "generating list of active projects..."
 STATCOUNT=0
-for PROJDIR in ${SRCLIST};do
-   PROJNAME=`basename ${PROJDIR}`
-   cd ${PROJDIR};
-   HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-   DATA=`git rev-list -n1 --after="${TIMELIMIT} day ago" ${HEAD} 2> /dev/null`
+for REPO in ${REPOLIST};do
+   report_set_project_vars "${REPO}"
+   PROJSRCDIR="${SRCDIR}/${REPO}"
+   DOMAINSRCDIR=`dirname ${PROJSRCDIR}`
+   DATA=`git --git-dir="${GITDIR}" rev-list -n1 --after="${TIMELIMIT} day ago" ${HEAD} 2> /dev/null`
    if test "x${DATA}" != "x";then
-      STATLIST="${STATLIST} ${PROJDIR}"
+      echo "${REPO}" >> "${TMPDIR}/project-list.txt"
+      mkdir -p "${TMPDIR}/data/${REPO}"
+      STATLIST="${STATLIST} ${REPO}"
       STATCOUNT=$((${STATCOUNT}+1))
    fi
 done
@@ -138,215 +368,97 @@ fi
 
 
 # Creates e-mail headers
-cat << EOF > ${TEMPLATE}
+cat << EOF > "${TEMPLATEDIR}/email-header.html"
 To: @EMAIL_ADDRESS@
 From: "David M. Syzdek" <syzdek@bindlebinaries.com>
-Subject: Bindle Binaries Project Activity (${DATE} / ${STATCOUNT} projects)
+Subject: @SUBJECT@ (${DATE} / ${STATCOUNT} projects)
 Content-Type: text/html; charset=ISO-8859-1
 
 EOF
 
 
-# create list of anchors
-PROJANCHORS="Project_Statistics Project_Line_Counts Project_ChangeLog"
-ANCHORS="Active_Projects ${PROJANCHORS} Help"
+for REPO in ${STATLIST};do
+   echo "Creating report components for ${REPO}..."
+   report_generate_project_summary     "${REPO}" > "${DATADIR}/${REPO}/report.summary"
+   report_generate_project_statistics  "${REPO}" > "${DATADIR}/${REPO}/report.stats"
+   report_generate_project_line_counts "${REPO}" > "${DATADIR}/${REPO}/report.linecount"
+   report_generate_project_changelog   "${REPO}" > "${DATADIR}/${REPO}/report.changelog"
+done
 
 
-# E-mail Section: Active Projects
-ANCHOR=Active_Projects
-TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
-echo "generating project summary..."
-echo "<a name='${ANCHOR}'></a>"                                                       >> ${TEMPLATE} 
-echo "<div style='color:#660066'><h3>${TITLE} (Last ${TIMELIMIT} days)</h3></div>"   >> ${TEMPLATE}
-for PROJDIR in ${STATLIST};do
-   PROJNAME=`basename ${PROJDIR}`
-   PROJANCHOR="${ANCHOR}_${PROJNAME}"
-   PROJCLIENT=`dirname ${PROJDIR}`
-   PROJCLIENT=`basename ${PROJCLIENT}`
-   PROJURL="http://scm.office.bindlebinaries.com/pub/scm/${PROJCLIENT}/${PROJNAME}.git"
-   HEAD=`git --git-dir=${PROJDIR}/.git branch |egrep '^\* '|awk '{print$2}'`
-   GITDIR="--git-dir=${PROJDIR}/.git"
-   if test -d ${PROJDIR};then
-      echo "   generating project summary for ${PROJDIR}..."
-      cd ${PROJDIR}
-      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                       >> ${TEMPLATE}
-      echo -n "<p>"                                                     >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b><br/>"      >> ${TEMPLATE}
-      if test -f ${PROJDIR}/.git/description;then
-         echo -n "<i><b>"                                               >> ${TEMPLATE}
-         cat ${PROJDIR}/.git/description                                >> ${TEMPLATE}
-         echo "</b></i>"                                                >> ${TEMPLATE}
+report_generate_section_title "Active_Projects"      > "${TEMPLATEDIR}/section-header-summary.html"
+report_generate_section_title "Project_Statistics"   > "${TEMPLATEDIR}/section-header-stats.html"
+report_generate_section_title "Project_Line_Counts"  > "${TEMPLATEDIR}/section-header-linecount.html"
+report_generate_section_title "Project_ChangeLog"    > "${TEMPLATEDIR}/section-header-changelog.html"
+report_generate_section_help                         > "${TEMPLATEDIR}/section-help.html"
+
+
+if test "x${1}" == "x";then
+   for REPORT in ${REPORTLIST};do
+      echo "Generating report: ${REPORT}"
+      REPORTFILE="${DATADIR}/${REPORT}/report.html"
+      REPORTTITLE=`egrep -i '^SUBJECT=' "${REPODIR}/${REPORT}/.reports" |cut -d= -f2`
+      if test "x${REPORTTITLE}" == "x";then
+         REPORTTITLE="Project Activity"
       fi
-      echo "<br/>Client: <i>${PROJCLIENT}</i>"                          >> ${TEMPLATE}
-      FIRSTACTIVITY=`git log --quiet --date=short --pretty="format:%ad" --reverse ${HEAD} |head -1`
-      LASTACTIVITY=`git ${GITDIR} log -n1 --quiet --date=short --pretty="format:%ad" ${HEAD}^..${HEAD}`
-      echo "<br/>Active: <i>${FIRSTACTIVITY} to ${LASTACTIVITY}</i>"  >> ${TEMPLATE}
-      echo "<br/>Project Links:<i>"                                     >> ${TEMPLATE}
-      for LINK in ${PROJANCHORS};do
-         TITLE=`echo ${LINK} |sed -e 's/_/ /g' -e 's/Project //g'`
-         echo "<a href='#${LINK}_${PROJNAME}' style='color:#660066;text-decoration:none;'>${TITLE}</a>,"   >> ${TEMPLATE}
+
+      egrep "${REPORT}" "${TMPDIR}/project-list.txt" > /dev/null 2>&1
+      if test $? == 0;then
+         mkdir -p "${DATADIR}/${REPORT}"
+
+         # generate finished report
+         report_generate "${REPORT}" > "${REPORTFILE}"
+
+         # copies report to HTML directory
+         mkdir -p "${HTMLDIR}/${REPORT}"
+         cp "${REPORTFILE}" "${HTMLDIR}/${REPORT}/index.html"
+
+         # genrates e-mail template
+         REPORTEMAIL="${DATADIR}/${REPORT}/report-email.html"
+         cat "${TEMPLATEDIR}/email-header.html" >  "${REPORTEMAIL}"
+         cat "${REPORTFILE}"                    >> "${REPORTEMAIL}"
+
+         # sends e-mail
+         for ADDR in `egrep '^[-_a-zA-Z0-9.]+@[-a-zA-Z0-9.]+$' "${REPODIR}/${REPORT}/.reports"`;do
+            echo "   sending report to ${ADDR}"
+            sed -e "s/[@]EMAIL_ADDRESS[@]/${ADDR}/g" \
+                -e "s/[@]SUBJECT[@]/${REPORTTITLE}/g" \
+               ${REPORTEMAIL} \
+               |sendmail -t ${ADDR}
+         done
+      fi
+   done
+fi
+if test "x${1}" != "x";then
+   REPORT=.
+   echo "Generating report: ${REPORT}"
+   REPORTFILE="${DATADIR}/${REPORT}/report.html"
+
+   egrep "${REPORT}" "${TMPDIR}/project-list.txt" > /dev/null 2>&1
+   if test $? == 0;then
+      mkdir -p "${DATADIR}/${REPORT}"
+
+      # generate finished report
+      report_generate "${REPORT}" > "${REPORTFILE}"
+
+      # genrates e-mail template
+      REPORTEMAIL="${DATADIR}/${REPORT}/report-email.html"
+      cat "${TEMPLATEDIR}/email-header.html" >  "${REPORTEMAIL}"
+      cat "${REPORTFILE}"                    >> "${REPORTEMAIL}"
+
+      # sends e-mail
+      for ADDR in $@;do
+         echo "   sending report to ${ADDR}"
+         sed -e "s/[@]EMAIL_ADDRESS[@]/${ADDR}/g" \
+             -e "s/[@]SUBJECT[@]/Project Activity/g" \
+            ${REPORTEMAIL} \
+            |sendmail -t ${ADDR}
       done
-      echo "<a href='${PROJURL}' style='color:#660066;text-decoration:none;'>Source Code</a>"   >> ${TEMPLATE}
-     echo "</p>"                                                 >> ${TEMPLATE}
    fi
-done
-echo -e "\n\n" >> ${TEMPLATE}
-
-
-# E-mail Section: Project Diff Statistics
-ANCHOR=Project_Statistics
-TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
-echo "running git diff..."
-echo "<a name='${ANCHOR}'></a>"                              >> ${TEMPLATE}
-echo "<div style='color:#660066'><h3>${TITLE}</h3></div>"   >> ${TEMPLATE}
-for REPO in ${STATLIST};do
-   PROJNAME=`basename ${REPO}`
-   if test -d ${REPO};then
-      echo "   running git diff on ${REPO}..."
-      cd ${REPO}
-      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"               >> ${TEMPLATE}
-      HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-      echo -n "<p>"                                             >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b>"                                 >> ${TEMPLATE}
-
-      for BRANCH in pu next master;do
-         PROJVER=`git describe --long origin/${BRANCH} 2> /dev/null |sed -e 's/-/./g' -e 's/^v//g'` 2> /dev/null
-         if test "x${PROJVER}" != "x";then
-            echo "<br/>Version: <i>${PROJVER} (${BRANCH})</i>"           >> ${TEMPLATE}
-         fi
-      done
-
-      for NUM in ${TIMEINTERVALS};do
-         STAT=`git diff --stat $(git rev-list -n1 --before="${NUM} day ago" ${HEAD}) |grep 'files changed, '`
-         if test "x${STAT}" != "x${OLDSTAT}";then
-            if test "x${STAT}" != "x";then
-               echo "<br/>Changes to ${HEAD} branch within last  ${NUM} day(s): ${STAT}" >> ${TEMPLATE}
-            fi
-            OLDSTAT="${STAT}"
-         fi
-      done
-
-      echo "</p>"                                                >> ${TEMPLATE}
-   fi
-done
-echo -e "\n\n" >> ${TEMPLATE}
-
-
-# E-mail Section: Project Line Counts
-ANCHOR=Project_Line_Counts
-TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
-echo "running ohcount..."
-echo "<a name='${ANCHOR}'></a>"                             >> ${TEMPLATE}
-echo "<div style='color:#660066'><h3>${TITLE}</h3></div>"  >> ${TEMPLATE}
-for REPO in ${STATLIST};do
-   PROJNAME=`basename ${REPO}`
-   if test -d ${REPO};then
-      echo "   running ohcount on ${REPO}..."
-      cd ${REPO}
-      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
-      echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
-      echo -n "<pre>"                                            >> ${TEMPLATE}
-      /usr/local/bin/ohcount ${REPO} |egrep -v '^$|Examining|Ohloh'    >> ${TEMPLATE}
-      echo -n "</pre>"                                           >> ${TEMPLATE}
-      echo "</p>"                                                >> ${TEMPLATE}
-   fi
-done
-echo -e "\n\n" >> ${TEMPLATE}
-
-
-# E-mail Section: Project Commit Logs
-ANCHOR=Project_ChangeLog
-TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
-echo "generating project log..."
-echo "<a name='${ANCHOR}'></a>"                               >> ${TEMPLATE}
-echo "<div style='color:#660066'><h3>${TITLE}</h3></div>"    >> ${TEMPLATE}
-for REPO in ${STATLIST};do
-   PROJNAME=`basename ${REPO}`
-   if test -d ${REPO};then
-      echo "   generating logs for ${REPO}..."
-      cd ${REPO}
-      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"                >> ${TEMPLATE}
-      echo -n "<p>"                                              >> ${TEMPLATE}
-      echo "<b>${PROJNAME}</b><br/>"                             >> ${TEMPLATE}
-      echo -n "<pre>"                                            >> ${TEMPLATE}
-      HEAD=`git branch |egrep '^\* '|awk '{print$2}'`
-      LINKDIR=`echo ${REPO} |sed -e 's/$/.git/g' -e 's/\/pub\/src\//\/pub\/scm\//g' -e 's/\//\\\\\//g'`
-      git log --quiet --date=short --pretty="format:%ad %h %s" --after="${HISTORYLIMIT} day ago" ${HEAD} \
-         |sed -e "s/^\([[:digit:]]\{4\}\(-[[:digit:]]\{2\}\)\{2\}\) \([[:xdigit:]]\{1,\}\) /\1 <a href='http:\/\/scm.office.bindlebinaries.com${LINKDIR}\?a=commit;h=\3' style='color:#660066;text-decoration:none;'>\3<\/a> /g"  >> ${TEMPLATE}
-      echo -n "</pre>"                                           >> ${TEMPLATE}
-      echo "</p>"                                                >> ${TEMPLATE}
-   fi
-done
-echo -e "\n\n" >> ${TEMPLATE}
-
-
-# E-mail Section: Help
-ANCHOR=Help
-TITLE=`echo ${ANCHOR} |sed -e 's/_/ /g'`
-cat << EOF >> ${TEMPLATE}
-<a name='${ANCHOR}'></a>
-<div style='color:#660066'><h3>${TITLE}</h3></div>
-<b>Version Naming Conventions:</b>
-<p>
-A project version is used to identify a specific instance of the project. The version will be in one of the following formats:
-<pre>
-  <b>Managed Projects:</b>
-  <i>x.y</i>
-  <i>x.y.z</i>
-  <i>x.y.z.c</i>
-
-  <b>Unmanaged Projects:</b>
-  <i>yyyy.mm.dd</i>
-  <i>yyyy.mm.dd.c</i>
-
-  <b>Where:</b>
-  <i>x</i>    is the major release version.
-  <i>y</i>    is the minor release version.
-  <i>z</i>    is the patch level.
-  <i>c</i>    is the commit identifier of the last change.
-  <i>yyyy</i> is the year of the release.
-  <i>mm</i>   is the month of the release.
-  <i>dd</i>   is the day of the release.
-</pre>
-</p>
-<b>Branch Naming Conventions:</b>
-<p>
-A project's repository contains multiple branches which are used to organize the
-development process.  Bindle Binaries uses the following convention for branch
-naming:
-<pre>
-  <i>master</i> - Current release of packages.
-  <i>next</i>   - changes staged for next release
-  <i>pu</i>     - proposed updates for next release
-  <i>xx/yy+</i> - branch for testing new changes before merging to 'pu' branch
-</pre>
-Active development occurrs either directly on the 'pu' branch or on topic branches.
-Once modifications are considered stable, they are merged from the 'pu' branch
-into the 'next' branch. The modifications are not merged into the 'master' branch
-until a new public release (aka version) of the project is published. As such,
-information in this message is generated from the 'pu' branch of a project rather
-than the 'next' or 'master' branches which are much less frequently updated.
-<p>
-<b><i>The information in this message was generated using Ohcount and Git.</i></b>
-EOF
-echo -e "\n\n" >> ${TEMPLATE}
-
-
-# sends e-mail messages
-SENTRESULTS=NO
-for ADDR in $@;do
-   echo "sending results to ${ADDR}..."
-   sed -e "s/[@]EMAIL_ADDRESS[@]/${ADDR}/g" ${TEMPLATE} |sendmail -t ${ADDR}
-   SENTRESULTS=YES
-done
-
-if test "x${SENTRESULTS}" == "xNO";then
-   cat ${TEMPLATE}
 fi
 
 
 # removes e-mail template
-rm -f /tmp/mail-project-stats.*
+rm -Rf "${TMPDIR}"
 
 # end of script
