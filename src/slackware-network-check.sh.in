@@ -1,0 +1,62 @@
+#!/bin/sh
+
+
+# sets script/package information
+PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+
+
+# parses CLI arguments
+for FLAG in ${@};do
+   if test "x${FLAG}" == "x--help";then
+      echo "Usage: ${0} <address> <address> ... <address>"
+      exit 0
+   elif test "x${FLAG}" == "x--version";then
+      echo "git-proj-stats.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+      echo "Copyright 2013 Bindle Binaries <${PACKAGE_BUGREPORT}>."
+      echo ""
+      exit 0
+   fi
+done
+
+
+PING_FAILED=no
+
+
+PING_HOST=${1}
+if test "x${PING_HOST}" == "x";then
+   PING_HOST=www.google.com
+fi
+
+
+# tests IPv4 Connectivity
+/bin/ping -c 1 ${PING_HOST} > /dev/null 2>&1
+if test $? -ne 0;then
+   PING_FAILED=yes
+fi
+
+
+# tests IPv4 Connectivity
+/bin/ping6 -c 1 ${PING_HOST} > /dev/null 2>&1
+if test $? -ne 0;then
+   PING_FAILED=yes
+fi
+
+
+# restart network layers
+if test "x${PING_FAILED}" != "xno";then
+   if test -x /etc/rc.d/rc.inet1;then
+      /etc/rc.d/rc.inet1 stop
+      sleep 10
+      /etc/rc.d/rc.inet1 start
+   fi
+   if test -x /etc/rc.d/rc.firewall;then
+      /etc/rc.d/rc.firewall stop
+      sleep 10
+      /etc/rc.d/rc.firewall start
+   fi
+fi
+
+
+# end of script
