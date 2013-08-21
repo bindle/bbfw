@@ -1,9 +1,9 @@
 
-Bindle Binaries Tools
-=====================
+Bindle Binaries Admin Tools
+===========================
 
-   Bindle Binaries Tools is a collection of scripts and files which aid in the
-   management of projects. 
+   Bindle Binaries Admin Tools is a collection of scripts and files which aid
+   in the management of projects. 
 
 
 Contents
@@ -61,22 +61,22 @@ Source Code
    source code from the git repository.
 
    Browse Source:
-      https://github.com/bindle/bindletools
-      http://scm.bindlebinaries.com/scm/com.bindlebinaries/bindletools.git
+      https://github.com/bindle/bindleadmin
+      http://scm.bindlebinaries.com/scm/com.bindlebinaries/bindleadmin.git
 
    Git URLs:
-      git://github.com/bindle/bindletools.git
-      git://git.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindletools.git
-      http://http.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindletools.git
-      ssh://ssh.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindletools.git
+      git://github.com/bindle/bindleadmin.git
+      git://git.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindleadmin.git
+      http://http.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindleadmin.git
+      ssh://ssh.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindleadmin.git
 
    Downloading Source:
 
-      $ git clone git://github.com/bindle/bindletools.git
+      $ git clone git://github.com/bindle/bindleadmin.git
 
    Preparing Source:
 
-      $ cd bindletools
+      $ cd bindleadmin
       $ ./build-aux/autogen.sh
 
    Git Branches:
