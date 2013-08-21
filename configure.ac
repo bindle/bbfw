@@ -1,6 +1,6 @@
 #
-#   Bindle Binaries Tools
-#   Copyright (C) 2011 Bindle Binaries <syzdek@bindlebinaries.com>.
+#   Bindle Binaries Admin Tools
+#   Copyright (C) 2013 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@
 #
@@ -36,9 +36,9 @@
 
 AC_PREREQ([2.65])
 
-AC_COPYRIGHT([Copyright (c) 2011 Bindle Binaries <syzdek@bindlebinaries.com>.])
+AC_COPYRIGHT([Copyright (c) 2013 Bindle Binaries <syzdek@bindlebinaries.com>.])
 AC_REVISION(0.1)
-AC_INIT([Bindle Binaries Tools],[0.1],[syzdek@bindlebinaries.com],[bindletools])
+AC_INIT([Bindle Binaries Admin Tools],[0.1],[syzdek@bindlebinaries.com],[bindleadmin])
 
 AC_SUBST([RELEASE_MONTH],["April 2011"])
 
@@ -103,7 +103,7 @@ AC_BINDLE_ENABLE_WARNINGS
 AC_CHECK_HEADERS([getopt.h], [AC_DEFINE_UNQUOTED(USE_GETOPT_LONG, 1, [Use GNU getopt_long])])
 
 # determine PACKAGE_VERSION via Git
-AC_BINDLE_GIT_PACKAGE_VERSION
+AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version.sh])
 
 # Creates outputs
 AC_CONFIG_FILES([Makefile])
@@ -111,7 +111,7 @@ AC_OUTPUT
 
 # Show local config
 AC_MSG_NOTICE([ ])
-AC_MSG_NOTICE([   Bindle Binaries Tools])
+AC_MSG_NOTICE([   Scheduler $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Please send suggestions to:   $PACKAGE_BUGREPORT])
 AC_MSG_NOTICE([ ])

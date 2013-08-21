@@ -17,14 +17,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A01F6FF717C4E70F00C4789F /* bindleadmin-script.profile.in */ = {isa = PBXFileReference; explicitFileType = text.script.sh; path = "bindleadmin-script.profile.in"; sourceTree = "<group>"; };
+		A01F6FF817C4E70F00C4789F /* slackware-network-check.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slackware-network-check.sh.in"; sourceTree = "<group>"; };
+		A01F700017C4F4A600C4789F /* git-tar-name.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "git-tar-name.txt"; sourceTree = "<group>"; };
 		A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bindletools.xcodeproj; path = bindletools/bindletools.xcodeproj; sourceTree = "<group>"; };
 		A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */ = {isa = PBXFileReference; explicitFileType = text.script.sh; path = "git-proj-stats.sh.in"; sourceTree = "<group>"; };
 		A0D52C9F17C2E486001352CA /* pub-generate-readme.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pub-generate-readme.sh.in"; sourceTree = "<group>"; };
 		A0D52CA017C2E486001352CA /* pub-rsync-remotes.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pub-rsync-remotes.sh.in"; sourceTree = "<group>"; };
 		A0D52CA117C2E486001352CA /* slackware-sync-auth.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slackware-sync-auth.sh.in"; sourceTree = "<group>"; };
 		A0D52CA217C2E486001352CA /* slackware-update-mirrors.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slackware-update-mirrors.sh.in"; sourceTree = "<group>"; };
-		A0EC36A81365466E008F3CC7 /* autogen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = autogen.sh; sourceTree = "<group>"; };
-		A0EC36A91365466E008F3CC7 /* git-package-version.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "git-package-version.sh"; sourceTree = "<group>"; };
 		A0EC36AA1365470C008F3CC7 /* acinclude.m4 */ = {isa = PBXFileReference; explicitFileType = text.script; path = acinclude.m4; sourceTree = "<group>"; };
 		A0EC36AB1365470C008F3CC7 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
 		A0EC36AC1365470C008F3CC7 /* configure.ac */ = {isa = PBXFileReference; explicitFileType = text.script; path = configure.ac; sourceTree = "<group>"; };
@@ -33,7 +34,6 @@
 		A0EC36AF1365470C008F3CC7 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		A0EC36B013654903008F3CC7 /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
 		A0EC36B11365494C008F3CC7 /* ChangeLog */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
-		A0EC36B313654CB6008F3CC7 /* bindle.m4 */ = {isa = PBXFileReference; explicitFileType = text.script; path = bindle.m4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -56,9 +56,11 @@
 		A0D52C9C17C2E486001352CA /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A01F6FF717C4E70F00C4789F /* bindleadmin-script.profile.in */,
 				A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */,
 				A0D52C9F17C2E486001352CA /* pub-generate-readme.sh.in */,
 				A0D52CA017C2E486001352CA /* pub-rsync-remotes.sh.in */,
+				A01F6FF817C4E70F00C4789F /* slackware-network-check.sh.in */,
 				A0D52CA117C2E486001352CA /* slackware-sync-auth.sh.in */,
 				A0D52CA217C2E486001352CA /* slackware-update-mirrors.sh.in */,
 			);
@@ -75,7 +77,6 @@
 				A0EC36AC1365470C008F3CC7 /* configure.ac */,
 				A0D52C9217C2E41D001352CA /* contrib */,
 				A0EC36B013654903008F3CC7 /* COPYING */,
-				A0EC36B213654C75008F3CC7 /* m4 */,
 				A0EC36AD1365470C008F3CC7 /* Makefile.am */,
 				A0EC36AE1365470C008F3CC7 /* NEWS */,
 				A0EC36AF1365470C008F3CC7 /* README */,
@@ -86,18 +87,9 @@
 		A0EC36A613654636008F3CC7 /* build-aux */ = {
 			isa = PBXGroup;
 			children = (
-				A0EC36A81365466E008F3CC7 /* autogen.sh */,
-				A0EC36A91365466E008F3CC7 /* git-package-version.sh */,
+				A01F700017C4F4A600C4789F /* git-tar-name.txt */,
 			);
 			path = "build-aux";
-			sourceTree = "<group>";
-		};
-		A0EC36B213654C75008F3CC7 /* m4 */ = {
-			isa = PBXGroup;
-			children = (
-				A0EC36B313654CB6008F3CC7 /* bindle.m4 */,
-			);
-			path = m4;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
