@@ -31,7 +31,7 @@
 		A0EC36AC1365470C008F3CC7 /* configure.ac */ = {isa = PBXFileReference; explicitFileType = text.script; path = configure.ac; sourceTree = "<group>"; };
 		A0EC36AD1365470C008F3CC7 /* Makefile.am */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; indentWidth = 8; path = Makefile.am; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
 		A0EC36AE1365470C008F3CC7 /* NEWS */ = {isa = PBXFileReference; lastKnownFileType = text; path = NEWS; sourceTree = "<group>"; };
-		A0EC36AF1365470C008F3CC7 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		A0EC36AF1365470C008F3CC7 /* README */ = {isa = PBXFileReference; explicitFileType = text.script; path = README; sourceTree = "<group>"; };
 		A0EC36B013654903008F3CC7 /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
 		A0EC36B11365494C008F3CC7 /* ChangeLog */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,14 +72,14 @@
 			children = (
 				A0EC36AA1365470C008F3CC7 /* acinclude.m4 */,
 				A0EC36AB1365470C008F3CC7 /* AUTHORS */,
-				A0EC36A613654636008F3CC7 /* build-aux */,
 				A0EC36B11365494C008F3CC7 /* ChangeLog */,
 				A0EC36AC1365470C008F3CC7 /* configure.ac */,
-				A0D52C9217C2E41D001352CA /* contrib */,
 				A0EC36B013654903008F3CC7 /* COPYING */,
 				A0EC36AD1365470C008F3CC7 /* Makefile.am */,
 				A0EC36AE1365470C008F3CC7 /* NEWS */,
 				A0EC36AF1365470C008F3CC7 /* README */,
+				A0EC36A613654636008F3CC7 /* build-aux */,
+				A0D52C9217C2E41D001352CA /* contrib */,
 				A0D52C9C17C2E486001352CA /* src */,
 			);
 			sourceTree = "<group>";

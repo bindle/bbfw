@@ -48,7 +48,7 @@ AM_CFLAGS				= -O2 $(CFLAGS_WARNINGS)
 AM_CXXFLAGS				= -O2 @AM_CXXFLAGS@
 AM_OBJCFLAGS				= -O2 @AM_OBJCFLAGS@
 AM_CPPFLAGS				= -O2 -UPMARK -DHAVE_CONFIG_H=1 -I$(top_builddir)/include -I$(top_srcdir)/include -DSYSCONFDIR="\"$(sysconfdir)\""
-ACLOCAL_AMFLAGS				= -I m4 -I contrib/bindletools/m4 -W all -W error
+ACLOCAL_AMFLAGS				= -I m4 -W all -W error
 AM_MAKEINFOFLAGS                        = --no-split
 DEFS					=
 
@@ -79,10 +79,7 @@ BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
-EXTRA_DIST				= build-aux/autogen.sh \
-					  build-aux/git-package-version \
-					  build-aux/git-tar-name.txt \
-					  src/bindleadmin-script.profile.in \
+EXTRA_DIST				= src/bindleadmin-script.profile.in \
 					  src/git-proj-stats.sh.in \
 					  src/pub-generate-readme.sh.in \
 					  src/pub-rsync-remotes.sh.in \
@@ -104,12 +101,10 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
 
 # Makefile includes
 GIT_PACKAGE_VERSION_DIR=build-aux
-SUBST_EXPRESSIONS = \
-	-e 's,[@]srcdir[@],$(srcdir),g' \
-	-e 's,[@]top_srcdir[@],$(top_srcdir),g'
-include $(srcdir)/contrib/bindletools/build-aux/makefile-autotools.am
-include $(srcdir)/contrib/bindletools/build-aux/makefile-subst.am
-include $(srcdir)/contrib/bindletools/build-aux/makefile-version.am
+SUBST_EXPRESSIONS =
+include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-autotools.am
+include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-subst.am
+include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 
 
 # custom targets

@@ -55,7 +55,7 @@ AC_SUBST([LIB_VERSION_INFO],     [${LIB_VERSION_CURRENT}:${LIB_VERSION_REVISION}
 AC_SUBST([LIB_RELEASE_INFO],     [${LIB_VERSION_CURRENT}]) # used by Win32 DLLs
 
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_SRCDIR([build-aux/autogen.sh])
+AC_CONFIG_SRCDIR([build-aux/git-tar-name.txt])
 #AC_CONFIG_LIBOBJ_DIR(compat)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -96,6 +96,9 @@ AC_PROG_LN_S
 # GNU Libtool Support
 LT_INIT(dlopen disable-fast-install win32-dll)
 
+# initiates bindle tools macros
+AC_BINDLE([contrib/bindletools])
+
 # custom configure options
 AC_BINDLE_ENABLE_WARNINGS
 
@@ -111,7 +114,7 @@ AC_OUTPUT
 
 # Show local config
 AC_MSG_NOTICE([ ])
-AC_MSG_NOTICE([   Scheduler $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
+AC_MSG_NOTICE([   Bindle Binaries Admin Tools $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Please send suggestions to:   $PACKAGE_BUGREPORT])
 AC_MSG_NOTICE([ ])
