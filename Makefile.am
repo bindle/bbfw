@@ -64,6 +64,7 @@ noinst_HEADERS				=
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
+pkgdata_DATA				= src/bindleadmin-script.profile
 sbin_SCRIPTS				= src/git-proj-stats.sh \
 					  src/pub-generate-readme.sh \
 					  src/pub-rsync-remotes.sh \
@@ -114,6 +115,7 @@ EXTRA_MANS				=
 EXTRA_DIST				= build-aux/autogen.sh \
 					  build-aux/git-package-version \
 					  build-aux/git-package-version.sh \
+					  src/bindleadmin-script.profile.in \
 					  src/git-proj-stats.sh.in \
 					  src/pub-generate-readme.sh.in \
 					  src/pub-rsync-remotes.sh.in \
@@ -125,6 +127,7 @@ CLEANFILES				= \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
 					  config.h.in~ $(srcdir)/config.h.in~ \
 					  $(man_MANS) \
+					  $(pkgdata_DATA) \
 					  $(bin_SCRIPTS) \
 					  $(sbin_SCRIPTS) \
 					  @PACKAGE_TARNAME@-*.tar.* \
@@ -133,6 +136,9 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
 
 
 # script targets
+src/bindleadmin-script.profile: Makefile src/bindleadmin-script.profile.in
+	@$(do_subst_dt)
+
 src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
 	@$(do_subst_fn)
 

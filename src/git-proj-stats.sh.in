@@ -274,11 +274,9 @@ for FLAG in ${@};do
       echo "Usage: ${0} <address> <address> ... <address>"
       exit 0
    elif test "x${FLAG}" == "x--version";then
-cat << EOF
-git-proj-stats.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}
-Copyright 2013 Bindle Binaries <${PACKAGE_BUGREPORT}>.
-
-EOF
+      echo "git-proj-stats.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+      echo "Copyright 2013 Bindle Binaries <${PACKAGE_BUGREPORT}>."
+      echo ""
       exit 0
    fi
 done
