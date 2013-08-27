@@ -63,7 +63,7 @@ TMPDIR="${TMPDIR}/report$$"
 DATADIR="${TMPDIR}/data"
 TEMPLATEDIR="${TMPDIR}/templates"
 DATE=`date '+%a %Y-%m-%d'`
-HOST=`hostname`
+HOST=`hostname -f`
 
 
 # sets script/package information
