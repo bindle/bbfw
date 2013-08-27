@@ -125,7 +125,7 @@ report_generate_project_changelog()
    echo -n "<p>"
    echo "<b>${PROJNAME}</b><br/>"
    echo -n "<pre>"
-   LINKDIR=`echo ${REPO} |sed -e 's,^,/pub/scm/,g' -e 's,/,\\/,g'`
+   LINKDIR=`echo ${REPO} |sed -e 's/$/.git/g' -e 's/\/pub\/src\//\/pub\/scm\//g' -e 's/\//\\\\\//g'`
    git --git-dir="${GITDIR}" log --quiet --date=short --pretty="format:%ad %h %s" --after="${HISTORYLIMIT} day ago" ${HEAD} \
       |sed -e "s/^\([[:digit:]]\{4\}\(-[[:digit:]]\{2\}\)\{2\}\) \([[:xdigit:]]\{1,\}\) /\1 <a href='http:\/\/scm.office.bindlebinaries.com${LINKDIR}\?a=commit;h=\3' style='color:#660066;text-decoration:none;'>\3<\/a> /g"
    echo -n "</pre>"
@@ -447,7 +447,7 @@ if test "x${1}" == "x";then
 
          # copies report to HTML directory
          mkdir -p "${HTMLDIR}/${REPORT}"
-         cp "${REPORTFILE}" "${HTMLDIR}/${REPORT}/index.html"
+         cp "${REPORTFILE}" "${HTMLDIR}/${REPORT}/report.html"
 
          # genrates e-mail template
          REPORTEMAIL="${DATADIR}/${REPORT}/report-email.html"
