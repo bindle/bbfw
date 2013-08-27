@@ -374,7 +374,8 @@ fi
 # Creates e-mail headers
 cat << EOF > "${TEMPLATEDIR}/email-header.html"
 To: @EMAIL_ADDRESS@
-From: "David M. Syzdek" <syzdek@bindlebinaries.com>
+From: "Project Reports" <project-reports@bindlebinaries.com>
+X-Mailer: BindleBinariesGitProjectStats.${PACKAGE_VERSION}
 Subject: @SUBJECT@ (${DATE} / @PROJECT_COUNT@ projects)
 Content-Type: text/html; charset=ISO-8859-1
 
