@@ -34,6 +34,7 @@
 
 
 # sets script/package information
+PROGRAM_NAME=`basename $0`
 PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
@@ -42,7 +43,7 @@ PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
 # parses CLI arguments for required arguments
 for FLAG in ${@};do
    if test "x${FLAG}" == "x--help";then
-      echo "Usage: ${0} <address> <address> ... <address>"
+      echo "Usage: ${0} ${PROGRAM_USAGE_OPTIONS}"
       exit 0
    elif test "x${FLAG}" == "x--version";then
       echo "git-proj-stats.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
