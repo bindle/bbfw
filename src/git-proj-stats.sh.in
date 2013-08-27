@@ -96,7 +96,7 @@ report_set_project_vars()
 report_generate()
 {
    REPORT=${1}
-   echo "<div style='color:#660066'><i>Report was generated on ${DATE} from ${HOST}.</i></div>"
+   cat "${TEMPLATEDIR}/report-header.html"
    for SECTION in summary stats linecount changelog;do
       if test -f "${TEMPLATEDIR}/section-header-${SECTION}.html";then
          cat "${TEMPLATEDIR}/section-header-${SECTION}.html"
@@ -111,11 +111,17 @@ report_generate()
 }
 
 
+report_generate_header()
+{
+   echo "<div style='color:#660066'><i>Report was generated on ${DATE} from ${HOST}.</i></div>"
+}
+
+
 report_generate_project_changelog()
 {
    report_set_project_vars "${1}"
    echo "   generating logs for ${REPO}..." 1>&2
-   echo "<a name='${ANCHOR}_${PROJNAME}'></a>"
+   echo "<a name='Project_ChangeLog_${PROJNAME}'></a>"
    echo -n "<p>"
    echo "<b>${PROJNAME}</b><br/>"
    echo -n "<pre>"
@@ -132,7 +138,7 @@ report_generate_project_line_counts()
    report_set_project_vars "${1}"
    echo "   running ohcount on ${REPO}..." 1>&2
    if test -d "${SRCDIR}/${REPO}";then
-      echo "<a name='${ANCHOR}_${PROJNAME}'></a>"
+      echo "<a name='Project_Line_Counts_${PROJNAME}'></a>"
       echo -n "<p>"
       echo "<b>${PROJNAME}</b><br/>"
       echo -n "<pre>"
@@ -147,7 +153,7 @@ report_generate_project_statistics()
 {
    report_set_project_vars "${1}"
    echo "   running git diff on ${REPO}..." 1>&2
-   echo "<a name='${ANCHOR}_${PROJNAME}'></a>"
+   echo "<a name='Project_Statistics_${PROJNAME}'></a>"
    echo -n "<p>"
    echo "<b>${PROJNAME}</b>"
 
@@ -313,7 +319,7 @@ done
 
 # generate list of reports
 echo "Generating list of reports..."
-for REPORT in ` find "${REPODIR}"  -type f ! -path "*.git/*" |egrep '/.reports$' |sed -e "s,^${REPODIR}/,,g"`;do
+for REPORT in ` find "${REPODIR}"  -type f ! -path "*.git/*" |egrep '/.report$' |sed -e "s,^${REPODIR}/,,g"`;do
    REPORT=`dirname ${REPORT}`
    REPORTLIST="${REPORTLIST} ${REPORT}"
 done
@@ -369,10 +375,18 @@ fi
 cat << EOF > "${TEMPLATEDIR}/email-header.html"
 To: @EMAIL_ADDRESS@
 From: "David M. Syzdek" <syzdek@bindlebinaries.com>
-Subject: @SUBJECT@ (${DATE} / ${STATCOUNT} projects)
+Subject: @SUBJECT@ (${DATE} / @PROJECT_COUNT@ projects)
 Content-Type: text/html; charset=ISO-8859-1
 
 EOF
+
+
+report_generate_header                               > "${TEMPLATEDIR}/report-header.html"
+report_generate_section_title "Active_Projects"      > "${TEMPLATEDIR}/section-header-summary.html"
+report_generate_section_title "Project_Statistics"   > "${TEMPLATEDIR}/section-header-stats.html"
+report_generate_section_title "Project_Line_Counts"  > "${TEMPLATEDIR}/section-header-linecount.html"
+report_generate_section_title "Project_ChangeLog"    > "${TEMPLATEDIR}/section-header-changelog.html"
+report_generate_section_help                         > "${TEMPLATEDIR}/section-help.html"
 
 
 for REPO in ${STATLIST};do
@@ -384,21 +398,45 @@ for REPO in ${STATLIST};do
 done
 
 
-report_generate_section_title "Active_Projects"      > "${TEMPLATEDIR}/section-header-summary.html"
-report_generate_section_title "Project_Statistics"   > "${TEMPLATEDIR}/section-header-stats.html"
-report_generate_section_title "Project_Line_Counts"  > "${TEMPLATEDIR}/section-header-linecount.html"
-report_generate_section_title "Project_ChangeLog"    > "${TEMPLATEDIR}/section-header-changelog.html"
-report_generate_section_help                         > "${TEMPLATEDIR}/section-help.html"
+for REPO in ${STATLIST};do
+   echo "Creating HTML report for ${REPO}..."
+   mkdir -p "${HTMLDIR}/${REPO}"         || exit 1
+   rm -f "${HTMLDIR}/${REPO}/index.html" || exit 1
+
+   cat "${TEMPLATEDIR}/report-header.html"             > "${HTMLDIR}/${REPO}/index.html"
+
+   # summary
+   cat "${TEMPLATEDIR}/section-header-summary.html"   >> "${HTMLDIR}/${REPO}/index.html"
+   cat "${DATADIR}/${REPO}/report.summary"            >> "${HTMLDIR}/${REPO}/index.html"
+
+   # stats
+   cat "${TEMPLATEDIR}/section-header-stats.html"     >> "${HTMLDIR}/${REPO}/index.html"
+   cat "${DATADIR}/${REPO}/report.stats"              >> "${HTMLDIR}/${REPO}/index.html"
+
+   # line counts
+   cat "${TEMPLATEDIR}/section-header-linecount.html" >> "${HTMLDIR}/${REPO}/index.html"
+   cat "${DATADIR}/${REPO}/report.linecount"          >> "${HTMLDIR}/${REPO}/index.html"
+
+   # git changelog
+   cat "${TEMPLATEDIR}/section-header-changelog.html" >> "${HTMLDIR}/${REPO}/index.html"
+   cat "${DATADIR}/${REPO}/report.changelog"          >> "${HTMLDIR}/${REPO}/index.html"
+
+   # help
+   cat "${TEMPLATEDIR}/section-help.html"             >> "${HTMLDIR}/${REPO}/index.html"
+done
 
 
+# sends reports to list members
 if test "x${1}" == "x";then
    for REPORT in ${REPORTLIST};do
       echo "Generating report: ${REPORT}"
       REPORTFILE="${DATADIR}/${REPORT}/report.html"
-      REPORTTITLE=`egrep -i '^SUBJECT=' "${REPODIR}/${REPORT}/.reports" |cut -d= -f2`
+      REPORTTITLE=`egrep -i '^SUBJECT=' "${REPODIR}/${REPORT}/.report" |cut -d= -f2`
       if test "x${REPORTTITLE}" == "x";then
          REPORTTITLE="Project Activity"
       fi
+
+      PROJECT_COUNT=`egrep "${REPORT}" "${TMPDIR}/project-list.txt" 2> /dev/null |wc -l`
 
       egrep "${REPORT}" "${TMPDIR}/project-list.txt" > /dev/null 2>&1
       if test $? == 0;then
@@ -413,11 +451,13 @@ if test "x${1}" == "x";then
 
          # genrates e-mail template
          REPORTEMAIL="${DATADIR}/${REPORT}/report-email.html"
-         cat "${TEMPLATEDIR}/email-header.html" >  "${REPORTEMAIL}"
-         cat "${REPORTFILE}"                    >> "${REPORTEMAIL}"
+         sed -e "s/[@]PROJECT_COUNT[@]/${PROJECT_COUNT}/g" \
+            "${TEMPLATEDIR}/email-header.html" \
+            > "${REPORTEMAIL}"
+         cat "${REPORTFILE}" >> "${REPORTEMAIL}"
 
          # sends e-mail
-         for ADDR in `egrep '^[-_a-zA-Z0-9.]+@[-a-zA-Z0-9.]+$' "${REPODIR}/${REPORT}/.reports"`;do
+         for ADDR in `egrep '^[-_a-zA-Z0-9.]+@[-a-zA-Z0-9.]+$' "${REPODIR}/${REPORT}/.report"`;do
             echo "   sending report to ${ADDR}"
             sed -e "s/[@]EMAIL_ADDRESS[@]/${ADDR}/g" \
                 -e "s/[@]SUBJECT[@]/${REPORTTITLE}/g" \
@@ -427,10 +467,14 @@ if test "x${1}" == "x";then
       fi
    done
 fi
+
+# sends reports to requested addresses
 if test "x${1}" != "x";then
    REPORT=.
    echo "Generating report: ${REPORT}"
    REPORTFILE="${DATADIR}/${REPORT}/report.html"
+
+   PROJECT_COUNT=`egrep "${REPORT}" "${TMPDIR}/project-list.txt" 2> /dev/null |wc -l`
 
    egrep "${REPORT}" "${TMPDIR}/project-list.txt" > /dev/null 2>&1
    if test $? == 0;then
@@ -441,8 +485,10 @@ if test "x${1}" != "x";then
 
       # genrates e-mail template
       REPORTEMAIL="${DATADIR}/${REPORT}/report-email.html"
-      cat "${TEMPLATEDIR}/email-header.html" >  "${REPORTEMAIL}"
-      cat "${REPORTFILE}"                    >> "${REPORTEMAIL}"
+      sed -e "s/[@]PROJECT_COUNT[@]/${PROJECT_COUNT}/g" \
+         "${TEMPLATEDIR}/email-header.html" \
+         > "${REPORTEMAIL}"
+      cat "${REPORTFILE}" >> "${REPORTEMAIL}"
 
       # sends e-mail
       for ADDR in $@;do
