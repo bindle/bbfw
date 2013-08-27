@@ -447,7 +447,7 @@ if test "x${1}" == "x";then
 
          # copies report to HTML directory
          mkdir -p "${HTMLDIR}/${REPORT}"
-         cp "${REPORTFILE}" "${HTMLDIR}/${REPORT}/report.html"
+         cp "${REPORTFILE}" "${HTMLDIR}/${REPORT}/index.html"
 
          # genrates e-mail template
          REPORTEMAIL="${DATADIR}/${REPORT}/report-email.html"
