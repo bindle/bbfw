@@ -66,7 +66,8 @@ noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				= src/bindleadmin-script.profile
-sbin_SCRIPTS				= src/git-proj-stats.sh \
+sbin_SCRIPTS				= src/git-proj-cleanup.sh \
+					  src/git-proj-stats.sh \
 					  src/pub-generate-readme.sh \
 					  src/pub-rsync-remotes.sh \
 					  src/slackware-network-check.sh \
@@ -80,6 +81,7 @@ TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
 EXTRA_DIST				= src/bindleadmin-script.profile.in \
+					  src/git-proj-cleanup.sh.in \
 					  src/git-proj-stats.sh.in \
 					  src/pub-generate-readme.sh.in \
 					  src/pub-rsync-remotes.sh.in \
@@ -110,6 +112,9 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 # custom targets
 src/bindleadmin-script.profile: Makefile src/bindleadmin-script.profile.in
 	@$(do_subst_dt)
+
+src/git-proj-cleanup.sh: Makefile src/git-proj-cleanup.sh.in
+	@$(do_subst_fn)
 
 src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
 	@$(do_subst_fn)

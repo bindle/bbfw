@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+#   Bindle Binaries Admin Tools
+#   Copyright (C) 2013 Bindle Binaries <syzdek@bindlebinaries.com>.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_START@
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of Bindle Binaries nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BINDLE BINARIES BE LIABLE FOR
+#   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_END@
+#
+#   git-proj-stats.sh - script for generating development stats on active projects
+#
+
+# default configuration information
+test "x${CLEANUP_PREFIXDIR}"     == "x" && CLEANUP_PREFIXDIR="/pub"
+test "x${CLEANUP_REPODIR}"       == "x" && CLEANUP_REPODIR="${CLEANUP_PREFIXDIR}/scm"
+
+
+# sets local variables
+PREFIXDIR="${CLEANUP_PREFIXDIR}"
+REPODIR="${CLEANUP_REPODIR}"
+
+
+# sets script/package information
+PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+
+
+# parses CLI arguments
+for FLAG in ${@};do
+   if test "x${FLAG}" == "x--help";then
+      echo "Usage: ${0}"
+      exit 0
+   elif test "x${FLAG}" == "x--version";then
+      echo "git-proj-fsck.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+      echo "Copyright 2013 Bindle Binaries <${PACKAGE_BUGREPORT}>."
+      echo ""
+      exit 0
+   fi
+done
+
+
+# tests configuration
+if test ! -d ${REPODIR};then
+   echo "${0}: ${REPODIR}: repository prefix does not exist" 1>&2
+   exit 1
+fi
+
+
+# generate list of repositories
+echo "Generating list of repositories..."
+for REPO in `find "${REPODIR}" ! -path "*.git/*" -type d |egrep '[A-Za-z0-9]/{0,1}.git$' |sed -e "s,^${REPODIR}/,,g" -e 's/.git$//g' 2> /dev/null`;do
+   if test -d "${REPODIR}/${REPO}.git";then
+      REPOLIST="${REPOLIST} ${REPO}"
+   fi
+done
+
+
+# clones repositories into working directory
+echo "creating directory structure..."
+for REPO in ${REPOLIST};do
+   GITDIR=""
+   if test -d "${REPODIR}/${REPO}.git";then
+      GITDIR="${REPODIR}/${REPO}.git"
+   elif test -d "${REPODIR}/${REPO}/.git";then
+      GITDIR="${REPODIR}/${REPO}/.git"
+   fi
+   if test "x${GITDIR}" != "x";then
+      echo " "
+      echo "cleaning up ${GITDIR}..."
+      git --git-dir="${REPODIR}/${REPO}.git" repack -a -d           || exit 1
+      git --git-dir="${REPODIR}/${REPO}.git" gc --aggressive --auto || exit 1
+   fi
+done
+
+# end of script
