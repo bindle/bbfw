@@ -182,10 +182,21 @@ report_generate_project_summary()
 {
    report_set_project_vars "${1}"
    echo "   generating project summary for ${REPO}..." 1>&2
-   PROJCLIENT=`dirname ${REPO}`
+   PROJSCOPE=`dirname ${REPO}`
    PROJDESC=""
    PROJDESC=`cat "${GITDIR}/description"`
-   test "x${PROJDESC}" != "x" && PROJDESC="<i><b>${PROJDESC}</b></i><br/>"
+   test "x${PROJDESC}" != "x" && PROJDESC="<i>${PROJDESC}</i><br/>"
+   REPORTDIR="${REPO}.git"
+   PROJORG=""
+   while test "x${REPORTDIR}" != "x." && test "x${PROJORG}" == "x";do
+      if test -f "${REPORT_REPODIR}/${REPORTDIR}/.report";then
+         PROJORG=`grep -i ORGANIZATION "${REPORT_REPODIR}/${REPORTDIR}/.report" |awk -F= '{print$2}'`
+      fi
+      REPORTDIR=`dirname ${REPORTDIR}`
+   done
+   if test "x${PROJORG}" != "x";then
+      PROJORG="Organization: <i>${PROJORG}</i><br/>"
+   fi
    FIRSTACTIVITY=`git --git-dir="${GITDIR}" log --quiet --date=short --pretty="format:%ad" --reverse ${HEAD} |head -1`
    LASTACTIVITY=`git --git-dir="${GITDIR}"  log --quiet --date=short --pretty="format:%ad" -n1 ${HEAD}^..${HEAD}`
    PROJANCHORS="Project_Statistics Project_Line_Counts Project_ChangeLog"
@@ -199,11 +210,14 @@ report_generate_project_summary()
       <p>
       <b>${PROJNAME}</b><br/>
       ${PROJDESC}
-      Client: <i>${PROJCLIENT}</i>
-      <br/>Active: <i>${FIRSTACTIVITY} to ${LASTACTIVITY}</i>
-      <br/>Project Links:<i>
+      ${PROJORG}
+      Scope: <i>${PROJSCOPE}</i><br/>
+      Active: <i>${FIRSTACTIVITY} to ${LASTACTIVITY}</i><br/>
+      Project Links:
+      <i>
       ${LINKS}
       <a href='${PROJURL}' style='color:#660066;text-decoration:none;'>Source Code</a>
+      </i>
       </p>
 EOF
 }
