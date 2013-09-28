@@ -34,9 +34,19 @@
 #
 
 # sets script/package information
+PROGRAM_NAME=`basename ${0}`
 PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
 PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+
+
+# If possible, log events in /var/log/messages:
+PROG=slackware-network-check.sh
+if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
+  LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
+else
+  LOGGER="/usr/bin/sed -e \"s/^/${PROG}: /g\""
+fi
 
 
 # parses CLI arguments
@@ -45,7 +55,7 @@ for FLAG in ${@};do
       echo "Usage: ${0} <address> <address> ... <address>"
       exit 0
    elif test "x${FLAG}" == "x--version";then
-      echo "git-proj-stats.sh (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+      echo "${PROGRAM_NAME} (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
       echo "Copyright 2013 Bindle Binaries <${PACKAGE_BUGREPORT}>."
       echo ""
       exit 0
@@ -66,27 +76,31 @@ fi
 /bin/ping -c 1 ${PING_HOST} > /dev/null 2>&1
 if test $? -ne 0;then
    PING_FAILED=yes
+   echo "${PROGRAM_NAME}: Unable to ping remote IPv4 host." 2>&1 | $LOGGER
 fi
 
 
-# tests IPv4 Connectivity
+# tests IPv6 Connectivity
 /bin/ping6 -c 1 ${PING_HOST} > /dev/null 2>&1
 if test $? -ne 0;then
    PING_FAILED=yes
+   echo "${PROGRAM_NAME}: Unable to ping remote IPv6 host."  2>&1 | $LOGGER
 fi
 
 
 # restart network layers
 if test "x${PING_FAILED}" != "xno";then
    if test -x /etc/rc.d/rc.inet1;then
-      /etc/rc.d/rc.inet1 stop
-      sleep 10
-      /etc/rc.d/rc.inet1 start
+      echo "restarting network interfaces"  2>&1 | $LOGGER
+      /etc/rc.d/rc.inet1 stop               2>&1 | $LOGGER
+      sleep 10                              2>&1 | $LOGGER
+      /etc/rc.d/rc.inet1 start              2>&1 | $LOGGER
    fi
    if test -x /etc/rc.d/rc.firewall;then
-      /etc/rc.d/rc.firewall stop
-      sleep 10
-      /etc/rc.d/rc.firewall start
+      echo "restarting fireall rules"       2>&1 | $LOGGER
+      /etc/rc.d/rc.firewall stop            2>&1 | $LOGGER
+      sleep 10                              2>&1 | $LOGGER
+      /etc/rc.d/rc.firewall start           2>&1 | $LOGGER
    fi
 fi
 
