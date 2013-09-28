@@ -60,8 +60,9 @@ RSYNC_FLAGS="-a --delete --exclude source"
 
 #SUBDIRS=("${SUBDIRS[@]}" "slackware-13.37")
 #SUBDIRS=("${SUBDIRS[@]}" "slackware64-13.37")
-#SUBDIRS=("${SUBDIRS[@]}" "slackware64-14.0")
+SUBDIRS=("${SUBDIRS[@]}" "slackware-14.0")
 SUBDIRS=("${SUBDIRS[@]}" "slackware-current")
+SUBDIRS=("${SUBDIRS[@]}" "slackware64-14.0")
 SUBDIRS=("${SUBDIRS[@]}" "slackware64-current")
 
 for SUBDIR in ${SUBDIRS[@]}; do
