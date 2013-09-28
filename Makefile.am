@@ -70,9 +70,9 @@ sbin_SCRIPTS				= src/git-proj-cleanup.sh \
 					  src/git-proj-stats.sh \
 					  src/pub-generate-readme.sh \
 					  src/pub-rsync-remotes.sh \
-					  src/slackware-network-check.sh \
-					  src/slackware-sync-auth.sh \
-					  src/slackware-update-mirrors.sh
+					  src/slack-net-check.sh \
+					  src/slack-sync-auth.sh \
+					  src/slack-update-mirrors.sh
 
 
 # lists
@@ -85,9 +85,9 @@ EXTRA_DIST				= src/bindleadmin-script.profile.in \
 					  src/git-proj-stats.sh.in \
 					  src/pub-generate-readme.sh.in \
 					  src/pub-rsync-remotes.sh.in \
-					  src/slackware-network-check.sh.in \
-					  src/slackware-sync-auth.sh.in \
-					  src/slackware-update-mirrors.sh.in
+					  src/slack-net-check.sh.in \
+					  src/slack-sync-auth.sh.in \
+					  src/slack-update-mirrors.sh.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -125,13 +125,13 @@ src/pub-generate-readme.sh: Makefile src/pub-generate-readme.sh.in
 src/pub-rsync-remotes.sh: Makefile src/pub-rsync-remotes.sh.in
 	@$(do_subst_fn)
 
-src/slackware-network-check.sh: Makefile src/slackware-network-check.sh.in
+src/slack-net-check.sh: Makefile src/slack-net-check.sh.in
 	@$(do_subst_fn)
 
-src/slackware-sync-auth.sh: Makefile src/slackware-sync-auth.sh.in
+src/slack-sync-auth.sh: Makefile src/slack-sync-auth.sh.in
 	@$(do_subst_fn)
 
-src/slackware-update-mirrors.sh: Makefile src/slackware-update-mirrors.sh.in
+src/slack-update-mirrors.sh: Makefile src/slack-update-mirrors.sh.in
 	@$(do_subst_fn)
 
 
