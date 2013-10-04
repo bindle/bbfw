@@ -53,6 +53,9 @@ AM_MAKEINFOFLAGS                        = --no-split
 DEFS					=
 
 
+LXCDIR					?= /var/lib/lxc
+
+
 # automake targets
 check_PROGRAMS				=
 doc_DATA				=
@@ -114,6 +117,8 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 
 
 # custom targets
+.PHONY: install-lxc
+
 src/bindleadmin-script.profile: Makefile src/bindleadmin-script.profile.in
 	@$(do_subst_dt)
 
@@ -143,6 +148,9 @@ src/slack-sync-auth.sh: Makefile src/slack-sync-auth.sh.in
 
 src/slack-update-mirrors.sh: Makefile src/slack-update-mirrors.sh.in
 	@$(do_subst_fn)
+
+install-lxc: install
+	for LXC in `ls $(LXCDIR)`;do $(MAKE) DESTDIR=/var/lib/lxc/$${LXC}/rootfs install;done
 
 
 # local targets
