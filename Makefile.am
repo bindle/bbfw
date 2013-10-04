@@ -66,11 +66,13 @@ noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				= src/bindleadmin-script.profile
-sbin_SCRIPTS				= src/git-proj-cleanup.sh \
+sbin_SCRIPTS				= src/cronmail.sh \
+					  src/git-proj-cleanup.sh \
 					  src/git-proj-stats.sh \
 					  src/pub-generate-readme.sh \
 					  src/pub-rsync-remotes.sh \
 					  src/slack-net-check.sh \
+					  src/slack-pkg-audit.sh \
 					  src/slack-sync-auth.sh \
 					  src/slack-update-mirrors.sh
 
@@ -81,11 +83,13 @@ TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
 EXTRA_DIST				= src/bindleadmin-script.profile.in \
+					  src/cronmail.sh.in \
 					  src/git-proj-cleanup.sh.in \
 					  src/git-proj-stats.sh.in \
 					  src/pub-generate-readme.sh.in \
 					  src/pub-rsync-remotes.sh.in \
 					  src/slack-net-check.sh.in \
+					  src/slack-pkg-audit.sh.in \
 					  src/slack-sync-auth.sh.in \
 					  src/slack-update-mirrors.sh.in
 CLEANFILES				= \
@@ -113,6 +117,9 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 src/bindleadmin-script.profile: Makefile src/bindleadmin-script.profile.in
 	@$(do_subst_dt)
 
+src/cronmail.sh: Makefile src/cronmail.sh.in
+	@$(do_subst_fn)
+
 src/git-proj-cleanup.sh: Makefile src/git-proj-cleanup.sh.in
 	@$(do_subst_fn)
 
@@ -120,6 +127,9 @@ src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
 	@$(do_subst_fn)
 
 src/pub-generate-readme.sh: Makefile src/pub-generate-readme.sh.in
+	@$(do_subst_fn)
+
+src/slack-pkg-audit.sh: Makefile src/slack-pkg-audit.sh.in
 	@$(do_subst_fn)
 
 src/pub-rsync-remotes.sh: Makefile src/pub-rsync-remotes.sh.in
