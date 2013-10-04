@@ -41,11 +41,10 @@ PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
 
 
 # If possible, log events in /var/log/messages:
-PROG=slackware-network-check.sh
 if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
-  LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
+  LOGGER="/usr/bin/logger -s -t ${PROGRAM_NAME}[$$]"
 else
-  LOGGER="/usr/bin/sed -e \"s/^/${PROG}: /g\""
+  LOGGER="/usr/bin/sed -e \"s/^/${PROGRAM_NAME}: /g\""
 fi
 
 
