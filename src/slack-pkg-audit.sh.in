@@ -68,17 +68,32 @@ done
    -default_answer=n \
    -batch=on \
    -spinning=off \
-   update > /dev/null
+   update > /dev/null 2>&1
 
 
-/usr/sbin/slackpkg \
-   -dialog=off \
-   -default_answer=n \
-   -batch=on \
-   -spinning=off \
-   upgrade-all 2>&1 \
-   | /usr/bin/egrep -v '^$| ' \
-   | /usr/bin/sed -e 's/^/upgrade available: /g' \
-   | ${LOGGER} 2>&1
+if test $# -eq 0;then
+   /usr/sbin/slackpkg \
+      -dialog=off \
+      -default_answer=n \
+      -batch=on \
+      -spinning=off \
+      upgrade-all 2>&1 \
+      | /usr/bin/egrep -v '^$| ' \
+      | /usr/bin/sed -e 's/^/upgrade available: /g' \
+      | ${LOGGER} 2>&1
+else
+   CRONMAIL="`dirname ${0}`/cronmail.sh"
+   SUBJECT="Slackware Package Audit (`hostname`)"
+   /usr/sbin/slackpkg \
+      -dialog=off \
+      -default_answer=n \
+      -batch=on \
+      -spinning=off \
+      upgrade-all 2>&1 \
+      | /usr/bin/egrep -v '^$| ' \
+      | /usr/bin/sed -e 's/^/upgrade available: /g' \
+      | ${CRONMAIL} "${SUBJECT}" $@
+fi
+
 
 # end of script
