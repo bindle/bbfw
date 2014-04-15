@@ -5,13 +5,13 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>EDEBB115-4912-41E8-A4C7-F627106040C2</string>
+	<string>B31C7F14-0DC2-472D-A67B-34164633C301</string>
 	<key>IDESourceControlProjectName</key>
 	<string>bindleadmin</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>C45DC694-24BB-4257-8025-63A2E3120BBC</key>
-		<string>syzdek@flatbox.office.bindlebinaries.com:/pub/scm/com.bindlebinaries/bindleadmin.git</string>
+		<key>775CD5FB-BDCC-4FF2-BA8E-4C36CAF457D2</key>
+		<string>syzdek@scm.prv.anc.bindlebinaries.com:/pub/scm/com.bindlebinaries/bindleadmin.git</string>
 		<key>F4E86893-3519-40A6-A0F1-AE4133C9FE27</key>
 		<string>git://github.com/bindle/bindletools.git</string>
 	</dict>
@@ -19,24 +19,24 @@
 	<string>bindleadmin.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>C45DC694-24BB-4257-8025-63A2E3120BBC</key>
+		<key>775CD5FB-BDCC-4FF2-BA8E-4C36CAF457D2</key>
 		<string>../..</string>
 		<key>F4E86893-3519-40A6-A0F1-AE4133C9FE27</key>
 		<string>../../contrib/bindletools</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>syzdek@flatbox.office.bindlebinaries.com:/pub/scm/com.bindlebinaries/bindleadmin.git</string>
+	<string>syzdek@scm.prv.anc.bindlebinaries.com:/pub/scm/com.bindlebinaries/bindleadmin.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>C45DC694-24BB-4257-8025-63A2E3120BBC</string>
+	<string>775CD5FB-BDCC-4FF2-BA8E-4C36CAF457D2</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>C45DC694-24BB-4257-8025-63A2E3120BBC</string>
+			<string>775CD5FB-BDCC-4FF2-BA8E-4C36CAF457D2</string>
 			<key>IDESourceControlWCCName</key>
 			<string>bindleadmin</string>
 		</dict>
