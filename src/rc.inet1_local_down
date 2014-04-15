@@ -1,0 +1,210 @@
+#! /bin/sh
+#
+#   Bindle Binaries Admin Tools
+#   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_START@
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of Bindle Binaries nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BINDLE BINARIES BE LIABLE FOR
+#   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_END@
+#
+
+###########
+# LOGGING #
+###########
+
+# If possible, log events in /var/log/messages:
+PROG=rc.inet1_local
+if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
+  LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
+else # output to stdout/stderr:
+  LOGGER="/usr/bin/sed -e \"s/^/${PROG}: /g\""
+fi
+
+
+print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
+print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
+
+
+#####################
+# GATEWAY FUNCTIONS #
+#####################
+
+# Function to start the network:
+start()
+{
+   # Load Kernel Modules
+   echo "loading modules..."
+   /sbin/modprobe 8139cp
+   /sbin/modprobe ipv6
+   /sbin/modprobe 8021q
+
+
+   # Interface: lo
+   print_up "lo"
+   /usr/sbin/ip link set lo up
+   /usr/sbin/ip addr add 127.0.0.1/8 dev lo
+
+
+   # interface: eth0
+   print_up "eth0"
+   /usr/sbin/ip link set                    eth0 up
+   /sbin/sysctl -q -w net.ipv6.conf.eth0.disable_ipv6=0
+
+
+   # Interface: eth1
+   print_up eth1
+   /usr/sbin/ip link set                    eth1 up
+   /sbin/sysctl -q -w net.ipv6.conf.eth1.disable_ipv6=1
+
+
+   # Interface: eth1.42
+   print_up eth1.42
+   /sbin/vconfig add eth1 42
+   /usr/sbin/ip link set eth1.42 up
+   /usr/sbin/ip addr add 63.140.112.161/28       dev eth1.42
+
+
+   # Interface: eth1.81
+   print_up eth1.81
+   /sbin/vconfig add eth1 81
+   /usr/sbin/ip link set eth1.81 up
+   /usr/sbin/ip addr add 10.19.81.2/25           dev eth1.81
+   /usr/sbin/ip addr add 2001:470:ea85:81::2/64  dev eth1.81
+
+
+   # Routes
+   echo "adding routes"
+   /usr/sbin/ip route add 127.0.0.0/8                   dev lo
+   /usr/sbin/ip route add default    via 63.140.112.174 dev eth1.42
+   /usr/sbin/ip route add 10.0.0.0/8 via 10.19.81.1     dev eth1.81
+   /usr/sbin/ip route add default    via fe80::1        dev eth1.42
+
+
+   # enable forwarding
+   echo "enabling forwarding"
+   echo 1 > /proc/sys/net/ipv4/ip_forward
+   echo 1 >  /proc/sys/net/ipv6/conf/all/forwarding
+}
+
+
+# Function to stop the network:
+stop()
+{
+   # disabling forwarding
+   echo "disabling forwarding..."
+   echo 0 > /proc/sys/net/ipv4/ip_forward
+   echo 0 >  /proc/sys/net/ipv6/conf/all/forwarding
+
+
+   # Routes
+   echo "removing routes..."
+   /usr/sbin/ip -6 route flush all
+   /usr/sbin/ip -4 route flush all
+
+
+   # delete tunnels
+   for NETDEV in `/usr/sbin/ip tunnel show |cut -d: -f1`;do
+      print_down "${NETDEV}"
+      /usr/sbin/ip -4 addr flush dev ${NETDEV}
+      /usr/sbin/ip -6 addr flush dev ${NETDEV}
+      /usr/sbin/ip    tun  del       ${NETDEV}
+   done
+
+
+   # purge vlans
+   for NETDEV in `ls /proc/net/vlan/ |grep -v '^config$'`;do
+      print_down "${NETDEV}"
+      /usr/sbin/ip -4 addr flush dev ${NETDEV}
+      /usr/sbin/ip -6 addr flush dev ${NETDEV}
+      /sbin/vconfig rem ${NETDEV} > /dev/null
+   done
+
+
+   # down all network interfaces
+   for NETDEV in `cut -d: -f1 /proc/net/dev |grep -v '|' |sort`;do
+      print_down "${NETDEV}"
+      /usr/sbin/ip -4 addr flush dev ${NETDEV}
+      /usr/sbin/ip -6 addr flush dev ${NETDEV}
+      /usr/sbin/ip    link set   dev ${NETDEV} down
+   done
+
+
+   # ovs-vswitchd
+   echo "stopping vSwitch deamon..."
+   if test -f /var/run/openvswitch/ovs-vswitchd.pid;then
+      kill `cat /var/run/openvswitch/ovs-vswitchd.pid`
+      sleep 1
+      if test -f /var/run/openvswitch/ovs-vswitchd.pid;then
+         kill -9 `cat /var/run/openvswitch/ovsdb-vswitchd.pid`
+      fi
+   fi
+
+
+   # ovsdb-server
+   echo "stopping ovsdb-server..."
+   if test -f /var/run/openvswitch/ovsdb-server.pid;then
+      kill `cat /var/run/openvswitch/ovsdb-server.pid`
+      sleep 1
+      if test -f /var/run/openvswitch/ovsdb-server.pid;then
+         kill -9 `cat /var/run/openvswitch/ovsdb-server.pid`
+      fi
+   fi
+
+   # removes modules
+   echo "unloading modules..."
+   /sbin/modprobe -r openvswitch
+}
+
+
+############
+### MAIN ###
+############
+
+case "$1" in
+   'start') # "start" brings up all configured interfaces:
+   start 2>&1 | $LOGGER
+   ;;
+
+   'stop') # "stop" takes down all configured interfaces:
+   stop 2>&1 | $LOGGER
+   ;;
+
+   'restart') # "restart" restarts the network:
+   stop 2>&1 | $LOGGER
+   sleep 2
+   start 2>&1 | $LOGGER
+   exit 0
+   ;;
+
+   *) # The default is to bring up all configured interfaces:
+   start 2>&1 | $LOGGER
+   ;;
+esac
+
+
+# End of /etc/rc.d/rc.inet1

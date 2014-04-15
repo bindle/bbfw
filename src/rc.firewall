@@ -1,0 +1,169 @@
+#!/bin/sh
+#
+#   Bindle Binaries Admin Tools
+#   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_START@
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of Bindle Binaries nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BINDLE BINARIES BE LIABLE FOR
+#   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_END@
+#
+
+###########
+# LOGGING #
+###########
+
+# If possible, log events in /var/log/messages:
+PROG=rc.firewall
+if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
+  LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
+else # output to stdout/stderr:
+  LOGGER="/usr/bin/sed -e \"s/^/${PROG}: /g\""
+fi
+
+
+# Function to start the network:
+start() {
+   # local rules
+   if test -f /etc/rc.d/rc.firewall.rules;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 rules (local)"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
+   fi
+   if test -f /etc/rc.d/rc.firewall.rules4;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv4 rules (local)"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
+   fi
+   if test -f /etc/rc.d/rc.firewall.rules6;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv6 rules (local)"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
+   fi
+
+
+   # LXC rules
+   if test -d /var/lib/lxc/;then
+      for LXC in `ls /var/lib/lxc/`;do
+         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
+            echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 rules (LXC: ${LXC})"
+            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
+            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
+         fi
+         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4;then
+            echo "/etc/rc.d/rc.firewall:  adding IPv4 rules (LXC: ${LXC})"
+            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
+         fi
+         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6;then
+            echo "/etc/rc.d/rc.firewall:  adding IPv6 rules (LXC: ${LXC})"
+            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
+         fi
+      done
+   fi
+
+
+   echo "/etc/rc.d/rc.firewall:  adding IPv4 INPUT rules"
+   /usr/sbin/iptables  -t filter -P INPUT DROP
+   /usr/sbin/iptables  -t filter -I INPUT           -s 10.19.80.1/32                   -j ACCEPT
+   /usr/sbin/iptables  -t filter -I INPUT           -s 10.19.80.33/32                  -j ACCEPT
+   /usr/sbin/iptables  -t filter -I INPUT           -s 63.140.112.161/32               -j ACCEPT
+   /usr/sbin/iptables  -t filter -I INPUT           -s 127.0.0.0/8                     -j ACCEPT
+   /usr/sbin/iptables  -t filter -I INPUT -p icmp   -s 0.0.0.0/0                       -j ACCEPT
+   /usr/sbin/iptables  -t filter -I INPUT -m conntrack --ctstate ESTABLISHED,RELATED   -j ACCEPT
+   /usr/sbin/iptables  -t filter -I INPUT -p tcp --dport ident                         -j REJECT --reject-with tcp-reset
+   /usr/sbin/iptables  -t filter -A INPUT -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop input: "
+
+
+   echo "/etc/rc.d/rc.firewall:  adding IPv4 FORWARD rules"
+   /usr/sbin/iptables  -t filter -P FORWARD DROP
+   /usr/sbin/iptables  -t filter -I FORWARD -p icmp   -s 0.0.0.0/0                        -j ACCEPT
+   /usr/sbin/iptables  -t filter -I FORWARD -m conntrack --ctstate ESTABLISHED,RELATED    -j ACCEPT
+   /usr/sbin/iptables  -t filter -I FORWARD -p tcp --dport ident                          -j REJECT --reject-with tcp-reset
+   /usr/sbin/iptables  -t filter -A FORWARD -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop forward: "
+
+
+   echo "/etc/rc.d/rc.firewall:  adding IPv6 INPUT rules"
+   /usr/sbin/ip6tables -t filter -P INPUT DROP
+   /usr/sbin/ip6tables -t filter -I INPUT           -s 2001:470:b:84a::1/128                     -j ACCEPT
+   /usr/sbin/ip6tables -t filter -I INPUT           -s 2001:470:b:84a::33/128                    -j ACCEPT
+   /usr/sbin/ip6tables -t filter -I INPUT           -s 2001:470:ea85:c::1/128                    -j ACCEPT
+   /usr/sbin/ip6tables -t filter -I INPUT           -s ::1/128                                   -j ACCEPT
+   /usr/sbin/ip6tables -t filter -I INPUT -p icmpv6 -s ::/0                                      -j ACCEPT
+   /usr/sbin/ip6tables -t filter -I INPUT -m conntrack --ctstate ESTABLISHED,RELATED             -j ACCEPT
+   /usr/sbin/ip6tables -t filter -I INPUT -p tcp --dport ident                                   -j REJECT --reject-with tcp-reset
+   /usr/sbin/ip6tables -t filter -A INPUT -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop input: "
+
+
+   echo "/etc/rc.d/rc.firewall:  adding IPv6 FORWARD rules"
+   /usr/sbin/ip6tables -t filter -P FORWARD DROP
+   /usr/sbin/ip6tables -t filter -I FORWARD -p icmpv6 -s ::/0                          -j ACCEPT
+   /usr/sbin/ip6tables -t filter -I FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+   /usr/sbin/ip6tables -t filter -A FORWARD -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop forward: "
+}
+
+
+# Function to stop the network:
+stop() {
+   for TABLE in filter nat;do
+      echo "Flushing rules from ${TABLE} table (IPv4)"
+      for CHAIN in `/usr/sbin/iptables -t ${TABLE} -L -n |grep '^Chain ' |awk '{print$2}'`;do
+         /usr/sbin/iptables -t ${TABLE} -P ${CHAIN} ACCEPT
+      done
+      /usr/sbin/iptables -t ${TABLE} -F
+   done
+   for TABLE in filter;do
+      echo "Flushing rules from ${TABLE} table (IPv6)"
+      for CHAIN in `/usr/sbin/ip6tables -t ${TABLE} -L -n |grep '^Chain ' |awk '{print$2}'`;do
+         /usr/sbin/ip6tables -t ${TABLE} -P ${CHAIN} ACCEPT
+      done
+      /usr/sbin/ip6tables -t ${TABLE} -F
+   done
+}
+
+
+############
+### MAIN ###
+############
+
+case "$1" in
+   'start') # "start" brings up all configured interfaces:
+      start 2>&1 | $LOGGER
+   ;;
+
+   'stop') # "stop" takes down all configured interfaces:
+      stop  2>&1 | $LOGGER
+   ;;
+
+   'restart') # "restart" restarts the network:
+      stop  2>&1 | $LOGGER
+      start 2>&1 | $LOGGER
+   ;;
+
+   *) # The default is to bring up all configured interfaces:
+     start  2>&1 | $LOGGER
+   ;;
+esac
+
+# End of
