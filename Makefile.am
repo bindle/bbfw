@@ -68,16 +68,16 @@ noinst_HEADERS				=
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
-pkgdata_DATA				= src/bindleadmin-script.profile
-sbin_SCRIPTS				= src/cronmail.sh \
-					  src/git-proj-cleanup.sh \
-					  src/git-proj-stats.sh \
-					  src/pub-generate-readme.sh \
-					  src/pub-rsync-remotes.sh \
-					  src/slack-net-check.sh \
-					  src/slack-pkg-audit.sh \
-					  src/slack-sync-auth.sh \
-					  src/slack-update-mirrors.sh
+pkgdata_DATA				= src/misc/bindleadmin-script.profile
+sbin_SCRIPTS				= src/misc/cronmail.sh \
+					  src/misc/git-proj-cleanup.sh \
+					  src/misc/git-proj-stats.sh \
+					  src/misc/pub-generate-readme.sh \
+					  src/misc/pub-rsync-remotes.sh \
+					  src/slack/slack-net-check.sh \
+					  src/slack/slack-pkg-audit.sh \
+					  src/slack/slack-sync-auth.sh \
+					  src/slack/slack-update-mirrors.sh
 
 
 # lists
@@ -85,16 +85,16 @@ BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
-EXTRA_DIST				= src/bindleadmin-script.profile.in \
-					  src/cronmail.sh.in \
-					  src/git-proj-cleanup.sh.in \
-					  src/git-proj-stats.sh.in \
-					  src/pub-generate-readme.sh.in \
-					  src/pub-rsync-remotes.sh.in \
-					  src/slack-net-check.sh.in \
-					  src/slack-pkg-audit.sh.in \
-					  src/slack-sync-auth.sh.in \
-					  src/slack-update-mirrors.sh.in
+EXTRA_DIST				= src/misc/bindleadmin-script.profile.in \
+					  src/misc/cronmail.sh.in \
+					  src/misc/git-proj-cleanup.sh.in \
+					  src/misc/git-proj-stats.sh.in \
+					  src/misc/pub-generate-readme.sh.in \
+					  src/misc/pub-rsync-remotes.sh.in \
+					  src/slack/slack-net-check.sh.in \
+					  src/slack/slack-pkg-audit.sh.in \
+					  src/slack/slack-sync-auth.sh.in \
+					  src/slack/slack-update-mirrors.sh.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -119,34 +119,34 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 # custom targets
 .PHONY: install-lxc
 
-src/bindleadmin-script.profile: Makefile src/bindleadmin-script.profile.in
+src/misc/bindleadmin-script.profile: Makefile src/misc/bindleadmin-script.profile.in
 	@$(do_subst_dt)
 
-src/cronmail.sh: Makefile src/cronmail.sh.in
+src/misc/cronmail.sh: Makefile src/misc/cronmail.sh.in
 	@$(do_subst_fn)
 
-src/git-proj-cleanup.sh: Makefile src/git-proj-cleanup.sh.in
+src/misc/git-proj-cleanup.sh: Makefile src/misc/git-proj-cleanup.sh.in
 	@$(do_subst_fn)
 
-src/git-proj-stats.sh: Makefile src/git-proj-stats.sh.in
+src/misc/git-proj-stats.sh: Makefile src/misc/git-proj-stats.sh.in
 	@$(do_subst_fn)
 
-src/pub-generate-readme.sh: Makefile src/pub-generate-readme.sh.in
+src/misc/pub-generate-readme.sh: Makefile src/misc/pub-generate-readme.sh.in
 	@$(do_subst_fn)
 
-src/slack-pkg-audit.sh: Makefile src/slack-pkg-audit.sh.in
+src/misc/pub-rsync-remotes.sh: Makefile src/misc/pub-rsync-remotes.sh.in
 	@$(do_subst_fn)
 
-src/pub-rsync-remotes.sh: Makefile src/pub-rsync-remotes.sh.in
+src/slack/slack-pkg-audit.sh: Makefile src/slack/slack-pkg-audit.sh.in
 	@$(do_subst_fn)
 
-src/slack-net-check.sh: Makefile src/slack-net-check.sh.in
+src/slack/slack-net-check.sh: Makefile src/slack/slack-net-check.sh.in
 	@$(do_subst_fn)
 
-src/slack-sync-auth.sh: Makefile src/slack-sync-auth.sh.in
+src/slack/slack-sync-auth.sh: Makefile src/slack/slack-sync-auth.sh.in
 	@$(do_subst_fn)
 
-src/slack-update-mirrors.sh: Makefile src/slack-update-mirrors.sh.in
+src/slack/slack-update-mirrors.sh: Makefile src/slack/slack-update-mirrors.sh.in
 	@$(do_subst_fn)
 
 install-lxc: install

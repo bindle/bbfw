@@ -48,6 +48,38 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		A0664F0E18FD8BEF00A1AC67 /* slack */ = {
+			isa = PBXGroup;
+			children = (
+				A0664F0218FD87D400A1AC67 /* rc.firewall */,
+				A0664F0318FD87D400A1AC67 /* rc.firewall.rules */,
+				A0664F0418FD87D400A1AC67 /* rc.firewall.rules4 */,
+				A0664F0518FD87D400A1AC67 /* rc.firewall.rules6 */,
+				A0664F0618FD87D400A1AC67 /* rc.inet1_local */,
+				A0664F0718FD87D400A1AC67 /* rc.inet1_local_down.example */,
+				A0664F0818FD87D400A1AC67 /* rc.inet1_local_up.example */,
+				A0664F0918FD87D400A1AC67 /* rc.inet1.conf */,
+				A0664F0A18FD87D400A1AC67 /* slack-net-check.sh.in */,
+				A0664F0B18FD87D400A1AC67 /* slack-pkg-audit.sh.in */,
+				A0664F0C18FD87D400A1AC67 /* slack-sync-auth.sh.in */,
+				A0664F0D18FD87D400A1AC67 /* slack-update-mirrors.sh.in */,
+			);
+			path = slack;
+			sourceTree = "<group>";
+		};
+		A0664F0F18FD8CB700A1AC67 /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				A0664F0118FD87D400A1AC67 /* cronmail.sh.in */,
+				A01F6FF717C4E70F00C4789F /* bindleadmin-script.profile.in */,
+				A0519DB817CE458900400A39 /* git-proj-cleanup.sh.in */,
+				A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */,
+				A0D52C9F17C2E486001352CA /* pub-generate-readme.sh.in */,
+				A0D52CA017C2E486001352CA /* pub-rsync-remotes.sh.in */,
+			);
+			path = misc;
+			sourceTree = "<group>";
+		};
 		A0D52C9217C2E41D001352CA /* contrib */ = {
 			isa = PBXGroup;
 			children = (
@@ -67,24 +99,8 @@
 		A0D52C9C17C2E486001352CA /* src */ = {
 			isa = PBXGroup;
 			children = (
-				A0664F0118FD87D400A1AC67 /* cronmail.sh.in */,
-				A0664F0218FD87D400A1AC67 /* rc.firewall */,
-				A0664F0318FD87D400A1AC67 /* rc.firewall.rules */,
-				A0664F0418FD87D400A1AC67 /* rc.firewall.rules4 */,
-				A0664F0518FD87D400A1AC67 /* rc.firewall.rules6 */,
-				A0664F0618FD87D400A1AC67 /* rc.inet1_local */,
-				A0664F0718FD87D400A1AC67 /* rc.inet1_local_down.example */,
-				A0664F0818FD87D400A1AC67 /* rc.inet1_local_up.example */,
-				A0664F0918FD87D400A1AC67 /* rc.inet1.conf */,
-				A0664F0A18FD87D400A1AC67 /* slack-net-check.sh.in */,
-				A0664F0B18FD87D400A1AC67 /* slack-pkg-audit.sh.in */,
-				A0664F0C18FD87D400A1AC67 /* slack-sync-auth.sh.in */,
-				A0664F0D18FD87D400A1AC67 /* slack-update-mirrors.sh.in */,
-				A01F6FF717C4E70F00C4789F /* bindleadmin-script.profile.in */,
-				A0519DB817CE458900400A39 /* git-proj-cleanup.sh.in */,
-				A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */,
-				A0D52C9F17C2E486001352CA /* pub-generate-readme.sh.in */,
-				A0D52CA017C2E486001352CA /* pub-rsync-remotes.sh.in */,
+				A0664F0F18FD8CB700A1AC67 /* misc */,
+				A0664F0E18FD8BEF00A1AC67 /* slack */,
 			);
 			path = src;
 			sourceTree = "<group>";
