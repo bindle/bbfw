@@ -37,12 +37,19 @@
 # LOGGING #
 ###########
 
+# sets script/package information
+PROGRAM_NAME=`basename ${0}`
+PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+
+
 # If possible, log events in /var/log/messages:
 PROG=rc.inet1_local
 if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
   LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
 else # output to stdout/stderr:
-  LOGGER="/usr/bin/sed -e \"s/^/${PROG}: /g\""
+  LOGGER="/usr/bin/sed -e s/^/${PROG}:/g"
 fi
 
 
@@ -50,9 +57,9 @@ print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
 print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
 
 
-#####################
-# GATEWAY FUNCTIONS #
-#####################
+#############
+# FUNCTIONS #
+#############
 
 # Function to start the network:
 start()
@@ -132,6 +139,7 @@ stop()
 ### MAIN ###
 ############
 
+echo " ${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER 2>&1
 case "$1" in
    'start') # "start" brings up all configured interfaces:
    start 2>&1 | $LOGGER
@@ -145,6 +153,15 @@ case "$1" in
    stop 2>&1 | $LOGGER
    sleep 2
    start 2>&1 | $LOGGER
+   exit 0
+   ;;
+
+   # automake's required flags
+   '--help')
+   echo "Usage: $0 [ start | stop | restart ]"
+   exit 0
+   ;;
+   '--version')
    exit 0
    ;;
 

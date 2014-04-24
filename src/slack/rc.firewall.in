@@ -45,14 +45,25 @@
 # LOGGING #
 ###########
 
+# sets script/package information
+PROGRAM_NAME=`basename ${0}`
+PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+
+
 # If possible, log events in /var/log/messages:
 PROG=rc.firewall
 if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
   LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
 else # output to stdout/stderr:
-  LOGGER="/usr/bin/sed -e \"s/^/${PROG}: /g\""
+  LOGGER="/usr/bin/sed -e s/^/${PROG}:/g"
 fi
 
+
+#############
+# FUNCTIONS #
+#############
 
 # Function to start the network:
 start() {
@@ -131,6 +142,7 @@ stop() {
 ### MAIN ###
 ############
 
+echo " ${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER 2>&1
 case "$1" in
    'start') # "start" brings up all configured interfaces:
       start 2>&1 | $LOGGER
@@ -143,6 +155,15 @@ case "$1" in
    'restart') # "restart" restarts the network:
       stop  2>&1 | $LOGGER
       start 2>&1 | $LOGGER
+   ;;
+
+   # automake's required flags
+   '--help')
+   echo "Usage: $0 [ start | stop | restart ]"
+   exit 0
+   ;;
+   '--version')
+   exit 0
    ;;
 
    *) # The default is to bring up all configured interfaces:

@@ -48,11 +48,9 @@ AC_SUBST([RELEASE_MONTH],["April 2011"])
 #    Age        -- How many seqential past API versions is supported by
 #                  this implementation
 # Format => Current:Revision:Age
-AC_SUBST([LIB_VERSION_CURRENT],  [0])
-AC_SUBST([LIB_VERSION_REVISION], [0])
-AC_SUBST([LIB_VERSION_AGE],      [0])
-AC_SUBST([LIB_VERSION_INFO],     [${LIB_VERSION_CURRENT}:${LIB_VERSION_REVISION}:${LIB_VERSION_AGE}])
-AC_SUBST([LIB_RELEASE_INFO],     [${LIB_VERSION_CURRENT}]) # used by Win32 DLLs
+# Convenience macro:
+#    AC_BINDLE_LIBTOOL_VERSION_INFO(current, revision, age)
+AC_BINDLE_LIBTOOL_VERSION_INFO(0, 0, 0)
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([build-aux/git-tar-name.txt])
@@ -71,7 +69,7 @@ AM_INIT_AUTOMAKE(gnu std-options subdir-objects)
 # Compilers
 AC_PROG_CC
 #AC_PROG_OBJC
-#AC_PROG_CXX
+AC_PROG_CXX
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_USE_SYSTEM_EXTENSIONS # replaces AC_AIX AC_GNU_SOURCE AC_MINIX
@@ -97,10 +95,12 @@ AC_PROG_LN_S
 LT_INIT(dlopen disable-fast-install win32-dll)
 
 # initiates bindle tools macros
-AC_BINDLE([contrib/bindletools])
+AC_BINDLE(contrib/bindletools)
 
 # custom configure options
 AC_BINDLE_ENABLE_WARNINGS
+AC_BINDLE_WITH_PERL
+AC_BINDLEADMIN_SLACKWARE
 
 # enables getopt_long if header and functions were found
 AC_CHECK_HEADERS([getopt.h], [AC_DEFINE_UNQUOTED(USE_GETOPT_LONG, 1, [Use GNU getopt_long])])
@@ -115,6 +115,10 @@ AC_OUTPUT
 # Show local config
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Bindle Binaries Admin Tools $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
+AC_MSG_NOTICE([ ])
+AC_MSG_NOTICE([   Features:])
+AC_MSG_NOTICE([      Slackware Version:        ${SLACKWARE_VERSION}])
+AC_MSG_NOTICE([      Slackware Scripts:        ${ENABLE_SLACKWARE}])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Please send suggestions to:   $PACKAGE_BUGREPORT])
 AC_MSG_NOTICE([ ])

@@ -54,6 +54,7 @@ DEFS					=
 
 
 LXCDIR					?= /var/lib/lxc
+slackrcddir				= $(sysconfdir)/etc/rc.d
 
 
 # automake targets
@@ -73,11 +74,7 @@ sbin_SCRIPTS				= src/misc/cronmail.sh \
 					  src/misc/git-proj-cleanup.sh \
 					  src/misc/git-proj-stats.sh \
 					  src/misc/pub-generate-readme.sh \
-					  src/misc/pub-rsync-remotes.sh \
-					  src/slack/slack-net-check.sh \
-					  src/slack/slack-pkg-audit.sh \
-					  src/slack/slack-sync-auth.sh \
-					  src/slack/slack-update-mirrors.sh
+					  src/misc/pub-rsync-remotes.sh
 
 
 # lists
@@ -91,6 +88,17 @@ EXTRA_DIST				= src/misc/bindleadmin-script.profile.in \
 					  src/misc/git-proj-stats.sh.in \
 					  src/misc/pub-generate-readme.sh.in \
 					  src/misc/pub-rsync-remotes.sh.in \
+					  src/slack/rc.firewall.in \
+					  src/slack/rc.firewall.policy-example \
+					  src/slack/rc.firewall.policy4-example \
+					  src/slack/rc.firewall.policy6-example \
+					  src/slack/rc.firewall.rules-example \
+					  src/slack/rc.firewall.rules4-example \
+					  src/slack/rc.firewall.rules6-example \
+					  src/slack/rc.inet1.conf \
+					  src/slack/rc.inet1_local.in \
+					  src/slack/rc.inet1_local_down-example \
+					  src/slack/rc.inet1_local_up-example \
 					  src/slack/slack-net-check.sh.in \
 					  src/slack/slack-pkg-audit.sh.in \
 					  src/slack/slack-sync-auth.sh.in \
@@ -103,14 +111,40 @@ CLEANFILES				= \
 					  $(pkgdata_DATA) \
 					  $(bin_SCRIPTS) \
 					  $(sbin_SCRIPTS) \
+					  $(slackrcd_SCRIPTS) \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.zip
-DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings
+DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 
+
+# conditional targets
+if ENABLE_SLACKWARE
+sbin_SCRIPTS				+= src/slack/slack-net-check.sh \
+					   src/slack/slack-pkg-audit.sh \
+					   src/slack/slack-sync-auth.sh \
+					   src/slack/slack-update-mirrors.sh
+slackrcd_SCRIPTS			=  src/slack/rc.firewall \
+					   src/slack/rc.inet1_local
+slackrcd_DATA				=  src/slack/rc.firewall.policy-example \
+					   src/slack/rc.firewall.policy4-example \
+					   src/slack/rc.firewall.policy6-example \
+					   src/slack/rc.firewall.rules-example \
+					   src/slack/rc.firewall.rules4-example \
+					   src/slack/rc.firewall.rules6-example \
+					   src/slack/rc.inet1.conf \
+					   src/slack/rc.inet1_local_down-example \
+					   src/slack/rc.inet1_local_up-example
+endif
 
 # Makefile includes
-GIT_PACKAGE_VERSION_DIR=build-aux
-SUBST_EXPRESSIONS =
+#GIT_PACKAGE_VERSION_DIR=build-aux
+#SUBST_EXPRESSIONS =
+#include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-autotools.am
+#include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-subst.am
+#include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
+
+GIT_PACKAGE_VERSION_DIR			= include
+SUBST_EXPRESSIONS			=
 include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-autotools.am
 include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-subst.am
 include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
@@ -137,6 +171,12 @@ src/misc/pub-generate-readme.sh: Makefile src/misc/pub-generate-readme.sh.in
 src/misc/pub-rsync-remotes.sh: Makefile src/misc/pub-rsync-remotes.sh.in
 	@$(do_subst_fn)
 
+src/slack/rc.firewall: Makefile src/slack/rc.firewall.in
+	@$(do_subst_fn)
+
+src/slack/rc.inet1_local: Makefile src/slack/rc.inet1_local.in
+	@$(do_subst_fn)
+
 src/slack/slack-pkg-audit.sh: Makefile src/slack/slack-pkg-audit.sh.in
 	@$(do_subst_fn)
 
@@ -157,6 +197,9 @@ install-lxc: install
 install-exec-local:
 
 install-data-local:
+
+install-data-hook:
+	test ! -f $(slackrcddir)/rc.firewall || chmod 755 $(slackrcddir)/rc.firewall
 
 uninstall-local:
 

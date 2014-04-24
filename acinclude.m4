@@ -1,6 +1,6 @@
 #
 #   Bindle Binaries Admin Tools
-#   Copyright (C) 2013 Bindle Binaries <syzdek@bindlebinaries.com>.
+#   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@
 #
@@ -34,5 +34,40 @@
 #   acinclude.m4 - custom m4 macros used by configure.ac
 #
 
+# AC_BINDLEADMIN_SLACKWARE()
+# -----------------------------------
+AC_DEFUN([AC_BINDLEADMIN_SLACKWARE],[dnl
+
+   # display options
+   enableval=""
+   AC_ARG_ENABLE(
+      slackware,
+      [AS_HELP_STRING([--enable-slackware], [enable Slackware specific scripts [default=auto]])],
+      [ ESLACKWARE=$enableval ],
+      [ ESLACKWARE=$enableval ]
+   )
+
+   # determine slackware version
+   SLACKWARE_VERSION="unknown"
+   if test -f /etc/slackware-version;then
+      SLACKWARE_VERSION=`cat /etc/slackware-version`
+   fi
+   KERNEL_NAME=`uname -s`
+
+   # sets options
+   if test "x${ESLACKWARE}" == "xyes";then
+      ENABLE_SLACKWARE=yes
+   elif test "x${ESLACKWARE}" == "xno";then
+      ENABLE_SLACKWARE=no
+   else
+      if test "x${SLACKWARE_VERSION}" == "xunknown" || test "x${KERNEL_NAME}" != "Linux";then
+         ENABLE_SLACKWARE=no
+      else
+         ENABLE_SLACKWARE=yes
+      fi
+   fi
+
+   AM_CONDITIONAL([ENABLE_SLACKWARE], [test "${ENABLE_SLACKWARE}" == "yes"])
+])dnl
 
 # end of m4 file
