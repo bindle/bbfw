@@ -195,7 +195,7 @@ install-lxc: install
 
 if ENABLE_SLACKWARE
 bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
-	rm -Rf slackware-pkg-build
+	sudo rm -Rf slackware-pkg-build
 	$(abs_top_srcdir)/autogen.sh
 	mkdir -p slackware-pkg-build/slackware-package/install
 	cp $(abs_top_srcdir)/src/slack/slack-desc \
@@ -208,8 +208,8 @@ bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DAT
 	cd slackware-pkg-build && $(MAKE) distcheck
 	cd slackware-pkg-build && $(MAKE) DESTDIR=slackware-package install
 	sudo chown -R 0:0 slackware-pkg-build/slackware-package
-	cd slackware-pkg-build/slackware-package && makepkg -l y -p -c n ../../$(@)
-	rm -Rf slackware-pkg-build
+	cd slackware-pkg-build/slackware-package && sudo makepkg -l y -p -c n ../../$(@)
+	sudo rm -Rf slackware-pkg-build
 
 slackware-package: bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz
 endif
@@ -228,5 +228,6 @@ clean-local:
 
 distclean-local:
 	rm -fR $(srcdir)/autom4te.cache
+	rm -fR slackware-pkg-build
 
 # end of automake file
