@@ -12,8 +12,9 @@
 /Makefile.in
 /build-aux/git-package-version
 /libtool
-/bindletools-*.tar.*
-/bindletools-*.zip
+/bindleadmin-*.tar.*
+/bindleadmin-*-noarch-1_bindle.txz
+/bindleadmin-*.zip
 a.out
 aclocal.m4
 autom4te.cache

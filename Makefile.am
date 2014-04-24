@@ -1,6 +1,6 @@
 #
 #   Bindle Binaries Admin Tools
-#   Copyright (C) 2013 Bindle Binaries <syzdek@bindlebinaries.com>.
+#   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@
 #
@@ -59,7 +59,7 @@ slackrcddir				= $(sysconfdir)/etc/rc.d
 
 # automake targets
 check_PROGRAMS				=
-doc_DATA				=
+doc_DATA				= README COPYING ChangeLog AUTHORS
 include_HEADERS				=
 lib_LTLIBRARIES				=
 man_MANS				=
@@ -70,11 +70,7 @@ noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				= src/misc/bindleadmin-script.profile
-sbin_SCRIPTS				= src/misc/cronmail.sh \
-					  src/misc/git-proj-cleanup.sh \
-					  src/misc/git-proj-stats.sh \
-					  src/misc/pub-generate-readme.sh \
-					  src/misc/pub-rsync-remotes.sh
+sbin_SCRIPTS				= src/misc/cronmail.sh
 
 
 # lists
@@ -95,10 +91,11 @@ EXTRA_DIST				= src/misc/bindleadmin-script.profile.in \
 					  src/slack/rc.firewall.rules-example \
 					  src/slack/rc.firewall.rules4-example \
 					  src/slack/rc.firewall.rules6-example \
-					  src/slack/rc.inet1.conf \
+					  src/slack/rc.inet1.conf.new \
 					  src/slack/rc.inet1_local.in \
 					  src/slack/rc.inet1_local_down-example \
 					  src/slack/rc.inet1_local_up-example \
+					  src/slack/slack-desc \
 					  src/slack/slack-net-check.sh.in \
 					  src/slack/slack-pkg-audit.sh.in \
 					  src/slack/slack-sync-auth.sh.in \
@@ -112,7 +109,19 @@ CLEANFILES				= \
 					  $(bin_SCRIPTS) \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
+					  src/misc/cronmail.sh \
+					  src/misc/git-proj-cleanup.sh \
+					  src/misc/git-proj-stats.sh \
+					  src/misc/pub-generate-readme.sh \
+					  src/misc/pub-rsync-remotes.sh \
+					  src/slack/rc.firewall \
+					  src/slack/rc.inet1_local \
+					  src/slack/slack-net-check.sh \
+					  src/slack/slack-pkg-audit.sh \
+					  src/slack/slack-sync-auth.sh \
+					  src/slack/slack-update-mirrors.sh \
 					  @PACKAGE_TARNAME@-*.tar.* \
+					  @PACKAGE_TARNAME@-*.txz \
 					  @PACKAGE_TARNAME@-*.zip
 DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 
@@ -120,9 +129,7 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 # conditional targets
 if ENABLE_SLACKWARE
 sbin_SCRIPTS				+= src/slack/slack-net-check.sh \
-					   src/slack/slack-pkg-audit.sh \
-					   src/slack/slack-sync-auth.sh \
-					   src/slack/slack-update-mirrors.sh
+					   src/slack/slack-pkg-audit.sh
 slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 					   src/slack/rc.inet1_local
 slackrcd_DATA				=  src/slack/rc.firewall.policy-example \
@@ -131,27 +138,21 @@ slackrcd_DATA				=  src/slack/rc.firewall.policy-example \
 					   src/slack/rc.firewall.rules-example \
 					   src/slack/rc.firewall.rules4-example \
 					   src/slack/rc.firewall.rules6-example \
-					   src/slack/rc.inet1.conf \
+					   src/slack/rc.inet1.conf.new \
 					   src/slack/rc.inet1_local_down-example \
 					   src/slack/rc.inet1_local_up-example
 endif
 
 # Makefile includes
-#GIT_PACKAGE_VERSION_DIR=build-aux
-#SUBST_EXPRESSIONS =
-#include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-autotools.am
-#include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-subst.am
-#include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
-
-GIT_PACKAGE_VERSION_DIR			= include
-SUBST_EXPRESSIONS			=
+GIT_PACKAGE_VERSION_DIR=build-aux
+SUBST_EXPRESSIONS =
 include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-autotools.am
 include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-subst.am
 include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 
 
 # custom targets
-.PHONY: install-lxc
+.PHONY: install-lxc slackware-package
 
 src/misc/bindleadmin-script.profile: Makefile src/misc/bindleadmin-script.profile.in
 	@$(do_subst_dt)
@@ -191,6 +192,19 @@ src/slack/slack-update-mirrors.sh: Makefile src/slack/slack-update-mirrors.sh.in
 
 install-lxc: install
 	for LXC in `ls $(LXCDIR)`;do $(MAKE) DESTDIR=/var/lib/lxc/$${LXC}/rootfs install;done
+
+bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
+	@test "x${USER}" = "xroot" || { echo ""; echo "Must be run as root."; echo ""; exit 1; }
+	$(MAKE) distcheck
+	rm -Rf tmp/slackware-package
+	mkdir -p tmp/slackware-package/install
+	cp $(srcdir)/src/slack/slack-desc tmp/slackware-package/install/slack-desc
+	$(MAKE) DESTDIR=tmp/slackware-package install
+	chown -R 0:0 tmp/slackware-package
+	cd tmp/slackware-package && PATH="${PATH}:$(abs_top_srcdir)/build-aux" makepkg -l y -p -c n ../../$(@)
+	rm -Rf tmp/slackware-package
+
+slackware-package: bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz
 
 
 # local targets

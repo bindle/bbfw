@@ -7,12 +7,26 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		A0D52C9A17C2E43D001352CA /* PBXContainerItemProxy */ = {
+		A0D314D219099F29008EDE75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A01156E9175B0118008E66FA;
-			remoteInfo = bindle;
+			remoteGlobalIDString = A0EE9F2318DFE15600CF8788;
+			remoteInfo = "bindle-ios";
+		};
+		A0D314D419099F29008EDE75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A0EE9F1B18DFE10F00CF8788;
+			remoteInfo = "bindle-osx";
+		};
+		A0D314D619099F29008EDE75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A06092F718DF8FC000434E5C;
+			remoteInfo = fdtest;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -28,7 +42,7 @@
 		A0664F0618FD87D400A1AC67 /* rc.inet1_local.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = rc.inet1_local.in; sourceTree = "<group>"; };
 		A0664F0718FD87D400A1AC67 /* rc.inet1_local_down-example */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "rc.inet1_local_down-example"; sourceTree = "<group>"; };
 		A0664F0818FD87D400A1AC67 /* rc.inet1_local_up-example */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "rc.inet1_local_up-example"; sourceTree = "<group>"; };
-		A0664F0918FD87D400A1AC67 /* rc.inet1.conf */ = {isa = PBXFileReference; lastKnownFileType = text; path = rc.inet1.conf; sourceTree = "<group>"; };
+		A0664F0918FD87D400A1AC67 /* rc.inet1.conf.new */ = {isa = PBXFileReference; lastKnownFileType = text; path = rc.inet1.conf.new; sourceTree = "<group>"; };
 		A0664F0A18FD87D400A1AC67 /* slack-net-check.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-net-check.sh.in"; sourceTree = "<group>"; };
 		A0664F0B18FD87D400A1AC67 /* slack-pkg-audit.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-pkg-audit.sh.in"; sourceTree = "<group>"; };
 		A0664F0C18FD87D400A1AC67 /* slack-sync-auth.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-sync-auth.sh.in"; sourceTree = "<group>"; };
@@ -37,6 +51,8 @@
 		A0D314B419097585008EDE75 /* rc.firewall.policy4-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.policy4-example"; sourceTree = "<group>"; };
 		A0D314B519097585008EDE75 /* rc.firewall.policy6-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.policy6-example"; sourceTree = "<group>"; };
 		A0D314CA19097F82008EDE75 /* autogen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = autogen.sh; sourceTree = "<group>"; };
+		A0D314CE19099F29008EDE75 /* slack-desc */ = {isa = PBXFileReference; lastKnownFileType = text; path = "slack-desc"; sourceTree = "<group>"; };
+		A0D314D81909CBAF008EDE75 /* slackware-package.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slackware-package.sh"; sourceTree = "<group>"; };
 		A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bindletools.xcodeproj; path = bindletools/bindletools.xcodeproj; sourceTree = "<group>"; };
 		A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */ = {isa = PBXFileReference; explicitFileType = text.script.sh; path = "git-proj-stats.sh.in"; sourceTree = "<group>"; };
 		A0D52C9F17C2E486001352CA /* pub-generate-readme.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pub-generate-readme.sh.in"; sourceTree = "<group>"; };
@@ -65,7 +81,8 @@
 				A0664F0618FD87D400A1AC67 /* rc.inet1_local.in */,
 				A0664F0718FD87D400A1AC67 /* rc.inet1_local_down-example */,
 				A0664F0818FD87D400A1AC67 /* rc.inet1_local_up-example */,
-				A0664F0918FD87D400A1AC67 /* rc.inet1.conf */,
+				A0664F0918FD87D400A1AC67 /* rc.inet1.conf.new */,
+				A0D314CE19099F29008EDE75 /* slack-desc */,
 				A0664F0A18FD87D400A1AC67 /* slack-net-check.sh.in */,
 				A0664F0B18FD87D400A1AC67 /* slack-pkg-audit.sh.in */,
 				A0664F0C18FD87D400A1AC67 /* slack-sync-auth.sh.in */,
@@ -98,7 +115,9 @@
 		A0D52C9417C2E43C001352CA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A0D52C9B17C2E43D001352CA /* libbindle.a */,
+				A0D314D319099F29008EDE75 /* libbindle-ios.a */,
+				A0D314D519099F29008EDE75 /* libbindle-osx.a */,
+				A0D314D719099F29008EDE75 /* fdtest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,6 +143,7 @@
 				A0EC36AD1365470C008F3CC7 /* Makefile.am */,
 				A0EC36AE1365470C008F3CC7 /* NEWS */,
 				A0EC36AF1365470C008F3CC7 /* README */,
+				A0D314D81909CBAF008EDE75 /* slackware-package.sh */,
 				A0EC36A613654636008F3CC7 /* build-aux */,
 				A0D52C9217C2E41D001352CA /* contrib */,
 				A0D52C9C17C2E486001352CA /* src */,
@@ -168,11 +188,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		A0D52C9B17C2E43D001352CA /* libbindle.a */ = {
+		A0D314D319099F29008EDE75 /* libbindle-ios.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libbindle.a;
-			remoteRef = A0D52C9A17C2E43D001352CA /* PBXContainerItemProxy */;
+			path = "libbindle-ios.a";
+			remoteRef = A0D314D219099F29008EDE75 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A0D314D519099F29008EDE75 /* libbindle-osx.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libbindle-osx.a";
+			remoteRef = A0D314D419099F29008EDE75 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A0D314D719099F29008EDE75 /* fdtest */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = fdtest;
+			remoteRef = A0D314D619099F29008EDE75 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
