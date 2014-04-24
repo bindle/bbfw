@@ -193,19 +193,26 @@ src/slack/slack-update-mirrors.sh: Makefile src/slack/slack-update-mirrors.sh.in
 install-lxc: install
 	for LXC in `ls $(LXCDIR)`;do $(MAKE) DESTDIR=/var/lib/lxc/$${LXC}/rootfs install;done
 
+if ENABLE_SLACKWARE
 bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
-	@test "x${USER}" = "xroot" || { echo ""; echo "Must be run as root."; echo ""; exit 1; }
-	$(MAKE) distcheck
-	rm -Rf tmp/slackware-package
-	mkdir -p tmp/slackware-package/install
-	cp $(srcdir)/src/slack/slack-desc tmp/slackware-package/install/slack-desc
-	$(MAKE) DESTDIR=tmp/slackware-package install
-	chown -R 0:0 tmp/slackware-package
-	cd tmp/slackware-package && PATH="${PATH}:$(abs_top_srcdir)/build-aux" makepkg -l y -p -c n ../../$(@)
-	rm -Rf tmp/slackware-package
+	rm -Rf slackware-pkg-build
+	$(abs_top_srcdir)/autogen.sh
+	mkdir -p slackware-pkg-build/slackware-package/install
+	cp $(abs_top_srcdir)/src/slack/slack-desc \
+		slackware-pkg-build/slackware-package/install/slack-desc
+	cd slackware-pkg-build && $(abs_top_srcdir)/configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libdir=/usr/lib64 \
+		--enable-slackware
+	cd slackware-pkg-build && $(MAKE) distcheck
+	cd slackware-pkg-build && $(MAKE) DESTDIR=slackware-package install
+	sudo chown -R 0:0 slackware-pkg-build/slackware-package
+	cd slackware-pkg-build/slackware-package && makepkg -l y -p -c n ../../$(@)
+	rm -Rf slackware-pkg-build
 
 slackware-package: bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz
-
+endif
 
 # local targets
 install-exec-local:
