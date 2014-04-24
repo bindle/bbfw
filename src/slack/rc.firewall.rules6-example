@@ -1,0 +1,8 @@
+
+# Adding local rules to filter table (IPv6)
+*filter
+-A INPUT -p tcp -s ::1 --dport ssh   -j  ACCEPT
+-A INPUT -p tcp -s ::1 --dport snmp  -j  ACCEPT
+COMMIT
+
+# end of rules

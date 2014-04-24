@@ -1,0 +1,8 @@
+
+# Adding office rules to filter table
+*filter
+-A INPUT -p tcp --dport http   -j  ACCEPT
+-A INPUT -p tcp --dport domain -j  ACCEPT
+COMMIT
+
+# end of rules

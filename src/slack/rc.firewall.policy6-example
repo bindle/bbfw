@@ -1,0 +1,9 @@
+
+# Adding local rules to filter table (IPv6)
+*filter
+-I INPUT   -p icmpv6                   -j ACCEPT
+
+-I FORWARD -p icmpv6                   -j ACCEPT
+COMMIT
+
+# end of rules

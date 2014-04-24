@@ -1,0 +1,8 @@
+
+# Adding rules to filter table
+*filter
+-A INPUT -p tcp -s 127.0.0.1 --dport ssh   -j  ACCEPT
+-A INPUT -p tcp -s 127.0.0.1 --dport snmp  -j  ACCEPT
+COMMIT
+
+# end of rules

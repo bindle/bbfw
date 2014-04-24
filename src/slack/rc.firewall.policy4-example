@@ -1,0 +1,9 @@
+
+# Adding rules to filter table
+*filter
+-I INPUT   -p icmp           -j ACCEPT
+
+-I FORWARD -p icmp           -j ACCEPT
+COMMIT
+
+# end of rules

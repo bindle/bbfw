@@ -32,6 +32,14 @@
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_END@
 #
+#   rc.firewall         - Firewall init script for Slackware
+#   rc.firewall.policy  - IPv4/IPv6 rules mandated by organization's policies
+#   rc.firewall.policy4 - IPv4 rules mandated by organization's policies
+#   rc.firewall.policy6 - IPv6 rules mandated by organization's policies
+#   rc.firewall.rules   - IPv4/IPv6 host specific firewall rules
+#   rc.firewall.rules4  - IPv4 host specific firewall rules
+#   rc.firewall.rules6  - IPv6 host specific firewall rules
+#
 
 ###########
 # LOGGING #
@@ -48,19 +56,34 @@ fi
 
 # Function to start the network:
 start() {
-   # local rules
+   # apply host specific firewall rules
    if test -f /etc/rc.d/rc.firewall.rules;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 rules (local)"
+      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 host rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules4;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4 rules (local)"
+      echo "/etc/rc.d/rc.firewall:  adding IPv4 host rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules6;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv6 rules (local)"
+      echo "/etc/rc.d/rc.firewall:  adding IPv6 host rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
+   fi
+
+   # apply company policy for firewall rules
+   if test -f /etc/rc.d/rc.firewall.policy;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 organization policy"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/iptables-restore  -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/ip6tables-restore -n
+   fi
+   if test -f /etc/rc.d/rc.firewall.policy4;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv4 organization policy"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy4 | /usr/sbin/iptables-restore -n
+   fi
+   if test -f /etc/rc.d/rc.firewall.policy6;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv6 organization policy"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy6 | /usr/sbin/ip6tables-restore -n
    fi
 
 
@@ -82,45 +105,6 @@ start() {
          fi
       done
    fi
-
-
-   echo "/etc/rc.d/rc.firewall:  adding IPv4 INPUT rules"
-   /usr/sbin/iptables  -t filter -P INPUT DROP
-   /usr/sbin/iptables  -t filter -I INPUT           -s 10.19.80.1/32                   -j ACCEPT
-   /usr/sbin/iptables  -t filter -I INPUT           -s 10.19.80.33/32                  -j ACCEPT
-   /usr/sbin/iptables  -t filter -I INPUT           -s 63.140.112.161/32               -j ACCEPT
-   /usr/sbin/iptables  -t filter -I INPUT           -s 127.0.0.0/8                     -j ACCEPT
-   /usr/sbin/iptables  -t filter -I INPUT -p icmp   -s 0.0.0.0/0                       -j ACCEPT
-   /usr/sbin/iptables  -t filter -I INPUT -m conntrack --ctstate ESTABLISHED,RELATED   -j ACCEPT
-   /usr/sbin/iptables  -t filter -I INPUT -p tcp --dport ident                         -j REJECT --reject-with tcp-reset
-   /usr/sbin/iptables  -t filter -A INPUT -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop input: "
-
-
-   echo "/etc/rc.d/rc.firewall:  adding IPv4 FORWARD rules"
-   /usr/sbin/iptables  -t filter -P FORWARD DROP
-   /usr/sbin/iptables  -t filter -I FORWARD -p icmp   -s 0.0.0.0/0                        -j ACCEPT
-   /usr/sbin/iptables  -t filter -I FORWARD -m conntrack --ctstate ESTABLISHED,RELATED    -j ACCEPT
-   /usr/sbin/iptables  -t filter -I FORWARD -p tcp --dport ident                          -j REJECT --reject-with tcp-reset
-   /usr/sbin/iptables  -t filter -A FORWARD -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop forward: "
-
-
-   echo "/etc/rc.d/rc.firewall:  adding IPv6 INPUT rules"
-   /usr/sbin/ip6tables -t filter -P INPUT DROP
-   /usr/sbin/ip6tables -t filter -I INPUT           -s 2001:470:b:84a::1/128                     -j ACCEPT
-   /usr/sbin/ip6tables -t filter -I INPUT           -s 2001:470:b:84a::33/128                    -j ACCEPT
-   /usr/sbin/ip6tables -t filter -I INPUT           -s 2001:470:ea85:c::1/128                    -j ACCEPT
-   /usr/sbin/ip6tables -t filter -I INPUT           -s ::1/128                                   -j ACCEPT
-   /usr/sbin/ip6tables -t filter -I INPUT -p icmpv6 -s ::/0                                      -j ACCEPT
-   /usr/sbin/ip6tables -t filter -I INPUT -m conntrack --ctstate ESTABLISHED,RELATED             -j ACCEPT
-   /usr/sbin/ip6tables -t filter -I INPUT -p tcp --dport ident                                   -j REJECT --reject-with tcp-reset
-   /usr/sbin/ip6tables -t filter -A INPUT -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop input: "
-
-
-   echo "/etc/rc.d/rc.firewall:  adding IPv6 FORWARD rules"
-   /usr/sbin/ip6tables -t filter -P FORWARD DROP
-   /usr/sbin/ip6tables -t filter -I FORWARD -p icmpv6 -s ::/0                          -j ACCEPT
-   /usr/sbin/ip6tables -t filter -I FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-   /usr/sbin/ip6tables -t filter -A FORWARD -m limit --limit 60/minute -j LOG --log-level 7 --log-prefix "iptables drop forward: "
 }
 
 
