@@ -54,8 +54,8 @@ DEFS					=
 
 
 LXCDIR					?= /var/lib/lxc
-slackrcddir				= $(DESTDIR)/etc/rc.d
-bashprofiledir				= $(DESTDIR)/etc/profile.d
+slackrcddir				= $(sysconfdir)/rc.d
+bashprofiledir				= $(sysconfdir)/profile.d
 
 
 # automake targets
