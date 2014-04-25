@@ -224,7 +224,7 @@ install-exec-local:
 install-data-local:
 
 install-data-hook:
-	test ! -f $(bashprofiledir)/bindle.sh || chmod 755 $(bashprofiledir)/bindle.sh
+	test ! -f $(DESTDIR)$(bashprofiledir)/bindle.sh || chmod 755 $(DESTDIR)$(bashprofiledir)/bindle.sh
 
 uninstall-local:
 
