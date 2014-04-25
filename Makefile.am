@@ -54,8 +54,8 @@ DEFS					=
 
 
 LXCDIR					?= /var/lib/lxc
-slackrcddir				= $(sysconfdir)/rc.d
-bashprofiledir				= $(sysconfdir)/profile.d
+slackrcddir				= $(DESTDIR)/etc/rc.d
+bashprofiledir				= $(DESTDIR)/etc/profile.d
 
 
 # automake targets
@@ -223,8 +223,7 @@ install-exec-local:
 install-data-local:
 
 install-data-hook:
-	test ! -f $(slackrcddir)/rc.firewall || chmod 755 $(slackrcddir)/rc.firewall
-	test ! -f $(bashprofile)/bindle.sh   || chmod 755 $(bashprofile)/bindle.sh
+	test ! -f $(bashprofiledir)/bindle.sh || chmod 755 $(bashprofiledir)/bindle.sh
 
 uninstall-local:
 
