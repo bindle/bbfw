@@ -80,7 +80,8 @@ BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
-EXTRA_DIST				= src/misc/bindleadmin-script.profile.in \
+EXTRA_DIST				= src/bash/bindle.sh \
+					  src/misc/bindleadmin-script.profile.in \
 					  src/misc/cronmail.sh.in \
 					  src/misc/git-proj-cleanup.sh.in \
 					  src/misc/git-proj-stats.sh.in \
