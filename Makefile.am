@@ -199,7 +199,7 @@ install-lxc: install
 if ENABLE_SLACKWARE
 bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
 	sudo rm -Rf slackware-pkg-build
-	$(abs_top_srcdir)/autogen.sh
+	sudo rm -f  bindleadmin-*-noarch-1_bindle.txz
 	mkdir -p slackware-pkg-build/slackware-package/install
 	cp $(abs_top_srcdir)/src/slack/slack-desc \
 		slackware-pkg-build/slackware-package/install/slack-desc
