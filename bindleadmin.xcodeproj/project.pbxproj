@@ -52,6 +52,7 @@
 		A0D314B519097585008EDE75 /* rc.firewall.policy6-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.policy6-example"; sourceTree = "<group>"; };
 		A0D314CA19097F82008EDE75 /* autogen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = autogen.sh; sourceTree = "<group>"; };
 		A0D314CE19099F29008EDE75 /* slack-desc */ = {isa = PBXFileReference; lastKnownFileType = text; path = "slack-desc"; sourceTree = "<group>"; };
+		A0D314DA1909D84B008EDE75 /* bindle.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = bindle.sh; sourceTree = "<group>"; };
 		A0D52C9317C2E43C001352CA /* bindletools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bindletools.xcodeproj; path = bindletools/bindletools.xcodeproj; sourceTree = "<group>"; };
 		A0D52C9E17C2E486001352CA /* git-proj-stats.sh.in */ = {isa = PBXFileReference; explicitFileType = text.script.sh; path = "git-proj-stats.sh.in"; sourceTree = "<group>"; };
 		A0D52C9F17C2E486001352CA /* pub-generate-readme.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pub-generate-readme.sh.in"; sourceTree = "<group>"; };
@@ -103,6 +104,14 @@
 			path = misc;
 			sourceTree = "<group>";
 		};
+		A0D314D91909D84B008EDE75 /* bash */ = {
+			isa = PBXGroup;
+			children = (
+				A0D314DA1909D84B008EDE75 /* bindle.sh */,
+			);
+			path = bash;
+			sourceTree = "<group>";
+		};
 		A0D52C9217C2E41D001352CA /* contrib */ = {
 			isa = PBXGroup;
 			children = (
@@ -124,6 +133,7 @@
 		A0D52C9C17C2E486001352CA /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A0D314D91909D84B008EDE75 /* bash */,
 				A0664F0F18FD8CB700A1AC67 /* misc */,
 				A0664F0E18FD8BEF00A1AC67 /* slack */,
 			);
