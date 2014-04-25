@@ -60,7 +60,7 @@ AC_DEFUN([AC_BINDLEADMIN_SLACKWARE],[dnl
    elif test "x${ESLACKWARE}" == "xno";then
       ENABLE_SLACKWARE=no
    else
-      if test "x${SLACKWARE_VERSION}" == "xunknown" || test "x${KERNEL_NAME}" != "xLinux";then
+      if test "x${SLACKWARE_VERSION}" = "xunknown" || test "x${KERNEL_NAME}" != "xLinux";then
          ENABLE_SLACKWARE=no
       else
          ENABLE_SLACKWARE=yes
