@@ -59,7 +59,7 @@ bashprofiledir				= $(sysconfdir)/profile.d
 
 
 # automake targets
-bashprofile_DATA			= src/bash/bindle.sh
+bashprofile_SCRIPTS			= src/bash/bindle.sh
 check_PROGRAMS				=
 doc_DATA				= README COPYING ChangeLog AUTHORS
 include_HEADERS				=
@@ -76,6 +76,7 @@ sbin_SCRIPTS				= src/misc/cronmail.sh
 
 
 # lists
+AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bash/bindle.sh
 BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
@@ -224,7 +225,6 @@ install-exec-local:
 install-data-local:
 
 install-data-hook:
-	chmod 755 $(bashprofiledir)/bindle.sh
 
 uninstall-local:
 
