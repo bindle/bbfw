@@ -94,7 +94,7 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/slack/rc.firewall.rules-example \
 					  src/slack/rc.firewall.rules4-example \
 					  src/slack/rc.firewall.rules6-example \
-					  src/slack/rc.inet1.conf.new \
+					  src/slack/rc.inet1.conf \
 					  src/slack/rc.inet1_local.in \
 					  src/slack/rc.inet1_local_down-example \
 					  src/slack/rc.inet1_local_up-example \
@@ -141,7 +141,7 @@ slackrcd_DATA				=  src/slack/rc.firewall.policy-example \
 					   src/slack/rc.firewall.rules-example \
 					   src/slack/rc.firewall.rules4-example \
 					   src/slack/rc.firewall.rules6-example \
-					   src/slack/rc.inet1.conf.new \
+					   src/slack/rc.inet1.conf \
 					   src/slack/rc.inet1_local_down-example \
 					   src/slack/rc.inet1_local_up-example
 endif
@@ -224,7 +224,7 @@ install-exec-local:
 install-data-local:
 
 install-data-hook:
-	test ! -f $(DESTDIR)$(bashprofiledir)/bindle.sh || chmod 755 $(DESTDIR)$(bashprofiledir)/bindle.sh
+	chmod 755 $(bashprofiledir)/bindle.sh
 
 uninstall-local:
 

@@ -12,8 +12,8 @@ bindleadmin: This package contains scripts, shell profiles, utilities, and
 bindleadmin: documentation used by Bindle Binaries to manage Slackware based
 bindleadmin: servers and development repositories.
 bindleadmin:
-bindleadmin: WARNING: This packge will overwrite the current network configuration
-bindleadmin: if the system is using using /etc/rc.d/rc.inet1.conf.
+bindleadmin: 
+bindleadmin: 
 bindleadmin:
 bindleadmin: http://github.com/bindle/bindleadmin.git
 bindleadmin:
