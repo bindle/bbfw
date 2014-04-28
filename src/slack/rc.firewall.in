@@ -142,7 +142,7 @@ stop() {
 ### MAIN ###
 ############
 
-echo " ${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER 2>&1
+echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER 2>&1
 case "$1" in
    'start') # "start" brings up all configured interfaces:
       start 2>&1 | $LOGGER
