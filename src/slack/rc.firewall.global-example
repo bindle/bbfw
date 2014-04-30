@@ -47,7 +47,7 @@ COMMIT
 #############################################################################
 *raw
 
-# ICMP traffic
+# exclude local host traffic from conntrack
 -I PREROUTING -i lo   -j NOTRACK
 -I OUTPUT     -o lo   -j NOTRACK
 
