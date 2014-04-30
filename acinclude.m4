@@ -46,6 +46,14 @@ AC_DEFUN([AC_BINDLEADMIN_SLACKWARE],[dnl
       [ ESLACKWARE=$enableval ],
       [ ESLACKWARE=$enableval ]
    )
+   # display options
+   enableval=""
+   AC_ARG_ENABLE(
+      slackpkg,
+      [AS_HELP_STRING([--enable-slackpkg], [enable Slackware package scripts [default=no]])],
+      [ ESLACKWAREPKG=$enableval ],
+      [ ESLACKWAREPKG=$enableval ]
+   )
 
    # determine slackware version
    SLACKWARE_VERSION="unknown"
@@ -67,7 +75,17 @@ AC_DEFUN([AC_BINDLEADMIN_SLACKWARE],[dnl
       fi
    fi
 
+   # checks for slackware package
+   if test "x${ESLACKWAREPKG}" = "xyes" && "x${ENABLE_SLACKWARE}" != "xyes";then
+      AC_MSG_ERROR([--enable-slackpkg requires --enable-slackware to be specified or auto-detected.])
+   fi
+   ENABLE_SLACKPKG="no"
+   if test "x${ESLACKWAREPKG}" = "xyes";then
+      ENABLE_SLACKPKG="yes"
+   fi
+
    AM_CONDITIONAL([ENABLE_SLACKWARE], [test "${ENABLE_SLACKWARE}" == "yes"])
+   AM_CONDITIONAL([ENABLE_SLACKPKG],  [test "${ENABLE_SLACKPKG}"  == "yes"])
 ])dnl
 
 # end of m4 file

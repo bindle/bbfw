@@ -56,6 +56,7 @@ DEFS					=
 LXCDIR					?= /var/lib/lxc
 slackrcddir				= $(sysconfdir)/rc.d
 bashprofiledir				= $(sysconfdir)/profile.d
+slackinstdir				= /install
 
 
 # automake targets
@@ -132,7 +133,7 @@ CLEANFILES				= \
 DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 
 
-# conditional targets
+# conditional targets for slackware
 if ENABLE_SLACKWARE
 sbin_SCRIPTS				+= src/slack/slack-net-check.sh \
 					   src/slack/slack-pkg-audit.sh
@@ -148,6 +149,13 @@ slackrcd_DATA				=  src/slack/rc.firewall.global-example \
 					   src/slack/rc.inet1_local_down-example \
 					   src/slack/rc.inet1_local_up-example
 endif
+
+
+# conditional targets for slackware package
+if ENABLE_SLACKPKG
+slackinst_DATA				=  src/slack/slack-desc
+endif
+
 
 # Makefile includes
 GIT_PACKAGE_VERSION_DIR=build-aux
@@ -199,14 +207,12 @@ src/slack/slack-update-mirrors.sh: Makefile src/slack/slack-update-mirrors.sh.in
 install-lxc: install
 	for LXC in `ls $(LXCDIR)`;do $(MAKE) DESTDIR=/var/lib/lxc/$${LXC}/rootfs install;done
 
-if ENABLE_SLACKWARE
+if ENABLE_SLACKPKG
 bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
 	sudo rm -Rf slackware-pkg-build
 	sudo rm -f  bindleadmin-*-noarch-1_bindle.txz
 	./config.status --recheck
 	mkdir -p slackware-pkg-build/slackware-package/install
-	cp $(abs_top_srcdir)/src/slack/slack-desc \
-		slackware-pkg-build/slackware-package/install/slack-desc
 	cd slackware-pkg-build && $(abs_top_srcdir)/configure \
 		--prefix=/usr \
 		--sysconfdir=/etc \
