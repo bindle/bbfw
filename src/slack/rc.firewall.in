@@ -164,15 +164,6 @@ case "$1" in
       start 2>&1 | $LOGGER
    ;;
 
-   # automake's required flags
-   '--help')
-   echo "Usage: $0 [ start | stop | restart ]"
-   exit 0
-   ;;
-   '--version')
-   exit 0
-   ;;
-
    *) # The default is to bring up all configured interfaces:
      start  2>&1 | $LOGGER
    ;;

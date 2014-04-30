@@ -76,7 +76,9 @@ sbin_SCRIPTS				= src/misc/cronmail.sh
 
 
 # lists
-AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bash/bindle.sh
+AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bash/bindle.sh \
+					  src/slack/rc.firewall \
+					  src/slack/rc.inet1_local
 BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
