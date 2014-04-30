@@ -42,14 +42,14 @@
 		A0664F0618FD87D400A1AC67 /* rc.inet1_local.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = rc.inet1_local.in; sourceTree = "<group>"; };
 		A0664F0718FD87D400A1AC67 /* rc.inet1_local_down-example */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "rc.inet1_local_down-example"; sourceTree = "<group>"; };
 		A0664F0818FD87D400A1AC67 /* rc.inet1_local_up-example */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "rc.inet1_local_up-example"; sourceTree = "<group>"; };
-		A0664F0918FD87D400A1AC67 /* rc.inet1.conf.new */ = {isa = PBXFileReference; lastKnownFileType = text; path = rc.inet1.conf.new; sourceTree = "<group>"; };
 		A0664F0A18FD87D400A1AC67 /* slack-net-check.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-net-check.sh.in"; sourceTree = "<group>"; };
 		A0664F0B18FD87D400A1AC67 /* slack-pkg-audit.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-pkg-audit.sh.in"; sourceTree = "<group>"; };
 		A0664F0C18FD87D400A1AC67 /* slack-sync-auth.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-sync-auth.sh.in"; sourceTree = "<group>"; };
 		A0664F0D18FD87D400A1AC67 /* slack-update-mirrors.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-update-mirrors.sh.in"; sourceTree = "<group>"; };
-		A0D314B319097585008EDE75 /* rc.firewall.policy-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.policy-example"; sourceTree = "<group>"; };
-		A0D314B419097585008EDE75 /* rc.firewall.policy4-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.policy4-example"; sourceTree = "<group>"; };
-		A0D314B519097585008EDE75 /* rc.firewall.policy6-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.policy6-example"; sourceTree = "<group>"; };
+		A06923B719119E6D00A9F830 /* rc.inet1.conf */ = {isa = PBXFileReference; lastKnownFileType = text; path = rc.inet1.conf; sourceTree = "<group>"; };
+		A0D314B319097585008EDE75 /* rc.firewall.global-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.global-example"; sourceTree = "<group>"; };
+		A0D314B419097585008EDE75 /* rc.firewall.global4-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.global4-example"; sourceTree = "<group>"; };
+		A0D314B519097585008EDE75 /* rc.firewall.global6-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.global6-example"; sourceTree = "<group>"; };
 		A0D314CA19097F82008EDE75 /* autogen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = autogen.sh; sourceTree = "<group>"; };
 		A0D314CE19099F29008EDE75 /* slack-desc */ = {isa = PBXFileReference; lastKnownFileType = text; path = "slack-desc"; sourceTree = "<group>"; };
 		A0D314DA1909D84B008EDE75 /* bindle.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = bindle.sh; sourceTree = "<group>"; };
@@ -72,16 +72,16 @@
 			isa = PBXGroup;
 			children = (
 				A0664F0218FD87D400A1AC67 /* rc.firewall.in */,
-				A0D314B319097585008EDE75 /* rc.firewall.policy-example */,
-				A0D314B419097585008EDE75 /* rc.firewall.policy4-example */,
-				A0D314B519097585008EDE75 /* rc.firewall.policy6-example */,
+				A0D314B319097585008EDE75 /* rc.firewall.global-example */,
+				A0D314B419097585008EDE75 /* rc.firewall.global4-example */,
+				A0D314B519097585008EDE75 /* rc.firewall.global6-example */,
 				A0664F0318FD87D400A1AC67 /* rc.firewall.rules-example */,
 				A0664F0418FD87D400A1AC67 /* rc.firewall.rules4-example */,
 				A0664F0518FD87D400A1AC67 /* rc.firewall.rules6-example */,
+				A06923B719119E6D00A9F830 /* rc.inet1.conf */,
 				A0664F0618FD87D400A1AC67 /* rc.inet1_local.in */,
 				A0664F0718FD87D400A1AC67 /* rc.inet1_local_down-example */,
 				A0664F0818FD87D400A1AC67 /* rc.inet1_local_up-example */,
-				A0664F0918FD87D400A1AC67 /* rc.inet1.conf.new */,
 				A0D314CE19099F29008EDE75 /* slack-desc */,
 				A0664F0A18FD87D400A1AC67 /* slack-net-check.sh.in */,
 				A0664F0B18FD87D400A1AC67 /* slack-pkg-audit.sh.in */,

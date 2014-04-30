@@ -1,0 +1,56 @@
+# /etc/rc.d/rc.firewall.global
+#
+#  Global Organization IPv4/IPv6 Firewall Rules for Slackware Servers
+#
+#  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES PUSHED OUT FROM A
+#  CENTRALIZED LOCATION IN ORDER TO ALLOW AN ORGANIZATION TO CREATE GLOBAL
+#  FIREWALL RULES ACROSS ALL SYSTEMS.
+#
+#  PLACE HOST SPECIFIC RULES IN ONE OF THE FOLLOWING FILES:
+#     /etc/rc.d/rc.firewall.rules
+#     /etc/rc.d/rc.firewall.rules4
+#     /etc/rc.d/rc.firewall.rules6
+#
+
+
+#############################################################################
+#                                                                           #
+#                         FILTER Table (IPv4/IPv6)                          #
+#                                                                           #
+#############################################################################
+*filter
+
+# set default policies
+:INPUT DROP
+:FORWARD DROP
+:OUTPUT ACCEPT
+
+# allow all local host traffic
+-I INPUT -i lo   -j ACCEPT
+
+# reject ident loopups (fixes delays when connecting to misconfigured hosts)
+-A INPUT  -p tcp   --dport ident   -j REJECT --reject-with tcp-reset
+
+# allow established connections
+-A INPUT  -m conntrack --ctstate ESTABLISHED,RELATED   -j ACCEPT
+
+# log everything else
+-A INPUT  -m limit --limit 10/minute -j LOG --log-level 7 --log-prefix "iptables drop input: "
+
+COMMIT
+
+
+#############################################################################
+#                                                                           #
+#                           RAW Table (IPv4/IPv6)                           #
+#                                                                           #
+#############################################################################
+*raw
+
+# ICMP traffic
+-I PREROUTING -i lo   -j NOTRACK
+-I OUTPUT     -o lo   -j NOTRACK
+
+COMMIT
+
+# end of rules

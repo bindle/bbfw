@@ -1,8 +1,43 @@
+# /etc/rc.d/rc.firewall.rules6
+#
+#  Host Specific IPv6 Firewall Rules for Slackware Server
+#
+#  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES SPECIFIC TO AN INDIVIDUAL
+#  SERVER.
+#
+#  USE ONE OF THE FOLLOWING FILES FOR GLOBAL RULES:
+#     /etc/rc.d/rc.firewall.global
+#     /etc/rc.d/rc.firewall.global4
+#     /etc/rc.d/rc.firewall.global6
+#
 
-# Adding local rules to filter table (IPv6)
+#############################################################################
+#                                                                           #
+#                            FILTER Table (IPv6)                            #
+#                                                                           #
+#############################################################################
 *filter
--A INPUT -p tcp -s ::1 --dport ssh   -j  ACCEPT
--A INPUT -p tcp -s ::1 --dport snmp  -j  ACCEPT
+
+# accept SSH connections from link-local and RFC4193 addresses
+-A INPUT -p tcp   -s fc00::/7    --dport ssh   -j ACCEPT
+-A INPUT -p tcp   -s fe80::/10   --dport ssh   -j ACCEPT
+
+# accept DNS queries from link-local and RFC4193 addresses
+-A INPUT -p tcp   -s fc00::/7        --dport domain   -j ACCEPT
+-A INPUT -p udp   -s fc00::/7        --dport domain   -j ACCEPT
+-A INPUT -p tcp   -s fe80::/10       --dport domain   -j ACCEPT
+-A INPUT -p udp   -s fe80::/10       --dport domain   -j ACCEPT
+
+COMMIT
+
+
+#############################################################################
+#                                                                           #
+#                             RAW Table (IPv6)                              #
+#                                                                           #
+#############################################################################
+*raw
+
 COMMIT
 
 # end of rules

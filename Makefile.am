@@ -89,9 +89,9 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/misc/pub-generate-readme.sh.in \
 					  src/misc/pub-rsync-remotes.sh.in \
 					  src/slack/rc.firewall.in \
-					  src/slack/rc.firewall.policy-example \
-					  src/slack/rc.firewall.policy4-example \
-					  src/slack/rc.firewall.policy6-example \
+					  src/slack/rc.firewall.global-example \
+					  src/slack/rc.firewall.global4-example \
+					  src/slack/rc.firewall.global6-example \
 					  src/slack/rc.firewall.rules-example \
 					  src/slack/rc.firewall.rules4-example \
 					  src/slack/rc.firewall.rules6-example \
@@ -136,9 +136,9 @@ sbin_SCRIPTS				+= src/slack/slack-net-check.sh \
 					   src/slack/slack-pkg-audit.sh
 slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 					   src/slack/rc.inet1_local
-slackrcd_DATA				=  src/slack/rc.firewall.policy-example \
-					   src/slack/rc.firewall.policy4-example \
-					   src/slack/rc.firewall.policy6-example \
+slackrcd_DATA				=  src/slack/rc.firewall.global-example \
+					   src/slack/rc.firewall.global4-example \
+					   src/slack/rc.firewall.global6-example \
 					   src/slack/rc.firewall.rules-example \
 					   src/slack/rc.firewall.rules4-example \
 					   src/slack/rc.firewall.rules6-example \

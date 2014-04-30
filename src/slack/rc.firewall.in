@@ -33,12 +33,20 @@
 #   @BINDLE_BINARIES_BSD_LICENSE_END@
 #
 #   rc.firewall         - Firewall init script for Slackware
-#   rc.firewall.policy  - IPv4/IPv6 rules mandated by organization's policies
-#   rc.firewall.policy4 - IPv4 rules mandated by organization's policies
-#   rc.firewall.policy6 - IPv6 rules mandated by organization's policies
+#   rc.firewall.global  - IPv4/IPv6 global rules which are centrally maintained
+#   rc.firewall.global4 - IPv4 global rules which are centrally maintained
+#   rc.firewall.global6 - IPv6 global rules which are centrally maintained
 #   rc.firewall.rules   - IPv4/IPv6 host specific firewall rules
 #   rc.firewall.rules4  - IPv4 host specific firewall rules
 #   rc.firewall.rules6  - IPv6 host specific firewall rules
+#
+#   Firewall rules are loaded in the following order:
+#      rc.firewall.rules4
+#      rc.firewall.rules6
+#      rc.firewall.rules
+#      rc.firewall.global4
+#      rc.firewall.global6
+#      rc.firewall.global
 #
 
 ###########
@@ -68,44 +76,38 @@ fi
 # Function to start the network:
 start() {
    # apply host specific firewall rules
-   if test -f /etc/rc.d/rc.firewall.rules;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 host rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
-   fi
    if test -f /etc/rc.d/rc.firewall.rules4;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4 host rules"
+      echo "/etc/rc.d/rc.firewall:  adding IPv4 local rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules6;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv6 host rules"
+      echo "/etc/rc.d/rc.firewall:  adding IPv6 local rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
+   fi
+   if test -f /etc/rc.d/rc.firewall.rules;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 local rules"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
    fi
 
    # apply company policy for firewall rules
-   if test -f /etc/rc.d/rc.firewall.policy;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 organization policy"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/iptables-restore  -n
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/ip6tables-restore -n
-   fi
    if test -f /etc/rc.d/rc.firewall.policy4;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4 organization policy"
+      echo "/etc/rc.d/rc.firewall:  adding IPv4 global rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy4 | /usr/sbin/iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.policy6;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv6 organization policy"
+      echo "/etc/rc.d/rc.firewall:  adding IPv6 global rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy6 | /usr/sbin/ip6tables-restore -n
    fi
-
+   if test -f /etc/rc.d/rc.firewall.policy;then
+      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 global rules"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/iptables-restore  -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/ip6tables-restore -n
+   fi
 
    # LXC rules
    if test -d /var/lib/lxc/;then
       for LXC in `ls /var/lib/lxc/`;do
-         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
-            echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 rules (LXC: ${LXC})"
-            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
-            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
-         fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4;then
             echo "/etc/rc.d/rc.firewall:  adding IPv4 rules (LXC: ${LXC})"
             /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
@@ -114,6 +116,11 @@ start() {
             echo "/etc/rc.d/rc.firewall:  adding IPv6 rules (LXC: ${LXC})"
             /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
          fi
+         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
+            echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 rules (LXC: ${LXC})"
+            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
+            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
+         fi
       done
    fi
 }
@@ -121,14 +128,14 @@ start() {
 
 # Function to stop the network:
 stop() {
-   for TABLE in filter nat;do
+   for TABLE in filter nat raw;do
       echo "Flushing rules from ${TABLE} table (IPv4)"
       for CHAIN in `/usr/sbin/iptables -t ${TABLE} -L -n |grep '^Chain ' |awk '{print$2}'`;do
          /usr/sbin/iptables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
       /usr/sbin/iptables -t ${TABLE} -F
    done
-   for TABLE in filter;do
+   for TABLE in filter raw;do
       echo "Flushing rules from ${TABLE} table (IPv6)"
       for CHAIN in `/usr/sbin/ip6tables -t ${TABLE} -L -n |grep '^Chain ' |awk '{print$2}'`;do
          /usr/sbin/ip6tables -t ${TABLE} -P ${CHAIN} ACCEPT

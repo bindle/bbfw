@@ -1,0 +1,51 @@
+# /etc/rc.d/rc.firewall.global4
+#
+#  Global Organization IPv4 Firewall Rules for Slackware Servers
+#
+#  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES PUSHED OUT FROM A
+#  CENTRALIZED LOCATION IN ORDER TO ALLOW AN ORGANIZATION TO CREATE GLOBAL
+#  FIREWALL RULES ACROSS ALL SYSTEMS.
+#
+#  PLACE HOST SPECIFIC RULES IN ONE OF THE FOLLOWING FILES:
+#     /etc/rc.d/rc.firewall.rules
+#     /etc/rc.d/rc.firewall.rules4
+#     /etc/rc.d/rc.firewall.rules6
+#
+
+#############################################################################
+#                                                                           #
+#                            FILTER Table (IPv4)                            #
+#                                                                           #
+#############################################################################
+*filter
+
+# allow all ICMP traffic
+-I INPUT   -p icmp   -j ACCEPT
+-I FORWARD -p icmp   -j ACCEPT
+
+COMMIT
+
+
+#############################################################################
+#                                                                           #
+#                             NAT Table (IPv4)                              #
+#                                                                           #
+#############################################################################
+*nat
+COMMIT
+
+
+#############################################################################
+#                                                                           #
+#                             RAW Table (IPv4)                              #
+#                                                                           #
+#############################################################################
+*raw
+
+# ICMP traffic
+-I PREROUTING -p icmp   -j NOTRACK
+-I OUTPUT     -p icmp   -j NOTRACK
+
+COMMIT
+
+# end of rules

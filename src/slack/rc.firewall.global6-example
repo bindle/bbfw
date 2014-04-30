@@ -1,14 +1,15 @@
-# /etc/rc.d/rc.firewall.rules
+# /etc/rc.d/rc.firewall.global6
 #
-#  Host Specific IPv4/IPv6 Firewall Rules for Slackware Server
+#  Global Organization IPv6 Firewall Rules for Slackware Servers
 #
-#  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES SPECIFIC TO AN INDIVIDUAL
-#  SERVER.
+#  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES PUSHED OUT FROM A
+#  CENTRALIZED LOCATION IN ORDER TO ALLOW AN ORGANIZATION TO CREATE GLOBAL
+#  FIREWALL RULES ACROSS ALL SYSTEMS.
 #
-#  USE ONE OF THE FOLLOWING FILES FOR GLOBAL RULES:
-#     /etc/rc.d/rc.firewall.global
-#     /etc/rc.d/rc.firewall.global4
-#     /etc/rc.d/rc.firewall.global6
+#  PLACE HOST SPECIFIC RULES IN ONE OF THE FOLLOWING FILES:
+#     /etc/rc.d/rc.firewall.rules
+#     /etc/rc.d/rc.firewall.rules4
+#     /etc/rc.d/rc.firewall.rules6
 #
 
 
@@ -19,23 +20,23 @@
 #############################################################################
 *filter
 
-# accept HTTP/HTTPS connections
--A INPUT -p tcp --dport http   -j  ACCEPT
--A INPUT -p tcp --dport https  -j  ACCEPT
-
-# accept DNS connections
--A INPUT -p tcp --dport domain -j  ACCEPT
--A INPUT -p udp --dport domain -j  ACCEPT
+# allow all ICMPv6 traffic
+-I INPUT   -p icmpv6   -j ACCEPT
+-I FORWARD -p icmpv6   -j ACCEPT
 
 COMMIT
 
 
 #############################################################################
 #                                                                           #
-#                           RAW Table (IPv4/IPv6)                           #
+#                             RAW Table (IPv6)                              #
 #                                                                           #
 #############################################################################
 *raw
+
+# ICMP traffic
+-I PREROUTING -p icmpv6   -j NOTRACK
+-I OUTPUT     -p icmpv6   -j NOTRACK
 
 COMMIT
 
