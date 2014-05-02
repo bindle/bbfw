@@ -78,6 +78,7 @@ sbin_SCRIPTS				= src/misc/cronmail.sh
 
 # lists
 AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bash/bindle.sh \
+					  src/slack/mkinitrd-all.sh \
 					  src/slack/rc.firewall \
 					  src/slack/rc.inet1_local
 BUILT_SOURCES				=
@@ -91,6 +92,7 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/misc/git-proj-stats.sh.in \
 					  src/misc/pub-generate-readme.sh.in \
 					  src/misc/pub-rsync-remotes.sh.in \
+					  src/slack/mkinitrd-all.sh.in \
 					  src/slack/rc.firewall.in \
 					  src/slack/rc.firewall.global-example \
 					  src/slack/rc.firewall.global4-example \
@@ -135,7 +137,8 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 
 # conditional targets for slackware
 if ENABLE_SLACKWARE
-sbin_SCRIPTS				+= src/slack/slack-net-check.sh \
+sbin_SCRIPTS				+= src/slack/mkinitrd-all.sh \
+					   src/slack/slack-net-check.sh \
 					   src/slack/slack-pkg-audit.sh
 slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 					   src/slack/rc.inet1_local
@@ -184,6 +187,9 @@ src/misc/pub-generate-readme.sh: Makefile src/misc/pub-generate-readme.sh.in
 	@$(do_subst_fn)
 
 src/misc/pub-rsync-remotes.sh: Makefile src/misc/pub-rsync-remotes.sh.in
+	@$(do_subst_fn)
+
+src/slack/mkinitrd-all.sh: Makefile src/slack/mkinitrd-all.sh.in
 	@$(do_subst_fn)
 
 src/slack/rc.firewall: Makefile src/slack/rc.firewall.in

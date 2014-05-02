@@ -47,6 +47,7 @@
 		A0664F0C18FD87D400A1AC67 /* slack-sync-auth.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-sync-auth.sh.in"; sourceTree = "<group>"; };
 		A0664F0D18FD87D400A1AC67 /* slack-update-mirrors.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "slack-update-mirrors.sh.in"; sourceTree = "<group>"; };
 		A06923B719119E6D00A9F830 /* rc.inet1.conf */ = {isa = PBXFileReference; lastKnownFileType = text; path = rc.inet1.conf; sourceTree = "<group>"; };
+		A0B6A3E71913F836000636B2 /* mkinitrd-all.sh.in */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "mkinitrd-all.sh.in"; sourceTree = "<group>"; };
 		A0D314B319097585008EDE75 /* rc.firewall.global-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.global-example"; sourceTree = "<group>"; };
 		A0D314B419097585008EDE75 /* rc.firewall.global4-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.global4-example"; sourceTree = "<group>"; };
 		A0D314B519097585008EDE75 /* rc.firewall.global6-example */ = {isa = PBXFileReference; explicitFileType = text.script; path = "rc.firewall.global6-example"; sourceTree = "<group>"; };
@@ -71,6 +72,7 @@
 		A0664F0E18FD8BEF00A1AC67 /* slack */ = {
 			isa = PBXGroup;
 			children = (
+				A0B6A3E71913F836000636B2 /* mkinitrd-all.sh.in */,
 				A0664F0218FD87D400A1AC67 /* rc.firewall.in */,
 				A0D314B319097585008EDE75 /* rc.firewall.global-example */,
 				A0D314B419097585008EDE75 /* rc.firewall.global4-example */,
