@@ -91,18 +91,18 @@ start() {
    fi
 
    # apply company policy for firewall rules
-   if test -f /etc/rc.d/rc.firewall.policy4;then
+   if test -f /etc/rc.d/rc.firewall.global4;then
       echo "/etc/rc.d/rc.firewall:  adding IPv4 global rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy4 | /usr/sbin/iptables-restore -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global4 | /usr/sbin/iptables-restore -n
    fi
-   if test -f /etc/rc.d/rc.firewall.policy6;then
+   if test -f /etc/rc.d/rc.firewall.global6;then
       echo "/etc/rc.d/rc.firewall:  adding IPv6 global rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy6 | /usr/sbin/ip6tables-restore -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global6 | /usr/sbin/ip6tables-restore -n
    fi
-   if test -f /etc/rc.d/rc.firewall.policy;then
+   if test -f /etc/rc.d/rc.firewall.global;then
       echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 global rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/iptables-restore  -n
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.policy | /usr/sbin/ip6tables-restore -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global | /usr/sbin/iptables-restore  -n
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global | /usr/sbin/ip6tables-restore -n
    fi
 
    # LXC rules
