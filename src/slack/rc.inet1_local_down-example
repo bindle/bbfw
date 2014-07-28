@@ -33,29 +33,4 @@
 #   @BINDLE_BINARIES_BSD_LICENSE_END@
 #
 
-# ovs-vswitchd
-echo "stopping vSwitch deamon..."
-if test -f /var/run/openvswitch/ovs-vswitchd.pid;then
-   kill `cat /var/run/openvswitch/ovs-vswitchd.pid`
-   sleep 1
-   if test -f /var/run/openvswitch/ovs-vswitchd.pid;then
-      kill -9 `cat /var/run/openvswitch/ovsdb-vswitchd.pid`
-   fi
-fi
-
-
-# ovsdb-server
-echo "stopping ovsdb-server..."
-if test -f /var/run/openvswitch/ovsdb-server.pid;then
-   kill `cat /var/run/openvswitch/ovsdb-server.pid`
-   sleep 1
-   if test -f /var/run/openvswitch/ovsdb-server.pid;then
-      kill -9 `cat /var/run/openvswitch/ovsdb-server.pid`
-   fi
-fi
-
-# removes modules
-echo "unloading modules..."
-/sbin/modprobe -r openvswitch
-
 # End of /etc/rc.d/rc.inet1
