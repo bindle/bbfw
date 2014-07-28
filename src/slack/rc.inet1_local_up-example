@@ -35,48 +35,50 @@
 
 # Load Kernel Modules
 echo "loading modules..."
-/sbin/modprobe 8139cp
 /sbin/modprobe 8021q
 
 
 # interface: eth0
 print_up "eth0"
-/usr/sbin/ip link set                    eth0 up
+/usr/sbin/ip link set eth0 up
 /sbin/sysctl -q -w net.ipv6.conf.eth0.disable_ipv6=0
 
 
 # Interface: eth1
 print_up "eth1"
-/usr/sbin/ip link set                    eth1 up
+/usr/sbin/ip link set eth1 up
 /sbin/sysctl -q -w net.ipv6.conf.eth1.disable_ipv6=1
 
 
 # Interface: eth1.42
 print_up "eth1.42"
-/sbin/vconfig add eth1 42
-/usr/sbin/ip link set eth1.42 up
+/sbin/vconfig add                                 eth1 42
+/usr/sbin/ip link set                             eth1.42 up
 /usr/sbin/ip addr add 63.140.112.161/28       dev eth1.42
+/sbin/sysctl -q -w net.ipv6.conf.eth1/42.disable_ipv6=1
 
 
 # Interface: eth1.81
 print_up "eth1.81"
-/sbin/vconfig add eth1 81
-/usr/sbin/ip link set eth1.81 up
+/sbin/vconfig add                                 eth1 81
+/usr/sbin/ip link set                             eth1.81 up
 /usr/sbin/ip addr add 10.19.81.2/25           dev eth1.81
 /usr/sbin/ip addr add 2001:470:ea85:81::2/64  dev eth1.81
+/sbin/sysctl -q -w net.ipv6.conf.eth1/81.disable_ipv6=0
 
 
 # Routes
 echo "adding routes"
-/usr/sbin/ip route add 127.0.0.0/8                   dev lo
-/usr/sbin/ip route add default    via 63.140.112.174 dev eth1.42
-/usr/sbin/ip route add 10.0.0.0/8 via 10.19.81.1     dev eth1.81
-/usr/sbin/ip route add default    via fe80::1        dev eth1.42
+/usr/sbin/ip route add 127.0.0.0/8  dev lo
+/usr/sbin/ip route add default      via 63.140.112.174
+/usr/sbin/ip route add 10.0.0.0/8   via 10.19.81.1
+/usr/sbin/ip route add default      via fe80::1
 
 
 # enable forwarding
-echo "enabling forwarding"
-echo 1 > /proc/sys/net/ipv4/ip_forward
-echo 1 >  /proc/sys/net/ipv6/conf/all/forwarding
+echo "configuring forwarding"
+echo 0 > /proc/sys/net/ipv4/ip_forward
+echo 0 >  /proc/sys/net/ipv6/conf/all/forwarding
+
 
 # End of /etc/rc.d/rc.inet1
