@@ -2,5 +2,14 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2011 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.2
+   - Updating git-proj-stats.sh. (syzdek)
+   - Adding slack-pkg-audit.sh. (syzdek)
+   - Adding rc.firewall (syzdek)
+   - Adding rc.inet1_local (syzdek)
+   - Adding bash profile bindle.sh (syzdek)
+   - Misc fixes and updates to scripts. (syzdek)
+
 0.1
-	- starting project (syzdek)
+   - starting project (syzdek)
+
