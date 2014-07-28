@@ -112,12 +112,27 @@ stop()
 
 
    # purge vlans
-   for NETDEV in `ls /proc/net/vlan/ |grep -v '^config$'`;do
-      print_down "${NETDEV}"
-      /usr/sbin/ip -4 addr flush dev ${NETDEV}
-      /usr/sbin/ip -6 addr flush dev ${NETDEV}
-      /sbin/vconfig rem ${NETDEV} > /dev/null
-   done
+   if test -d /proc/net/vlan;then
+      for NETDEV in `ls /proc/net/vlan/ |egrep -v '^config$'`;do
+         print_down "${NETDEV}"
+         /usr/sbin/ip -4 addr flush dev ${NETDEV}
+         /usr/sbin/ip -6 addr flush dev ${NETDEV}
+         /sbin/vconfig rem ${NETDEV} > /dev/null
+      done
+   fi
+   /sbin/modprobe -r 8021q
+
+
+   # purge bonded ethernet
+   if test -d /proc/net/bonding;then
+      for NETDEV in `ls /proc/net/bonding`;do
+         print_down "${NETDEV}"
+         /usr/sbin/ip -4 addr flush dev ${NETDEV}
+         /usr/sbin/ip -6 addr flush dev ${NETDEV}
+         /usr/sbin/ip link set ${NETDEV} down > /dev/null
+      done
+   fi
+   /sbin/modprobe -r bonding
 
 
    # down all network interfaces
