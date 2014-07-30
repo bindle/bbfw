@@ -1,6 +1,9 @@
 
 Bindle Binaries Admin Tools
-Copyright (C) 2011 Bindle Binaries <syzdek@bindlebinaries.com>.
+Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
+
+0.3
+   - Fixing symlink handling in mkinitrd-all.sh (syzdek)
 
 0.2
    - Updating git-proj-stats.sh. (syzdek)
