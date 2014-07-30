@@ -48,7 +48,7 @@ else # output to stdout/stderr:
 fi
 
 # logs version
-echo " ${PACKAGE_NAME} ${PACKAGE_VERSION}" | ${LOGGER}
+echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | ${LOGGER}
 
 # verifies environment
 if test "x${USER}" != "xroot";then
@@ -72,14 +72,14 @@ for VMLINUZ in $(ls /boot/vmlinuz*);do
       echo "Generating /boot/initrd.gz${SUFFIX} ..."
       rm -f /boot/initrd.gz${SUFFIX}
       $(/usr/share/mkinitrd/mkinitrd_command_generator.sh -r /boot/${VMLINUZ} || exit 1)${SUFFIX} || exit 1
-      echo ""
-      echo ""
    elif test -f /boot/${VMLINUZ} && test -h /boot/${VMLINUZ};then
       LNSUFFIX=$(readlink ${VMLINUZ} |sed -e 's/^vmlinuz//g')
       echo "Symlinking /boot/initrd.gz${LNSUFFIX} to /boot/initrd.gz${SUFFIX} ..."
       rm -f /boot/initrd.gz${SUFFIX}
-      ln -s /boot/initrd.gz${LNSUFFIX} to /boot/initrd.gz${SUFFIX}
+      ln -fs /boot/initrd.gz${LNSUFFIX} /boot/initrd.gz${SUFFIX}
    fi
+   echo ""
+   echo ""
 done | ${LOGGER}
 
 # end of script
