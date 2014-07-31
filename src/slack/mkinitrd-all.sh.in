@@ -65,15 +65,15 @@ if test ! -d /boot;then
 fi
 
 # scans for vmlinuz files and generates initrd.gz
-for VMLINUZ in $(ls /boot/vmlinuz*);do
-   VMLINUZ=$(basename ${VMLINUZ})
-   SUFFIX=$(echo ${VMLINUZ} |sed -e 's/^vmlinuz//g')
-   if test -f /boot/${VMLINUZ} && test ! -h /boot/${VMLINUZ};then
+for FILE in $(ls /boot/vmlinuz*);do
+   SUFFIX=$(basename ${FILE} |sed -e 's/^vmlinuz//g')
+   if test -f ${FILE} && test ! -h ${FILE};then
       echo "Generating /boot/initrd.gz${SUFFIX} ..."
       rm -f /boot/initrd.gz${SUFFIX}
-      $(/usr/share/mkinitrd/mkinitrd_command_generator.sh -r /boot/${VMLINUZ} || exit 1)${SUFFIX} || exit 1
-   elif test -f /boot/${VMLINUZ} && test -h /boot/${VMLINUZ};then
-      LNSUFFIX=$(readlink ${VMLINUZ} |sed -e 's/^vmlinuz//g')
+      $(/usr/share/mkinitrd/mkinitrd_command_generator.sh -r ${FILE} || exit 1)${SUFFIX} || exit 1
+   elif test -f ${FILE} && test -h ${FILE};then
+      LNFILE=$(readlink ${FILE})
+      LNSUFFIX=$(basename ${LNFILE} |sed -e 's/^vmlinuz//g')
       echo "Symlinking /boot/initrd.gz${LNSUFFIX} to /boot/initrd.gz${SUFFIX} ..."
       rm -f /boot/initrd.gz${SUFFIX}
       ln -fs /boot/initrd.gz${LNSUFFIX} /boot/initrd.gz${SUFFIX}
