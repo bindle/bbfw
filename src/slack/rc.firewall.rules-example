@@ -19,13 +19,13 @@
 #############################################################################
 *filter
 
-# accept HTTP/HTTPS connections
--A INPUT -p tcp --dport http   -j  ACCEPT
--A INPUT -p tcp --dport https  -j  ACCEPT
+## accept HTTP/HTTPS connections
+#-A INPUT -p tcp --dport http   -j  ACCEPT
+#-A INPUT -p tcp --dport https  -j  ACCEPT
 
-# accept DNS connections
--A INPUT -p tcp --dport domain -j  ACCEPT
--A INPUT -p udp --dport domain -j  ACCEPT
+## accept DNS connections
+#-A INPUT -p tcp --dport domain -j  ACCEPT
+#-A INPUT -p udp --dport domain -j  ACCEPT
 
 COMMIT
 
