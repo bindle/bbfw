@@ -2,6 +2,9 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.4
+   - Updating example config files. (syzdek)
+
 0.3
    - Fixing symlink handling in mkinitrd-all.sh (syzdek)
 

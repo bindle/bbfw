@@ -38,7 +38,7 @@ AC_PREREQ([2.65])
 
 AC_COPYRIGHT([Copyright (c) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.])
 AC_REVISION(0.1)
-AC_INIT([Bindle Binaries Admin Tools],[0.3],[syzdek@bindlebinaries.com],[bindleadmin])
+AC_INIT([Bindle Binaries Admin Tools],[0.4],[syzdek@bindlebinaries.com],[bindleadmin])
 
 AC_SUBST([RELEASE_MONTH],["April 2011"])
 
