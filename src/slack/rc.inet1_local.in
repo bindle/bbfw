@@ -136,7 +136,7 @@ stop()
 
 
    # down all network interfaces
-   for NETDEV in `cut -d: -f1 /proc/net/dev |grep -v '|' |sort`;do
+   for NETDEV in `cut -d: -f1 /proc/net/dev |egrep  'eth' |sort`;do
       print_down "${NETDEV}"
       /usr/sbin/ip -4 addr flush dev ${NETDEV}
       /usr/sbin/ip -6 addr flush dev ${NETDEV}
