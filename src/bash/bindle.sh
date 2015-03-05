@@ -36,7 +36,11 @@
 
 
 # set relative hostname
-TMPHOST=`hostname -f |sed -e 's/\.[a-zA-Z0-9]\{1,\}\.[a-zA-Z]\{2,3\}$//g'`
+if test -f /etc/HOSTNAME;then
+   TMPHOST=`sed -e 's/\.[a-zA-Z0-9]\{1,\}\.[a-zA-Z]\{2,3\}$//g' /etc/HOSTNAME`
+else
+   TMPHOST=`hostname -f |sed -e 's/\.[a-zA-Z0-9]\{1,\}\.[a-zA-Z]\{2,3\}$//g'`
+fi
 PS1="\u@${TMPHOST}\\$ "
 export PS1
 unset TMPHOST
