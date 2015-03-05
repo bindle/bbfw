@@ -36,11 +36,11 @@
 
 AC_PREREQ([2.65])
 
-AC_COPYRIGHT([Copyright (c) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.])
+AC_COPYRIGHT([Copyright (c) 2015 Bindle Binaries <syzdek@bindlebinaries.com>.])
 AC_REVISION(0.1)
-AC_INIT([Bindle Binaries Admin Tools],[0.4],[syzdek@bindlebinaries.com],[bindleadmin])
+AC_INIT([Bindle Binaries Admin Tools],[0.5],[syzdek@bindlebinaries.com],[bindleadmin])
 
-AC_SUBST([RELEASE_MONTH],["April 2011"])
+AC_SUBST([RELEASE_MONTH],["March 20115])
 
 # Version Info:
 #    Current    -- the current version number of this API
