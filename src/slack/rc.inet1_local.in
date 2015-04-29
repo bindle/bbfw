@@ -73,9 +73,9 @@ start()
 
    # Interface: lo
    print_up "lo"
-   /usr/sbin/ip link set lo up
-   /usr/sbin/ip addr add 127.0.0.1/8 dev lo
-   /usr/sbin/ip addr add ::1         dev lo
+   /usr/sbin/ip link set lo up              > /dev/null 2>&1
+   /usr/sbin/ip addr add 127.0.0.1/8 dev lo > /dev/null 2>&1
+   /usr/sbin/ip addr add ::1         dev lo > /dev/null 2>&1
 
    # load local rules
    if test -f /etc/rc.d/rc.inet1_local_up;then
@@ -144,6 +144,13 @@ stop()
       /usr/sbin/ip -6 addr flush dev ${NETDEV}
       /usr/sbin/ip    link set   dev ${NETDEV} down
    done
+
+
+   # Interface: lo
+   print_up "lo"
+   /usr/sbin/ip link set lo up              > /dev/null 2>&1
+   /usr/sbin/ip addr add 127.0.0.1/8 dev lo > /dev/null 2>&1
+   /usr/sbin/ip addr add ::1         dev lo > /dev/null 2>&1
 
 
    # removes modules
