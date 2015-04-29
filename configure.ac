@@ -38,20 +38,11 @@ AC_PREREQ([2.65])
 
 AC_COPYRIGHT([Copyright (c) 2015 Bindle Binaries <syzdek@bindlebinaries.com>.])
 AC_REVISION(0.1)
-AC_INIT([Bindle Binaries Admin Tools],[0.5],[syzdek@bindlebinaries.com],[bindleadmin])
+AC_INIT([Bindle Binaries Admin Tools],[0.6],[syzdek@bindlebinaries.com],[bindleadmin])
 
-AC_SUBST([RELEASE_MONTH],["March 20115])
+AC_SUBST([RELEASE_MONTH],["March 2015"])
 
-# Version Info:
-#    Current    -- the current version number of this API
-#    Revision   -- the revision of the implementation of the API version
-#    Age        -- How many seqential past API versions is supported by
-#                  this implementation
-# Format => Current:Revision:Age
-# Convenience macro:
-#    AC_BINDLE_LIBTOOL_VERSION_INFO(current, revision, age)
-AC_BINDLE_LIBTOOL_VERSION_INFO(0, 0, 0)
-
+# directory locations
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([build-aux/git-tar-name.txt])
 #AC_CONFIG_LIBOBJ_DIR(compat)
@@ -72,11 +63,21 @@ AC_PROG_CC
 AC_PROG_CXX
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
+AC_PROG_MAKE_SET
 AC_USE_SYSTEM_EXTENSIONS # replaces AC_AIX AC_GNU_SOURCE AC_MINIX
 AC_C_BIGENDIAN
 
+# Version Info:
+#    Current    -- the current version number of this API
+#    Revision   -- the revision of the implementation of the API version
+#    Age        -- How many seqential past API versions is supported by
+#                  this implementation
+# Format => Current:Revision:Age
+# Convenience macro:
+#    AC_BINDLE_LIBTOOL_VERSION_INFO(current, revision, age)
+AC_BINDLE_LIBTOOL_VERSION_INFO(0, 0, 0)
+
 # binary locations
-AC_PROG_INSTALL
 AC_PATH_PROG([SHELL],   sh bash,        [AC_MSG_ERROR([missing "sh"])], [$PATH])
 AC_CHECK_TOOLS(AR,      ar gar,         [AC_MSG_ERROR([missing binutil "ar"])])
 AC_CHECK_TOOLS(LD,      ld gld,         [AC_MSG_ERROR([missing binutil "ld"])])
@@ -97,6 +98,10 @@ LT_INIT(dlopen disable-fast-install win32-dll)
 # initiates bindle tools macros
 AC_BINDLE(contrib/bindletools)
 
+# determine PACKAGE_VERSION via Git
+AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version.sh])
+
+
 # custom configure options
 AC_BINDLE_ENABLE_WARNINGS
 AC_BINDLE_WITH_PERL
@@ -104,9 +109,6 @@ AC_BINDLEADMIN_SLACKWARE
 
 # enables getopt_long if header and functions were found
 AC_CHECK_HEADERS([getopt.h], [AC_DEFINE_UNQUOTED(USE_GETOPT_LONG, 1, [Use GNU getopt_long])])
-
-# determine PACKAGE_VERSION via Git
-AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version.sh])
 
 # Creates outputs
 AC_CONFIG_FILES([Makefile])
