@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 #
 #   Bindle Binaries Admin Tools
 #   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
@@ -38,10 +38,10 @@
 ###########
 
 # sets script/package information
-PROGRAM_NAME=`basename ${0}`
-PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
-PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
-PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+PROGRAM_NAME=$(basename ${0})
+PACKAGE_NAME=$(echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g')
+PACKAGE_VERSION=$(echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g')
+PACKAGE_BUGREPORT=$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')
 
 
 # If possible, log events in /var/log/messages:
@@ -66,7 +66,9 @@ start()
 {
    # Load Kernel Modules
    echo "loading modules..."
-   /sbin/modprobe ipv6
+   /sbin/modprobe ipv6    > /dev/null 2>&1
+   /sbin/modprobe 8021q   > /dev/null 2>&1
+   /sbin/modprobe bonding > /dev/null 2>&1
 
 
    # Interface: lo
@@ -103,7 +105,7 @@ stop()
 
 
    # delete tunnels
-   for NETDEV in `/usr/sbin/ip tunnel show |cut -d: -f1`;do
+   for NETDEV in $(/usr/sbin/ip tunnel show |cut -d: -f1);do
       print_down "${NETDEV}"
       /usr/sbin/ip -4 addr flush dev ${NETDEV}
       /usr/sbin/ip -6 addr flush dev ${NETDEV}
@@ -113,30 +115,30 @@ stop()
 
    # purge vlans
    if test -d /proc/net/vlan;then
-      for NETDEV in `ls /proc/net/vlan/ |egrep -v '^config$'`;do
+      for NETDEV in $(ls /proc/net/vlan/ |egrep -v '^config$');do
          print_down "${NETDEV}"
          /usr/sbin/ip -4 addr flush dev ${NETDEV}
          /usr/sbin/ip -6 addr flush dev ${NETDEV}
          /sbin/vconfig rem ${NETDEV} > /dev/null
       done
    fi
-   /sbin/modprobe -r 8021q
+   /sbin/modprobe -r 8021q > /dev/null 2>&1
 
 
    # purge bonded ethernet
    if test -d /proc/net/bonding;then
-      for NETDEV in `ls /proc/net/bonding`;do
+      for NETDEV in $(ls /proc/net/bonding);do
          print_down "${NETDEV}"
          /usr/sbin/ip -4 addr flush dev ${NETDEV}
          /usr/sbin/ip -6 addr flush dev ${NETDEV}
          /usr/sbin/ip link set ${NETDEV} down > /dev/null
       done
    fi
-   /sbin/modprobe -r bonding
+   /sbin/modprobe -r bonding > /dev/null 2>&1
 
 
    # down all network interfaces
-   for NETDEV in `cut -d: -f1 /proc/net/dev |egrep  'eth' |sort`;do
+   for NETDEV in $(cut -d: -f1 /proc/net/dev |egrep  'eth' |sort) lo;do
       print_down "${NETDEV}"
       /usr/sbin/ip -4 addr flush dev ${NETDEV}
       /usr/sbin/ip -6 addr flush dev ${NETDEV}
@@ -146,7 +148,6 @@ stop()
 
    # removes modules
    echo "unloading modules..."
-   /sbin/modprobe -r ipv6
 }
 
 

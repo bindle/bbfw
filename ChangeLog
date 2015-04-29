@@ -2,6 +2,9 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.6
+   - Adding explicity flush to lo interface in rc.inet1_local. (syzdek)
+
 0.5
    - Updating logic in bash profile for determining hostname. (syzdek)
 
