@@ -2,6 +2,9 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.8
+   - Removing automatic loading of bonding module in rc.inet1 (syzdek)
+
 0.7
    - Ensuring loopback is always enabled. (syzdek)
 

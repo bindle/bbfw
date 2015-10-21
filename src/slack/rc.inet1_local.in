@@ -68,7 +68,6 @@ start()
    echo "loading modules..."
    /sbin/modprobe ipv6    > /dev/null 2>&1
    /sbin/modprobe 8021q   > /dev/null 2>&1
-   /sbin/modprobe bonding > /dev/null 2>&1
 
 
    # Interface: lo
