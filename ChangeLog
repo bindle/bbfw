@@ -1,6 +1,9 @@
 
 Bindle Binaries Admin Tools
-Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
+Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
+
+0.9
+   - Adding bility to purge custom chains with rc.firewall (syzdek)
 
 0.8
    - Removing automatic loading of bonding module in rc.inet1 (syzdek)
