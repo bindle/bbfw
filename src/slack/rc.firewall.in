@@ -130,18 +130,24 @@ start() {
 stop() {
    for TABLE in filter nat mangle raw security;do
       echo "Flushing rules from ${TABLE} table (IPv4)"
-      for CHAIN in `/usr/sbin/iptables -t ${TABLE} -L -n |grep '^Chain ' |awk '{print$2}'`;do
+      for CHAIN in $(/usr/sbin/iptables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep -v ' references)$' |awk '{print$2}');do
          /usr/sbin/iptables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
       /usr/sbin/iptables -t ${TABLE} -F
+      for CHAIN in $(/usr/sbin/iptables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep    ' references)$' |awk '{print$2}');do
+         /usr/sbin/iptables -t ${TABLE} -X ${CHAIN}
+      done
    done
 
    for TABLE in filter nat mangle raw security;do
       echo "Flushing rules from ${TABLE} table (IPv6)"
-      for CHAIN in `/usr/sbin/ip6tables -t ${TABLE} -L -n |grep '^Chain ' |awk '{print$2}'`;do
+      for CHAIN in `/usr/sbin/ip6tables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep -v ' references)$' |awk '{print$2}'`;do
          /usr/sbin/ip6tables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
       /usr/sbin/ip6tables -t ${TABLE} -F
+      for CHAIN in `/usr/sbin/ip6tables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep    ' references)$' |awk '{print$2}'`;do
+         /usr/sbin/ip6tables -t ${TABLE} -X ${CHAIN}
+      done
    done
 }
 
