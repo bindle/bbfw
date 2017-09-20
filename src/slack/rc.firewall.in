@@ -137,6 +137,27 @@ start() {
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global | /usr/sbin/ip6tables-restore -n
    fi
 
+   # Application rules
+   if test -d /etc/firewall.d;then
+      for FILE in $(find /etc/firewall.d/ -name '*.ipsets' -type f);do
+         echo "adding IP sets (App: $(basename ${FILE})) ..."
+         cut -d# -f1 ${FILE} | /usr/sbin/ipset retore
+      done
+      for FILE in $(find /etc/firewall.d/ -name '*.rules4' -type f);do
+         echo "adding IPv4 rules (App: $(basename ${FILE})) ..."
+         cut -d# -f1 ${FILE} | /usr/sbin/iptables-restore -n
+      done
+      for FILE in $(find /etc/firewall.d/ -name '*.rules6' -type f);do
+         echo "adding IPv6 rules (App: $(basename ${FILE})) ..."
+         cut -d# -f1 ${FILE} | /usr/sbin/ip6tables-restore -n
+      done
+      for FILE in $(find /etc/firewall.d/ -name '*.rules' -type f);do
+         echo "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
+         cut -d# -f1 ${FILE} | /usr/sbin/ip6tables-restore -n
+      done
+   fi
+
+
    # LXC rules
    if test -d /var/lib/lxc/;then
       for LXC in `ls /var/lib/lxc/`;do
