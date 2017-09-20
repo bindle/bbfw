@@ -32,21 +32,26 @@
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_END@
 #
-#   rc.firewall         - Firewall init script for Slackware
-#   rc.firewall.global  - IPv4/IPv6 global rules which are centrally maintained
-#   rc.firewall.global4 - IPv4 global rules which are centrally maintained
-#   rc.firewall.global6 - IPv6 global rules which are centrally maintained
-#   rc.firewall.rules   - IPv4/IPv6 host specific firewall rules
-#   rc.firewall.rules4  - IPv4 host specific firewall rules
-#   rc.firewall.rules6  - IPv6 host specific firewall rules
+#   rc.firewall            - Firewall init script for Slackware
+#   rc.firewall.ipsets     - IP sets host specific used by iptables/ip6tables
+#   rc.firewall.global     - IPv4/IPv6 global rules which are centrally maintained
+#   rc.firewall.global4    - IPv4 global rules which are centrally maintained
+#   rc.firewall.global6    - IPv6 global rules which are centrally maintained
+#   rc.firewall.globalsets - global IP sets which are centrally maintained
+#   rc.firewall.rules      - IPv4/IPv6 host specific firewall rules
+#   rc.firewall.rules4     - IPv4 host specific firewall rules
+#   rc.firewall.rules6     - IPv6 host specific firewall rules
 #
 #   Firewall rules are loaded in the following order:
+#      rc.firewall.globalsets
+#      rc.firewall.ipsets
 #      rc.firewall.rules4
 #      rc.firewall.rules6
 #      rc.firewall.rules
 #      rc.firewall.global4
 #      rc.firewall.global6
 #      rc.firewall.global
+#      rc.firewall.globalsets
 #
 
 ###########
@@ -55,9 +60,9 @@
 
 # sets script/package information
 PROGRAM_NAME=`basename ${0}`
-PACKAGE_NAME=`echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g'`
-PACKAGE_VERSION=`echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g'`
-PACKAGE_BUGREPORT=`echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g'`
+PACKAGE_NAME=`echo 'Bindle Binaries Admin Tools' |sed -e 's/[@].*[@]//g'`
+PACKAGE_VERSION=`echo '0.9.0' |sed -e 's/[@].*[@]//g'`
+PACKAGE_BUGREPORT=`echo 'syzdek@bindlebinaries.com' |sed -e 's/[@].*[@]//g'`
 
 
 # If possible, log events in /var/log/messages:
@@ -73,34 +78,61 @@ fi
 # FUNCTIONS #
 #############
 
+dump()
+{
+   /usr/sbin/ipset list |sed -e "s/^/ipset: /g"
+   echo ""
+   for TABLE in $(/usr/sbin/iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
+      PREFIX="$(printf "%-9s" "${TABLE}:")"
+      /usr/sbin/iptables -t ${TABLE} -L |sed -e "s/^/iptables ${PREFIX} /g"
+      echo ""
+   done
+   for TABLE in $(/usr/sbin/ip6tables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
+      PREFIX="$(printf "%-9s" "${TABLE}:")"
+      /usr/sbin/ip6tables -t ${TABLE} -L |sed -e "s/^/ip6tables ${PREFIX} /g"
+      echo ""
+   done
+}
+
+
 # Function to start the network:
 start() {
+   # create IP sets
+   if test -f /etc/rc.d/rc.firewall.globalsets;then
+      echo "adding global IP sets"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.globalsets | /usr/sbin/ipset restore
+   fi
+   if test -f /etc/rc.d/rc.firewall.ipsets;then
+      echo "adding local IP sets"
+      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.ipsets | /usr/sbin/ipset restore
+   fi
+
    # apply host specific firewall rules
    if test -f /etc/rc.d/rc.firewall.rules4;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4 local rules"
+      echo "adding IPv4 local rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules6;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv6 local rules"
+      echo "adding IPv6 local rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 local rules"
+      echo "adding IPv4/IPv6 local rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
    fi
 
    # apply company policy for firewall rules
    if test -f /etc/rc.d/rc.firewall.global4;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4 global rules"
+      echo "adding IPv4 global rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global4 | /usr/sbin/iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.global6;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv6 global rules"
+      echo "adding IPv6 global rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global6 | /usr/sbin/ip6tables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.global;then
-      echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 global rules"
+      echo "adding IPv4/IPv6 global rules"
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global | /usr/sbin/iptables-restore  -n
       /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global | /usr/sbin/ip6tables-restore -n
    fi
@@ -109,15 +141,15 @@ start() {
    if test -d /var/lib/lxc/;then
       for LXC in `ls /var/lib/lxc/`;do
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4;then
-            echo "/etc/rc.d/rc.firewall:  adding IPv4 rules (LXC: ${LXC})"
+            echo "adding IPv4 rules (LXC: ${LXC})"
             /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6;then
-            echo "/etc/rc.d/rc.firewall:  adding IPv6 rules (LXC: ${LXC})"
+            echo "adding IPv6 rules (LXC: ${LXC})"
             /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
-            echo "/etc/rc.d/rc.firewall:  adding IPv4/IPv6 rules (LXC: ${LXC})"
+            echo "adding IPv4/IPv6 rules (LXC: ${LXC})"
             /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
             /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
          fi
@@ -128,26 +160,34 @@ start() {
 
 # Function to stop the network:
 stop() {
-   for TABLE in filter nat mangle raw security;do
+   for TABLE in $(/usr/sbin/iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv4)"
-      for CHAIN in $(/usr/sbin/iptables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep -v ' references)$' |awk '{print$2}');do
+      for CHAIN in $(/usr/sbin/iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
          /usr/sbin/iptables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
       /usr/sbin/iptables -t ${TABLE} -F
-      for CHAIN in $(/usr/sbin/iptables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep    ' references)$' |awk '{print$2}');do
+      for CHAIN in $(/usr/sbin/iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
          /usr/sbin/iptables -t ${TABLE} -X ${CHAIN}
       done
-   done
+   done 2> /dev/null
 
-   for TABLE in filter nat mangle raw security;do
+   for TABLE in $(/usr/sbin/iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv6)"
-      for CHAIN in `/usr/sbin/ip6tables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep -v ' references)$' |awk '{print$2}'`;do
+      for CHAIN in $(/usr/sbin/ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
          /usr/sbin/ip6tables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
       /usr/sbin/ip6tables -t ${TABLE} -F
-      for CHAIN in `/usr/sbin/ip6tables -t ${TABLE} -L -n 2> /dev/null |grep '^Chain ' |grep    ' references)$' |awk '{print$2}'`;do
+      for CHAIN in $(/usr/sbin/ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
          /usr/sbin/ip6tables -t ${TABLE} -X ${CHAIN}
       done
+   done 2> /dev/null
+
+   echo "Destroying all IP sets ..."
+   for SET in $(/usr/sbin/ipset save |grep '^create' |grep ' list:' |awk '{print$2}');do
+      /usr/sbin/ipset destroy "${SET}"
+   done
+   for SET in $(/usr/sbin/ipset save |grep '^create' |awk '{print$2}');do
+      /usr/sbin/ipset destroy "${SET}"
    done
 }
 
@@ -158,6 +198,10 @@ stop() {
 
 echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER 2>&1
 case "$1" in
+   'dump')
+      dump
+   ;;
+
    'start') # "start" brings up all configured interfaces:
       start 2>&1 | $LOGGER
    ;;
@@ -176,4 +220,4 @@ case "$1" in
    ;;
 esac
 
-# End of
+# End of scripts
