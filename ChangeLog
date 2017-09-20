@@ -2,6 +2,10 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.10
+   - Adding ability to specify application specific firewall rules (syzdek)
+   - Adding ability to create IP sets with rc.firewall (syzdek)
+
 0.9
    - Adding bility to purge custom chains with rc.firewall (syzdek)
 
