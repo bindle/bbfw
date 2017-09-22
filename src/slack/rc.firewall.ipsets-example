@@ -1,0 +1,34 @@
+# /etc/rc.d/rc.firewall.rules
+#
+#  Host Specific IP Sets for Slackware Server
+#
+#  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES SPECIFIC TO AN INDIVIDUAL
+#  SERVER.
+#
+#  USE ONE OF THE FOLLOWING FILES FOR GLOBAL RULES:
+#     /etc/rc.d/rc.firewall.global
+#     /etc/rc.d/rc.firewall.global4
+#     /etc/rc.d/rc.firewall.global6
+#     /etc/rc.d/rc.firewall.globalsets
+#
+
+
+######################
+#                    #
+#  Private Networks  #
+#                    #
+######################
+
+create PRIVATE4 hash:ip family inet  hashsize 1024 comment
+create PRIVATE6 hash:ip family inet6 hashsize 1024 comment
+create PRIVATE  list:set
+add PRIVATE PRIVATE4
+add PRIVATE PRIVATE6
+add PRIVATE4 10.0.0.0/8    "rfc1918"
+add PRIVATE4 172.16.0.0/12 "rfc1918"
+add PRIVATE4 192.168.0.0/1 "rfc1918"
+add PRIVATE6 fc00::/7      "rfc4193"
+add PRIVATE6 fe80::/10     "rfc4291""
+
+
+# end of rules

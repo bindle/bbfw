@@ -97,6 +97,8 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/slack/rc.firewall.global-example \
 					  src/slack/rc.firewall.global4-example \
 					  src/slack/rc.firewall.global6-example \
+					  src/slack/rc.firewall.globalsets-example \
+					  src/slack/rc.firewall.ipsets-example \
 					  src/slack/rc.firewall.rules-example \
 					  src/slack/rc.firewall.rules4-example \
 					  src/slack/rc.firewall.rules6-example \
@@ -145,6 +147,8 @@ slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 slackrcd_DATA				=  src/slack/rc.firewall.global-example \
 					   src/slack/rc.firewall.global4-example \
 					   src/slack/rc.firewall.global6-example \
+					   src/slack/rc.firewall.globalsets-example \
+					   src/slack/rc.firewall.ipsets-example \
 					   src/slack/rc.firewall.rules-example \
 					   src/slack/rc.firewall.rules4-example \
 					   src/slack/rc.firewall.rules6-example \

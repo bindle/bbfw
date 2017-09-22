@@ -1,0 +1,38 @@
+# /etc/rc.d/rc.firewall.global
+#
+#  Global Organization IP Sets for Slackware Servers
+#
+#  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES PUSHED OUT FROM A
+#  CENTRALIZED LOCATION IN ORDER TO ALLOW AN ORGANIZATION TO CREATE GLOBAL
+#  FIREWALL RULES ACROSS ALL SYSTEMS.
+#
+#  PLACE HOST SPECIFIC RULES IN ONE OF THE FOLLOWING FILES:
+#     /etc/rc.d/rc.firewall.ipsets
+#     /etc/rc.d/rc.firewall.rules
+#     /etc/rc.d/rc.firewall.rules4
+#     /etc/rc.d/rc.firewall.rules6
+#
+
+#######################
+#                     #
+#  Standard Services  #
+#                     #
+#######################
+
+create SERVICES bitmap:port range 1-1024 comment
+add SERVICES 20   comment "FTP data"
+add SERVICES 21   comment "FTP"
+add SERVICES 22   comment "SSH"
+add SERVICES 23   comment "Telnet"
+add SERVICES 25   comment "SMTP"
+add SERVICES 53   comment "DNS"
+add SERVICES 69   comment "TFTP"
+add SERVICES 80   comment "HTTP"
+add SERVICES 110  comment "POP3"
+add SERVICES 123  comment "NTP"
+add SERVICES 143  comment "IMAP"
+add SERVICES 389  comment "LDAP"
+add SERVICES 443  comment "HTTPS"
+
+
+# end of rules
