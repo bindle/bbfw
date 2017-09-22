@@ -7,17 +7,18 @@
 #  FIREWALL RULES ACROSS ALL SYSTEMS.
 #
 #  PLACE HOST SPECIFIC RULES IN ONE OF THE FOLLOWING FILES:
+#     /etc/rc.d/rc.firewall.ipsets
 #     /etc/rc.d/rc.firewall.rules
 #     /etc/rc.d/rc.firewall.rules4
 #     /etc/rc.d/rc.firewall.rules6
 #
 
 
-#############################################################################
-#                                                                           #
-#                         FILTER Table (IPv4/IPv6)                          #
-#                                                                           #
-#############################################################################
+#########################
+#                       #
+#  FILTER Table (IPv6)  #
+#                       #
+#########################
 *filter
 
 # allow all ICMPv6 traffic
@@ -27,11 +28,11 @@
 COMMIT
 
 
-#############################################################################
-#                                                                           #
-#                             RAW Table (IPv6)                              #
-#                                                                           #
-#############################################################################
+######################
+#                    #
+#  RAW Table (IPv6)  #
+#                    #
+######################
 *raw
 
 # ICMP traffic
