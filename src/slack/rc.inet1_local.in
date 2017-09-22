@@ -1,7 +1,7 @@
 #! /bin/bash
 #
 #   Bindle Binaries Admin Tools
-#   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
+#   Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@
 #
@@ -83,6 +83,17 @@ start()
 }
 
 
+list_links()
+{
+   test -z "${1}" && return 0
+   TYPE="${1}"
+   /usr/sbin/ip -br link show type ${TYPE} \
+      |awk '{print$1}' \
+      |cut -d@ -f1 \
+      |sort -n
+}
+
+
 # Function to stop the network:
 stop()
 {
@@ -103,37 +114,35 @@ stop()
    /usr/sbin/ip -4 route flush all
 
 
+   # delete interfaces
+   for NETTYPE in vlan ipvlan macvlan macvtap bond;do
+      for NETDEV in $(list_links ${NETTYPE});do
+         print_down "${NETDEV}"
+         /usr/sbin/ip -4 addr flush dev ${NETDEV}
+         /usr/sbin/ip -6 addr flush dev ${NETDEV}
+         /usr/sbin/ip link set ${NETDEV} down > /dev/null
+         /usr/sbin/ip link del dev ${NETDEV} type ${NETTYPE}
+      done
+   done
+
+
+   # delete vrfs
+   for NETDEV in $(list_links vrf);do
+      print_down "${NETDEV}"
+      TABLE=$(/usr/sbin/ip -d link show ${NETDEV} type vrf |grep 'vrf table' |awk '{print$3}')
+      /usr/sbin/ip link del dev ${NETDEV} type vrf
+      /usr/sbin/ip route flush table ${TABLE}
+   done
+
+
    # delete tunnels
    for NETDEV in $(/usr/sbin/ip tunnel show |cut -d: -f1);do
       print_down "${NETDEV}"
       /usr/sbin/ip -4 addr flush dev ${NETDEV}
       /usr/sbin/ip -6 addr flush dev ${NETDEV}
+      /usr/sbin/ip    link set   dev ${NETDEV} down
       /usr/sbin/ip    tun  del       ${NETDEV}
    done
-
-
-   # purge vlans
-   if test -d /proc/net/vlan;then
-      for NETDEV in $(ls /proc/net/vlan/ |egrep -v '^config$');do
-         print_down "${NETDEV}"
-         /usr/sbin/ip -4 addr flush dev ${NETDEV}
-         /usr/sbin/ip -6 addr flush dev ${NETDEV}
-         /sbin/vconfig rem ${NETDEV} > /dev/null
-      done
-   fi
-   /sbin/modprobe -r 8021q > /dev/null 2>&1
-
-
-   # purge bonded ethernet
-   if test -d /proc/net/bonding;then
-      for NETDEV in $(ls /proc/net/bonding);do
-         print_down "${NETDEV}"
-         /usr/sbin/ip -4 addr flush dev ${NETDEV}
-         /usr/sbin/ip -6 addr flush dev ${NETDEV}
-         /usr/sbin/ip link set ${NETDEV} down > /dev/null
-      done
-   fi
-   /sbin/modprobe -r bonding > /dev/null 2>&1
 
 
    # down all network interfaces
@@ -154,6 +163,9 @@ stop()
 
    # removes modules
    echo "unloading modules..."
+   /sbin/modprobe -r 8021q   > /dev/null 2>&1
+   /sbin/modprobe -r bonding > /dev/null 2>&1
+   /sbin/modprobe -r sit     > /dev/null 2>&1
 }
 
 
