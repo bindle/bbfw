@@ -2,6 +2,9 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.11
+   - Adding new link types to rc.inet1_local (syzdek)
+
 0.10
    - Adding ability to specify application specific firewall rules (syzdek)
    - Adding ability to create IP sets with rc.firewall (syzdek)
