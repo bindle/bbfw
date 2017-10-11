@@ -2,6 +2,9 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.12
+   - Adding support for line wraps in rc.firewall (syzdek)
+
 0.11
    - Adding new link types to rc.inet1_local (syzdek)
 
