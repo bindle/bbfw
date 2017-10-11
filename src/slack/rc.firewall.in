@@ -78,6 +78,15 @@ fi
 # FUNCTIONS #
 #############
 
+clean_file()
+{
+   DIRTY_FILE="${1}"
+   /usr/bin/cut -d# -f1 "${DIRTY_FILE}" \
+      |sed -n 'H; ${ x; s/\\\n//; s/\n //g; p}' \
+      |sed -e 's/[[:space:]]{1,}/ /g'
+}
+
+
 dump()
 {
    /usr/sbin/ipset list |sed -e "s/^/ipset: /g"
@@ -100,60 +109,60 @@ start() {
    # create IP sets
    if test -f /etc/rc.d/rc.firewall.globalsets;then
       echo "adding global IP sets"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.globalsets | /usr/sbin/ipset restore
+      clean_file /etc/rc.d/rc.firewall.globalsets |/usr/sbin/ipset restore
    fi
    if test -f /etc/rc.d/rc.firewall.ipsets;then
       echo "adding local IP sets"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.ipsets | /usr/sbin/ipset restore
+      clean_file /etc/rc.d/rc.firewall.ipsets |/usr/sbin/ipset restore
    fi
 
    # apply host specific firewall rules
    if test -f /etc/rc.d/rc.firewall.rules4;then
       echo "adding IPv4 local rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
+      clean_file /etc/rc.d/rc.firewall.rules4 |/usr/sbin/iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules6;then
       echo "adding IPv6 local rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.rules6 |/usr/sbin/ip6tables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules;then
       echo "adding IPv4/IPv6 local rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.rules |/usr/sbin/iptables-restore  -n
+      clean_file /etc/rc.d/rc.firewall.rules |/usr/sbin/ip6tables-restore -n
    fi
 
    # apply company policy for firewall rules
    if test -f /etc/rc.d/rc.firewall.global4;then
       echo "adding IPv4 global rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global4 | /usr/sbin/iptables-restore -n
+      clean_file /etc/rc.d/rc.firewall.global4 |/usr/sbin/iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.global6;then
       echo "adding IPv6 global rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global6 | /usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.global6 |/usr/sbin/ip6tables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.global;then
       echo "adding IPv4/IPv6 global rules"
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global | /usr/sbin/iptables-restore  -n
-      /usr/bin/cut -d# -f1 /etc/rc.d/rc.firewall.global | /usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.global |/usr/sbin/iptables-restore  -n
+      clean_file /etc/rc.d/rc.firewall.global |/usr/sbin/ip6tables-restore -n
    fi
 
    # Application rules
    if test -d /etc/firewall.d;then
       for FILE in $(find /etc/firewall.d/ -name '*.ipsets' -type f);do
          echo "adding IP sets (App: $(basename ${FILE})) ..."
-         cut -d# -f1 ${FILE} | /usr/sbin/ipset retore
+         clean_file ${FILE} |/usr/sbin/ipset retore
       done
       for FILE in $(find /etc/firewall.d/ -name '*.rules4' -type f);do
          echo "adding IPv4 rules (App: $(basename ${FILE})) ..."
-         cut -d# -f1 ${FILE} | /usr/sbin/iptables-restore -n
+         clean_file ${FILE} |/usr/sbin/iptables-restore -n
       done
       for FILE in $(find /etc/firewall.d/ -name '*.rules6' -type f);do
          echo "adding IPv6 rules (App: $(basename ${FILE})) ..."
-         cut -d# -f1 ${FILE} | /usr/sbin/ip6tables-restore -n
+         clean_file ${FILE} |/usr/sbin/ip6tables-restore -n
       done
       for FILE in $(find /etc/firewall.d/ -name '*.rules' -type f);do
          echo "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
-         cut -d# -f1 ${FILE} | /usr/sbin/ip6tables-restore -n
+         clean_file ${FILE} |/usr/sbin/ip6tables-restore -n
       done
    fi
 
@@ -163,16 +172,16 @@ start() {
       for LXC in `ls /var/lib/lxc/`;do
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4;then
             echo "adding IPv4 rules (LXC: ${LXC})"
-            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6;then
             echo "adding IPv6 rules (LXC: ${LXC})"
-            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
             echo "adding IPv4/IPv6 rules (LXC: ${LXC})"
-            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
-            /usr/bin/cut -d# -f1 /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
          fi
       done
    fi
