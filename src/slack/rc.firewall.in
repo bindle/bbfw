@@ -59,10 +59,10 @@
 ###########
 
 # sets script/package information
-PROGRAM_NAME=`basename ${0}`
-PACKAGE_NAME=`echo 'Bindle Binaries Admin Tools' |sed -e 's/[@].*[@]//g'`
-PACKAGE_VERSION=`echo '0.9.0' |sed -e 's/[@].*[@]//g'`
-PACKAGE_BUGREPORT=`echo 'syzdek@bindlebinaries.com' |sed -e 's/[@].*[@]//g'`
+PROGRAM_NAME="$(basename ${0})"
+PACKAGE_NAME="$(echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g')"
+PACKAGE_VERSION="$(echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g')"
+PACKAGE_BUGREPORT="$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')"
 
 
 # If possible, log events in /var/log/messages:
