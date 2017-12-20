@@ -54,6 +54,14 @@
 #      rc.firewall.globalsets
 #
 
+###############
+# ENVIRONMENT #
+###############
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+
 ###########
 # LOGGING #
 ###########
@@ -67,10 +75,10 @@ PACKAGE_BUGREPORT="$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')"
 
 # If possible, log events in /var/log/messages:
 PROG=rc.firewall
-if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
-  LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
+if [ -f /var/run/syslogd.pid -a -x logger ]; then
+  LOGGER="logger -s -t ${PROG}[$$]"
 else # output to stdout/stderr:
-  LOGGER="/usr/bin/sed -e s/^/${PROG}:/g"
+  LOGGER="sed -e s/^/${PROG}:/g"
 fi
 
 
@@ -81,7 +89,7 @@ fi
 clean_file()
 {
    DIRTY_FILE="${1}"
-   /usr/bin/cut -d# -f1 "${DIRTY_FILE}" \
+   cut -d# -f1 "${DIRTY_FILE}" \
       |sed -n 'H; ${ x; s/\\\n//; s/\n //g; p}' \
       |sed -e 's/[[:space:]]{1,}/ /g'
 }
@@ -89,16 +97,16 @@ clean_file()
 
 dump()
 {
-   /usr/sbin/ipset list |sed -e "s/^/ipset: /g"
+   ipset list |sed -e "s/^/ipset: /g"
    echo ""
-   for TABLE in $(/usr/sbin/iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
+   for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       PREFIX="$(printf "%-9s" "${TABLE}:")"
-      /usr/sbin/iptables -t ${TABLE} -L |sed -e "s/^/iptables ${PREFIX} /g"
+      iptables -t ${TABLE} -L |sed -e "s/^/iptables ${PREFIX} /g"
       echo ""
    done
-   for TABLE in $(/usr/sbin/ip6tables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
+   for TABLE in $(ip6tables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       PREFIX="$(printf "%-9s" "${TABLE}:")"
-      /usr/sbin/ip6tables -t ${TABLE} -L |sed -e "s/^/ip6tables ${PREFIX} /g"
+      ip6tables -t ${TABLE} -L |sed -e "s/^/ip6tables ${PREFIX} /g"
       echo ""
    done
 }
@@ -109,60 +117,60 @@ start() {
    # create IP sets
    if test -f /etc/rc.d/rc.firewall.globalsets;then
       echo "adding global IP sets"
-      clean_file /etc/rc.d/rc.firewall.globalsets |/usr/sbin/ipset restore
+      clean_file /etc/rc.d/rc.firewall.globalsets |ipset restore
    fi
    if test -f /etc/rc.d/rc.firewall.ipsets;then
       echo "adding local IP sets"
-      clean_file /etc/rc.d/rc.firewall.ipsets |/usr/sbin/ipset restore
+      clean_file /etc/rc.d/rc.firewall.ipsets |ipset restore
    fi
 
    # apply host specific firewall rules
    if test -f /etc/rc.d/rc.firewall.rules4;then
       echo "adding IPv4 local rules"
-      clean_file /etc/rc.d/rc.firewall.rules4 |/usr/sbin/iptables-restore -n
+      clean_file /etc/rc.d/rc.firewall.rules4 |iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules6;then
       echo "adding IPv6 local rules"
-      clean_file /etc/rc.d/rc.firewall.rules6 |/usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.rules6 |ip6tables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.rules;then
       echo "adding IPv4/IPv6 local rules"
-      clean_file /etc/rc.d/rc.firewall.rules |/usr/sbin/iptables-restore  -n
-      clean_file /etc/rc.d/rc.firewall.rules |/usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.rules |iptables-restore  -n
+      clean_file /etc/rc.d/rc.firewall.rules |ip6tables-restore -n
    fi
 
    # apply company policy for firewall rules
    if test -f /etc/rc.d/rc.firewall.global4;then
       echo "adding IPv4 global rules"
-      clean_file /etc/rc.d/rc.firewall.global4 |/usr/sbin/iptables-restore -n
+      clean_file /etc/rc.d/rc.firewall.global4 |iptables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.global6;then
       echo "adding IPv6 global rules"
-      clean_file /etc/rc.d/rc.firewall.global6 |/usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.global6 |ip6tables-restore -n
    fi
    if test -f /etc/rc.d/rc.firewall.global;then
       echo "adding IPv4/IPv6 global rules"
-      clean_file /etc/rc.d/rc.firewall.global |/usr/sbin/iptables-restore  -n
-      clean_file /etc/rc.d/rc.firewall.global |/usr/sbin/ip6tables-restore -n
+      clean_file /etc/rc.d/rc.firewall.global |iptables-restore  -n
+      clean_file /etc/rc.d/rc.firewall.global |ip6tables-restore -n
    fi
 
    # Application rules
    if test -d /etc/firewall.d;then
       for FILE in $(find /etc/firewall.d/ -name '*.ipsets' -type f);do
          echo "adding IP sets (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |/usr/sbin/ipset retore
+         clean_file ${FILE} |ipset retore
       done
       for FILE in $(find /etc/firewall.d/ -name '*.rules4' -type f);do
          echo "adding IPv4 rules (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |/usr/sbin/iptables-restore -n
+         clean_file ${FILE} |iptables-restore -n
       done
       for FILE in $(find /etc/firewall.d/ -name '*.rules6' -type f);do
          echo "adding IPv6 rules (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |/usr/sbin/ip6tables-restore -n
+         clean_file ${FILE} |ip6tables-restore -n
       done
       for FILE in $(find /etc/firewall.d/ -name '*.rules' -type f);do
          echo "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |/usr/sbin/ip6tables-restore -n
+         clean_file ${FILE} |ip6tables-restore -n
       done
    fi
 
@@ -172,16 +180,16 @@ start() {
       for LXC in `ls /var/lib/lxc/`;do
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4;then
             echo "adding IPv4 rules (LXC: ${LXC})"
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | /usr/sbin/iptables-restore -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | iptables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6;then
             echo "adding IPv6 rules (LXC: ${LXC})"
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | /usr/sbin/ip6tables-restore -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | ip6tables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
             echo "adding IPv4/IPv6 rules (LXC: ${LXC})"
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/iptables-restore  -n
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | /usr/sbin/ip6tables-restore -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | iptables-restore  -n
+            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | ip6tables-restore -n
          fi
       done
    fi
@@ -190,34 +198,34 @@ start() {
 
 # Function to stop the network:
 stop() {
-   for TABLE in $(/usr/sbin/iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
+   for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv4)"
-      for CHAIN in $(/usr/sbin/iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
-         /usr/sbin/iptables -t ${TABLE} -P ${CHAIN} ACCEPT
+      for CHAIN in $(iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
+         iptables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
-      /usr/sbin/iptables -t ${TABLE} -F
-      for CHAIN in $(/usr/sbin/iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
-         /usr/sbin/iptables -t ${TABLE} -X ${CHAIN}
+      iptables -t ${TABLE} -F
+      for CHAIN in $(iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
+         iptables -t ${TABLE} -X ${CHAIN}
       done
    done 2> /dev/null
 
-   for TABLE in $(/usr/sbin/iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
+   for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv6)"
-      for CHAIN in $(/usr/sbin/ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
-         /usr/sbin/ip6tables -t ${TABLE} -P ${CHAIN} ACCEPT
+      for CHAIN in $(ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
+         ip6tables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
-      /usr/sbin/ip6tables -t ${TABLE} -F
-      for CHAIN in $(/usr/sbin/ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
-         /usr/sbin/ip6tables -t ${TABLE} -X ${CHAIN}
+      ip6tables -t ${TABLE} -F
+      for CHAIN in $(ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
+         ip6tables -t ${TABLE} -X ${CHAIN}
       done
    done 2> /dev/null
 
    echo "Destroying all IP sets ..."
-   for SET in $(/usr/sbin/ipset save |grep '^create' |grep ' list:' |awk '{print$2}');do
-      /usr/sbin/ipset destroy "${SET}"
+   for SET in $(ipset save |grep '^create' |grep ' list:' |awk '{print$2}');do
+      ipset destroy "${SET}"
    done
-   for SET in $(/usr/sbin/ipset save |grep '^create' |awk '{print$2}');do
-      /usr/sbin/ipset destroy "${SET}"
+   for SET in $(ipset save |grep '^create' |awk '{print$2}');do
+      ipset destroy "${SET}"
    done
 }
 
