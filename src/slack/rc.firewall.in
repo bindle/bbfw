@@ -62,10 +62,10 @@ PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
 
 
-# find init location
+# determine prefix of conf files
 if test -f /etc/rc.d/rc.firewall;then
    FW_PREFIX=/etc/rc.d/rc.firewall
-elif test -d /etc/init.d/rc.firewall;then
+elif test -f /etc/init.d/rc.firewall;then
    FW_PREFIX=/etc/init.d/rc.firewall
 else
    FW_PREFIX=/etc/firewall
