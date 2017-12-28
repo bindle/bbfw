@@ -74,12 +74,10 @@ export PATH
 
 
 # determine prefix of conf files
-if test -f /etc/rc.d/rc.firewall;then
-   FW_PREFIX=/etc/rc.d/rc.firewall
-elif test -f /etc/init.d/rc.firewall;then
-   FW_PREFIX=/etc/init.d/rc.firewall
+if test -f /etc/rc.d/rc.firewall.global;then
+   FW_PREFIX=/etc/rc.d/rc.firewall.
 else
-   FW_PREFIX=/etc/firewall
+   FW_PREFIX=/etc/firewall.d/
 fi
 
 
@@ -136,60 +134,60 @@ dump()
 # Function to start the network:
 start() {
    # create IP sets
-   if test -f ${FW_PREFIX}.globalsets;then
+   if test -f ${FW_PREFIX}globalsets;then
       echo "adding global IP sets"
-      clean_file ${FW_PREFIX}.globalsets |ipset restore
+      clean_file ${FW_PREFIX}globalsets |ipset restore
    fi
-   if test -f ${FW_PREFIX}/.ipsets;then
+   if test -f ${FW_PREFIX}ipsets;then
       echo "adding local IP sets"
-      clean_file ${FW_PREFIX}.ipsets |ipset restore
+      clean_file ${FW_PREFIX}ipsets |ipset restore
    fi
 
    # apply host specific firewall rules
-   if test -f ${FW_PREFIX}.rules4;then
+   if test -f ${FW_PREFIX}rules4;then
       echo "adding IPv4 local rules"
-      clean_file ${FW_PREFIX}.rules4 |iptables-restore -n
+      clean_file ${FW_PREFIX}rules4 |iptables-restore -n
    fi
-   if test -f ${FW_PREFIX}.rules6;then
+   if test -f ${FW_PREFIX}rules6;then
       echo "adding IPv6 local rules"
-      clean_file ${FW_PREFIX}.rules6 |ip6tables-restore -n
+      clean_file ${FW_PREFIX}rules6 |ip6tables-restore -n
    fi
-   if test -f ${FW_PREFIX}.rules;then
+   if test -f ${FW_PREFIX}rules;then
       echo "adding IPv4/IPv6 local rules"
-      clean_file ${FW_PREFIX}.rules |iptables-restore  -n
-      clean_file ${FW_PREFIX}.rules |ip6tables-restore -n
+      clean_file ${FW_PREFIX}rules |iptables-restore  -n
+      clean_file ${FW_PREFIX}rules |ip6tables-restore -n
    fi
 
    # apply company policy for firewall rules
-   if test -f ${FW_PREFIX}.global4;then
+   if test -f ${FW_PREFIX}global4;then
       echo "adding IPv4 global rules"
-      clean_file ${FW_PREFIX}.global4 |iptables-restore -n
+      clean_file ${FW_PREFIX}global4 |iptables-restore -n
    fi
-   if test -f ${FW_PREFIX}.global6;then
+   if test -f ${FW_PREFIX}global6;then
       echo "adding IPv6 global rules"
-      clean_file ${FW_PREFIX}.global6 |ip6tables-restore -n
+      clean_file ${FW_PREFIX}global6 |ip6tables-restore -n
    fi
-   if test -f ${FW_PREFIX}.global;then
+   if test -f ${FW_PREFIX}global;then
       echo "adding IPv4/IPv6 global rules"
-      clean_file ${FW_PREFIX}.global |iptables-restore  -n
-      clean_file ${FW_PREFIX}.global |ip6tables-restore -n
+      clean_file ${FW_PREFIX}global |iptables-restore  -n
+      clean_file ${FW_PREFIX}global |ip6tables-restore -n
    fi
 
    # Application rules
-   if test -d /etc/firewall.d;then
-      for FILE in $(find /etc/firewall.d/ -name '*.ipsets' -type f);do
+   if test -d /etc/firewall.d/apps.d;then
+      for FILE in $(find /etc/firewall.d/apps.d/ -name '*.ipsets' -type f);do
          echo "adding IP sets (App: $(basename ${FILE})) ..."
          clean_file ${FILE} |ipset retore
       done
-      for FILE in $(find /etc/firewall.d/ -name '*.rules4' -type f);do
+      for FILE in $(find /etc/firewall.d/apps.d/ -name '*.rules4' -type f);do
          echo "adding IPv4 rules (App: $(basename ${FILE})) ..."
          clean_file ${FILE} |iptables-restore -n
       done
-      for FILE in $(find /etc/firewall.d/ -name '*.rules6' -type f);do
+      for FILE in $(find /etc/firewall.d/apps.d/ -name '*.rules6' -type f);do
          echo "adding IPv6 rules (App: $(basename ${FILE})) ..."
          clean_file ${FILE} |ip6tables-restore -n
       done
-      for FILE in $(find /etc/firewall.d/ -name '*.rules' -type f);do
+      for FILE in $(find /etc/firewall.d/apps.d/ -name '*.rules' -type f);do
          echo "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
          clean_file ${FILE} |ip6tables-restore -n
       done
