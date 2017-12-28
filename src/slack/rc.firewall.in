@@ -142,6 +142,12 @@ start() {
       echo "adding local IP sets"
       clean_file ${FW_PREFIX}ipsets |ipset restore
    fi
+   if test -d /etc/firewall.d/apps.d;then
+      for FILE in $(find /etc/firewall.d/apps.d/ -name '*.ipsets' -type f);do
+         echo "adding IP sets (App: $(basename ${FILE})) ..."
+         clean_file ${FILE} |ipset retore
+      done
+   fi
 
    # apply host specific firewall rules
    if test -f ${FW_PREFIX}rules4;then
@@ -175,10 +181,6 @@ start() {
 
    # Application rules
    if test -d /etc/firewall.d/apps.d;then
-      for FILE in $(find /etc/firewall.d/apps.d/ -name '*.ipsets' -type f);do
-         echo "adding IP sets (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |ipset retore
-      done
       for FILE in $(find /etc/firewall.d/apps.d/ -name '*.rules4' -type f);do
          echo "adding IPv4 rules (App: $(basename ${FILE})) ..."
          clean_file ${FILE} |iptables-restore -n
