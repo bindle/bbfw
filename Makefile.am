@@ -54,6 +54,7 @@ DEFS					=
 
 
 LXCDIR					?= /var/lib/lxc
+firewalldir				= $(sysconfdir)/firewall.d
 slackrcddir				= $(sysconfdir)/rc.d
 bashprofiledir				= $(sysconfdir)/profile.d
 slackinstdir				= /install
@@ -94,14 +95,14 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/misc/pub-rsync-remotes.sh.in \
 					  src/slack/mkinitrd-all.sh.in \
 					  src/slack/rc.firewall.in \
-					  src/slack/rc.firewall.global-example \
-					  src/slack/rc.firewall.global4-example \
-					  src/slack/rc.firewall.global6-example \
-					  src/slack/rc.firewall.globalsets-example \
-					  src/slack/rc.firewall.ipsets-example \
-					  src/slack/rc.firewall.rules-example \
-					  src/slack/rc.firewall.rules4-example \
-					  src/slack/rc.firewall.rules6-example \
+					  src/slack/global-example \
+					  src/slack/global4-example \
+					  src/slack/global6-example \
+					  src/slack/globalsets-example \
+					  src/slack/ipsets-example \
+					  src/slack/rules-example \
+					  src/slack/rules4-example \
+					  src/slack/rules6-example \
 					  src/slack/rc.inet1.conf \
 					  src/slack/rc.inet1_local.in \
 					  src/slack/rc.inet1_local_down-example \
@@ -144,15 +145,15 @@ sbin_SCRIPTS				+= src/slack/mkinitrd-all.sh \
 					   src/slack/slack-pkg-audit.sh
 slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 					   src/slack/rc.inet1_local
-slackrcd_DATA				=  src/slack/rc.firewall.global-example \
-					   src/slack/rc.firewall.global4-example \
-					   src/slack/rc.firewall.global6-example \
-					   src/slack/rc.firewall.globalsets-example \
-					   src/slack/rc.firewall.ipsets-example \
-					   src/slack/rc.firewall.rules-example \
-					   src/slack/rc.firewall.rules4-example \
-					   src/slack/rc.firewall.rules6-example \
-					   src/slack/rc.inet1.conf \
+firewall_DATA				=  src/slack/global-example \
+					   src/slack/global4-example \
+					   src/slack/global6-example \
+					   src/slack/globalsets-example \
+					   src/slack/ipsets-example \
+					   src/slack/rules-example \
+					   src/slack/rules4-example \
+					   src/slack/rules6-example
+slackrcd_DATA				=  src/slack/rc.inet1.conf \
 					   src/slack/rc.inet1_local_down-example \
 					   src/slack/rc.inet1_local_up-example
 endif
