@@ -133,6 +133,22 @@ dump()
 
 # Function to start the network:
 start() {
+   # run pre-hooks
+   if test -x ${FW_PREFIX}global-pre;then
+      echo "running global pre-hook start"
+      ${FW_PREFIX}global-pre start
+   fi
+   if test -x ${FW_PREFIX}rules-pre;then
+      echo "running local pre-hook start"
+      ${FW_PREFIX}rules-pre start
+   fi
+   if test -d /etc/firewall.d/apps.d;then
+      for FILE in $(find /etc/firewall.d/apps.d/ -executable -name '*.pre' -type f);do
+         echo "running app pre-hook start (App: $(basename ${FILE})) ..."
+         ${FILE}
+      done
+   fi
+
    # create IP sets
    if test -f ${FW_PREFIX}globalsets;then
       echo "adding global IP sets"
@@ -214,11 +230,43 @@ start() {
          fi
       done
    fi
+
+   # run post-hooks
+   if test -x ${FW_PREFIX}global-post;then
+      echo "running global post-hook start"
+      ${FW_PREFIX}global-post start
+   fi
+   if test -x ${FW_PREFIX}rules-post;then
+      echo "running local post-hook start"
+      ${FW_PREFIX}rules-post start
+   fi
+   if test -d /etc/firewall.d/apps.d;then
+      for FILE in $(find /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
+         echo "running app post-hook start (App: $(basename ${FILE})) ..."
+         ${FILE}
+      done
+   fi
 }
 
 
 # Function to stop the network:
 stop() {
+   # run pre-hooks
+   if test -x ${FW_PREFIX}global-pre;then
+      echo "running global pre-hook stop"
+      ${FW_PREFIX}global-pre stop
+   fi
+   if test -x ${FW_PREFIX}rules-pre;then
+      echo "running local pre-hook stop"
+      ${FW_PREFIX}rules-pre stop
+   fi
+   if test -d /etc/firewall.d/apps.d;then
+      for FILE in $(find /etc/firewall.d/apps.d/ -executable -name '*.pre' -type f);do
+         echo "running app pre-hook stop (App: $(basename ${FILE})) ..."
+         ${FILE}
+      done
+   fi
+
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv4)"
       for CHAIN in $(iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
@@ -248,6 +296,22 @@ stop() {
    for SET in $(ipset save |grep '^create' |awk '{print$2}');do
       ipset destroy "${SET}"
    done
+
+   # run post-hooks
+   if test -x ${FW_PREFIX}global-post;then
+      echo "running global post-hook stop"
+      ${FW_PREFIX}global-post stop
+   fi
+   if test -x ${FW_PREFIX}rules-post;then
+      echo "running local post-hook stop"
+      ${FW_PREFIX}rules-post stop
+   fi
+   if test -d /etc/firewall.d/apps.d;then
+      for FILE in $(find /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
+         echo "running app post-hook stop (App: $(basename ${FILE})) ..."
+         ${FILE}
+      done
+   fi
 }
 
 
