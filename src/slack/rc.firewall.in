@@ -109,7 +109,7 @@ clean_file()
 {
    DIRTY_FILE="${1}"
    cut -d# -f1 "${DIRTY_FILE}" \
-      |sed -n 'H; ${ x; s/\\\n//; s/\n //g; p}' \
+      |sed -n 'H; ${ x; s/\\\n//g; s/\n //g; p}' \
       |sed -e 's/[[:space:]]\{1,\}/ /g'
 }
 
