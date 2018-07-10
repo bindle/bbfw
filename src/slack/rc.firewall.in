@@ -235,7 +235,7 @@ start() {
    # run post-hooks
    run_hook start ${FW_PREFIX}global-post "running global post-hook start ..."
    run_hook start ${FW_PREFIX}rules-post  "running local post-hook start ..."
-   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f 2> /dev/null);do
       run_hook start ${FILE} "running app post-hook start (App: $(basename ${FILE})) ..."
    done
 }
@@ -283,7 +283,7 @@ stop() {
    # run post-hooks
    run_hook stop ${FW_PREFIX}global-post "running global post-hook stop ..."
    run_hook stop ${FW_PREFIX}rules-post  "running local post-hook stop ..."
-   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f 2> /dev/null);do
       run_hook stop ${FILE} "running app post-hook stop (App: $(basename ${FILE})) ..."
    done
 }
