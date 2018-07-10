@@ -131,85 +131,86 @@ dump()
 }
 
 
+run_hook()
+{
+   TYPE="${1}"
+   FILE="${2}"
+   DESC="${3}"
+
+   if test ! -x "${FILE}";then
+      return 0;
+   fi
+
+   if test ! -z "${DESC}";then
+      echo "${DESC}"
+   fi
+
+   ${FILE} ${TYPE}
+}
+
+
+load()
+{
+   TYPE="${1}"
+   FILE="${2}"
+   DESC="${3}"
+
+   if test ! -f "${FILE}";then
+      return 0;
+   fi
+
+   if test ! -z "${DESC}";then
+      echo "${DESC}"
+   fi
+
+   case "${TYPE}" in
+      'ipset')     clean_file ${FILE} |ipset -! restore;;
+      'iptables')  clean_file ${FILE} |iptables-restore -n;;
+      'ip6tables') clean_file ${FILE} |ip6tables-restore -n;;
+      *) ;;
+   esac
+}
+
+
 # Function to start the network:
 start() {
    # run pre-hooks
-   if test -x ${FW_PREFIX}global-pre;then
-      echo "running global pre-hook start"
-      ${FW_PREFIX}global-pre start
-   fi
-   if test -x ${FW_PREFIX}rules-pre;then
-      echo "running local pre-hook start"
-      ${FW_PREFIX}rules-pre start
-   fi
-   if test -d /etc/firewall.d/apps.d;then
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.pre' -type f);do
-         echo "running app pre-hook start (App: $(basename ${FILE})) ..."
-         ${FILE}
-      done
-   fi
+   run_hook start ${FW_PREFIX}global-pre "running global pre-hook start ..."
+   run_hook start ${FW_PREFIX}rules-pre "running local pre-hook start ..."
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.pre' -type f 2> /dev/null);do
+      run_hook start ${FILE} "running app pre-hook start (App: $(basename ${FILE})) ..."
+   done
 
    # create IP sets
-   if test -f ${FW_PREFIX}globalsets;then
-      echo "adding global IP sets"
-      clean_file ${FW_PREFIX}globalsets |ipset -! restore
-   fi
-   if test -f ${FW_PREFIX}ipsets;then
-      echo "adding local IP sets"
-      clean_file ${FW_PREFIX}ipsets |ipset -! restore
-   fi
-   if test -d /etc/firewall.d/apps.d;then
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -name '*.ipsets' -type f);do
-         echo "adding IP sets (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |ipset -! retore
-      done
-   fi
+   load ipset ${FW_PREFIX}globalsets "adding global IP sets"
+   load ipset ${FW_PREFIX}ipsets     "adding local IP sets"
+   for FILE in $(find -L /etc/firewall.d/apps.d -name '*.ipsets' -type f 2> /dev/null);do
+      load ipset ${FILE} "adding IP sets (App: $(basename ${FILE})) ..."
+   done
 
    # apply host specific firewall rules
-   if test -f ${FW_PREFIX}rules4;then
-      echo "adding IPv4 local rules"
-      clean_file ${FW_PREFIX}rules4 |iptables-restore -n
-   fi
-   if test -f ${FW_PREFIX}rules6;then
-      echo "adding IPv6 local rules"
-      clean_file ${FW_PREFIX}rules6 |ip6tables-restore -n
-   fi
-   if test -f ${FW_PREFIX}rules;then
-      echo "adding IPv4/IPv6 local rules"
-      clean_file ${FW_PREFIX}rules |iptables-restore  -n
-      clean_file ${FW_PREFIX}rules |ip6tables-restore -n
-   fi
+   load iptables  ${FW_PREFIX}rules4  "adding IPv4 local rules"
+   load ip6tables ${FW_PREFIX}rules6  "adding IPv6 local rules"
+   load iptables  ${FW_PREFIX}rules   "adding IPv4/IPv6 local rules"
+   load ip6tables ${FW_PREFIX}rules
 
    # apply company policy for firewall rules
-   if test -f ${FW_PREFIX}global4;then
-      echo "adding IPv4 global rules"
-      clean_file ${FW_PREFIX}global4 |iptables-restore -n
-   fi
-   if test -f ${FW_PREFIX}global6;then
-      echo "adding IPv6 global rules"
-      clean_file ${FW_PREFIX}global6 |ip6tables-restore -n
-   fi
-   if test -f ${FW_PREFIX}global;then
-      echo "adding IPv4/IPv6 global rules"
-      clean_file ${FW_PREFIX}global |iptables-restore  -n
-      clean_file ${FW_PREFIX}global |ip6tables-restore -n
-   fi
+   load iptables  ${FW_PREFIX}global4 "adding IPv4 global rules"
+   load ip6tables ${FW_PREFIX}global6 "adding IPv6 global rules"
+   load iptables  ${FW_PREFIX}global  "adding IPv4/IPv6 global rules"
+   load ip6tables ${FW_PREFIX}global
 
    # Application rules
-   if test -d /etc/firewall.d/apps.d;then
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -name '*.rules4' -type f);do
-         echo "adding IPv4 rules (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |iptables-restore -n
-      done
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -name '*.rules6' -type f);do
-         echo "adding IPv6 rules (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |ip6tables-restore -n
-      done
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -name '*.rules' -type f);do
-         echo "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
-         clean_file ${FILE} |ip6tables-restore -n
-      done
-   fi
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -name '*.rules4' -type f 2> /dev/null);do
+      load iptables ${FILE} "adding IPv4 rules (App: $(basename ${FILE})) ..."
+   done
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -name '*.rules6' -type f 2> /dev/null);do
+      load ip6tables ${FILE} "adding IPv6 rules (App: $(basename ${FILE})) ..."
+   done
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -name '*.rules' -type f 2> /dev/null);do
+      load iptables ${FILE}  "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
+      load ip6tables ${FILE}
+   done
 
 
    # LXC rules
@@ -232,40 +233,22 @@ start() {
    fi
 
    # run post-hooks
-   if test -x ${FW_PREFIX}global-post;then
-      echo "running global post-hook start"
-      ${FW_PREFIX}global-post start
-   fi
-   if test -x ${FW_PREFIX}rules-post;then
-      echo "running local post-hook start"
-      ${FW_PREFIX}rules-post start
-   fi
-   if test -d /etc/firewall.d/apps.d;then
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
-         echo "running app post-hook start (App: $(basename ${FILE})) ..."
-         ${FILE}
-      done
-   fi
+   run_hook start ${FW_PREFIX}global-post "running global post-hook start ..."
+   run_hook start ${FW_PREFIX}rules-post  "running local post-hook start ..."
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
+      run_hook start ${FILE} "running app post-hook start (App: $(basename ${FILE})) ..."
+   done
 }
 
 
 # Function to stop the network:
 stop() {
    # run pre-hooks
-   if test -x ${FW_PREFIX}global-pre;then
-      echo "running global pre-hook stop"
-      ${FW_PREFIX}global-pre stop
-   fi
-   if test -x ${FW_PREFIX}rules-pre;then
-      echo "running local pre-hook stop"
-      ${FW_PREFIX}rules-pre stop
-   fi
-   if test -d /etc/firewall.d/apps.d;then
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.pre' -type f);do
-         echo "running app pre-hook stop (App: $(basename ${FILE})) ..."
-         ${FILE}
-      done
-   fi
+   run_hook stop ${FW_PREFIX}global-pre "running global pre-hook stop ..."
+   run_hook stop ${FW_PREFIX}rules-pre  "running local pre-hook stop ..."
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.pre' -type f 2> /dev/null);do
+      run_hook stop ${FILE} "running app pre-hook stop (App: $(basename ${FILE})) ..."
+   done
 
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv4)"
@@ -298,20 +281,11 @@ stop() {
    done
 
    # run post-hooks
-   if test -x ${FW_PREFIX}global-post;then
-      echo "running global post-hook stop"
-      ${FW_PREFIX}global-post stop
-   fi
-   if test -x ${FW_PREFIX}rules-post;then
-      echo "running local post-hook stop"
-      ${FW_PREFIX}rules-post stop
-   fi
-   if test -d /etc/firewall.d/apps.d;then
-      for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
-         echo "running app post-hook stop (App: $(basename ${FILE})) ..."
-         ${FILE}
-      done
-   fi
+   run_hook stop ${FW_PREFIX}global-post "running global post-hook stop ..."
+   run_hook stop ${FW_PREFIX}rules-post  "running local post-hook stop ..."
+   for FILE in $(find -L /etc/firewall.d/apps.d/ -executable -name '*.post' -type f);do
+      run_hook stop ${FILE} "running app post-hook stop (App: $(basename ${FILE})) ..."
+   done
 }
 
 
