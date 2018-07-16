@@ -2,6 +2,9 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.15
+  - Changing order firewall rules are applied (syzdek)
+
 0.14
   - Adding support for cluster specific firewall rules (syzdek)
   - Improving multi-line processing in rc.firewall (syzdek)
