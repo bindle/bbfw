@@ -235,20 +235,12 @@ start() {
 
    # LXC rules
    if test -d /var/lib/lxc/;then
-      for LXC in `ls /var/lib/lxc/`;do
-         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4;then
-            echo                                "adding IPv4 rules (LXC: ${LXC})"
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | iptables-restore -n
-         fi
-         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6;then
-            echo                                "adding IPv6 rules (LXC: ${LXC})"
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | ip6tables-restore -n
-         fi
-         if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
-            echo                                "adding IPv4/IPv6 rules (LXC: ${LXC})"
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | iptables-restore  -n
-            clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | ip6tables-restore -n
-         fi
+      for LXCDIR in $(find /var/lib/lxc/ -type d -maxdepth 1);do
+         LXC="$(basename ${LXCDIR})"
+         load iptables  ${LXCDIR}/rc.d/rc.firewall.rules4 "adding IPv4 rules (LXC: ${LXC})"
+         load ip6tables ${LXCDIR}/rc.d/rc.firewall.rules6 "adding IPv6 rules (LXC: ${LXC})"
+         load iptables  ${LXCDIR}/rc.d/rc.firewall.rules  "adding IPv4/IPv6 rules (LXC: ${LXC})"
+         load ip6tables ${LXCDIR}/rc.d/rc.firewall.rules
       done
    fi
 
