@@ -197,38 +197,38 @@ start() {
    run_hook start ${FW_PREFIX}cluster/rules-pre "running cluster pre-hook start ..."
    run_hook start ${FW_PREFIX}rules-pre         "running local pre-hook start ..."
    for FILE in $( find_appfile pre );do
-      run_hook start ${FILE} "running app pre-hook start (App: $(basename ${FILE})) ..."
+      run_hook start ${FILE}                    "running app pre-hook start (App: $(basename ${FILE})) ..."
    done
 
    # create IP sets
-   load ipset ${FW_PREFIX}globalsets     "adding global IP sets"
-   load ipset ${FW_PREFIX}cluster/ipsets "adding cluster IP sets"
-   load ipset ${FW_PREFIX}ipsets         "adding local IP sets"
+   load ipset ${FW_PREFIX}globalsets            "adding global IP sets"
+   load ipset ${FW_PREFIX}cluster/ipsets        "adding cluster IP sets"
+   load ipset ${FW_PREFIX}ipsets                "adding local IP sets"
    for FILE in $( find_appfile ipsets );do
-      load ipset ${FILE} "adding IP sets (App: $(basename ${FILE})) ..."
+      load ipset ${FILE}                        "adding IP sets (App: $(basename ${FILE})) ..."
    done
 
    # apply cluster specific firewall rules
-   load iptables  ${FW_PREFIX}cluster/rules4  "adding IPv4 cluster rules"
-   load ip6tables ${FW_PREFIX}cluster/rules6  "adding IPv6 cluster rules"
-   load iptables  ${FW_PREFIX}cluster/rules   "adding IPv4/IPv6 cluster rules"
+   load iptables  ${FW_PREFIX}cluster/rules4    "adding IPv4 cluster rules"
+   load ip6tables ${FW_PREFIX}cluster/rules6    "adding IPv6 cluster rules"
+   load iptables  ${FW_PREFIX}cluster/rules     "adding IPv4/IPv6 cluster rules"
    load ip6tables ${FW_PREFIX}cluster/rules
 
    # apply host specific firewall rules
-   load iptables  ${FW_PREFIX}rules4  "adding IPv4 local rules"
-   load ip6tables ${FW_PREFIX}rules6  "adding IPv6 local rules"
-   load iptables  ${FW_PREFIX}rules   "adding IPv4/IPv6 local rules"
+   load iptables  ${FW_PREFIX}rules4            "adding IPv4 local rules"
+   load ip6tables ${FW_PREFIX}rules6            "adding IPv6 local rules"
+   load iptables  ${FW_PREFIX}rules             "adding IPv4/IPv6 local rules"
    load ip6tables ${FW_PREFIX}rules
 
    # Application rules
    for FILE in $( find_appfile rules4 );do
-      load iptables ${FILE} "adding IPv4 rules (App: $(basename ${FILE})) ..."
+      load iptables ${FILE}                     "adding IPv4 rules (App: $(basename ${FILE})) ..."
    done
    for FILE in $( find_appfile rules6 );do
-      load ip6tables ${FILE} "adding IPv6 rules (App: $(basename ${FILE})) ..."
+      load ip6tables ${FILE}                    "adding IPv6 rules (App: $(basename ${FILE})) ..."
    done
    for FILE in $( find_appfile rules );do
-      load iptables ${FILE}  "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
+      load iptables ${FILE}                     "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
       load ip6tables ${FILE}
    done
 
@@ -237,15 +237,15 @@ start() {
    if test -d /var/lib/lxc/;then
       for LXC in `ls /var/lib/lxc/`;do
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4;then
-            echo "adding IPv4 rules (LXC: ${LXC})"
+            echo                                "adding IPv4 rules (LXC: ${LXC})"
             clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules4 | iptables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6;then
-            echo "adding IPv6 rules (LXC: ${LXC})"
+            echo                                "adding IPv6 rules (LXC: ${LXC})"
             clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules6 | ip6tables-restore -n
          fi
          if test -f /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules;then
-            echo "adding IPv4/IPv6 rules (LXC: ${LXC})"
+            echo                                "adding IPv4/IPv6 rules (LXC: ${LXC})"
             clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | iptables-restore  -n
             clean_file /var/lib/lxc/${LXC}/rc.d/rc.firewall.rules | ip6tables-restore -n
          fi
@@ -253,17 +253,17 @@ start() {
    fi
 
    # apply company policy for firewall rules
-   load iptables  ${FW_PREFIX}global4 "adding IPv4 global rules"
-   load ip6tables ${FW_PREFIX}global6 "adding IPv6 global rules"
-   load iptables  ${FW_PREFIX}global  "adding IPv4/IPv6 global rules"
+   load iptables  ${FW_PREFIX}global4           "adding IPv4 global rules"
+   load ip6tables ${FW_PREFIX}global6           "adding IPv6 global rules"
+   load iptables  ${FW_PREFIX}global            "adding IPv4/IPv6 global rules"
    load ip6tables ${FW_PREFIX}global
 
    # run post-hooks
-   run_hook start ${FW_PREFIX}global-post         "running global post-hook start ..."
-   run_hook start ${FW_PREFIX}cluster/rules-post  "running cluster post-hook start ..."
-   run_hook start ${FW_PREFIX}rules-post          "running local post-hook start ..."
+   run_hook start ${FW_PREFIX}global-post        "running global post-hook start ..."
+   run_hook start ${FW_PREFIX}cluster/rules-post "running cluster post-hook start ..."
+   run_hook start ${FW_PREFIX}rules-post         "running local post-hook start ..."
    for FILE in $( find_appfile post );do
-      run_hook start ${FILE} "running app post-hook start (App: $(basename ${FILE})) ..."
+      run_hook start ${FILE}                     "running app post-hook start (App: $(basename ${FILE})) ..."
    done
 }
 
