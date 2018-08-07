@@ -115,7 +115,7 @@ stop()
 
 
    # delete interfaces
-   for NETTYPE in vlan ipvlan macvlan macvtap bond;do
+   for NETTYPE in vlan ipvlan macvlan macvtap dummy veth bond;do
       for NETDEV in $(list_links ${NETTYPE});do
          print_down "${NETDEV}"
          /usr/sbin/ip -4 addr flush dev ${NETDEV}
