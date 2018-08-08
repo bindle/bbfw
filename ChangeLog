@@ -2,6 +2,10 @@
 Bindle Binaries Admin Tools
 Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.16
+  - Re-ordering firewall rule processing (syzdek)
+  - Adding 'dummy' and 'veth' interface types to rc.inet1 (syzdek)
+
 0.15
   - Changing order firewall rules are applied (syzdek)
 
