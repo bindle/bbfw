@@ -40,35 +40,35 @@
 #   Files are processed in the following order:
 #
 #      /etc/firewall.d/global-pre         - centrally maintained pre-hook script
+#      /etc/firewall.d/apps.d/*.pre       - app pre-hook script
 #      /etc/firewall.d/cluster/rules-pre  - cluster specific pre-hook script
 #      /etc/firewall.d/rules-pre          - host specific pre-hook script
-#      /etc/firewall.d/apps.d/*.pre       - app pre-hook script
 #
 #      /etc/firewall.d/globalsets         - centrally maintained IP sets
+#      /etc/firewall.d/apps.d/*.ipsets    - app specific IP sets
 #      /etc/firewall.d/cluster/ipsets     - cluster specific IP sets
 #      /etc/firewall.d/ipsets             - host specific IP sets
-#      /etc/firewall.d/apps.d/*.ipsets    - app specific IP sets
 #
-#      /etc/firewall.d/cluster/rules4     - cluster specific IPv4 firewall rules
-#      /etc/firewall.d/cluster/rules6     - cluster specific IPv6 firewall rules
-#      /etc/firewall.d/cluster/rules      - cluster specific IPv4/IPv6 firewall rules
+#      /etc/firewall.d/apps.d/*.rules4    - app specific IPv4 firewall rules
+#      /etc/firewall.d/apps.d/*.rules6    - app specific IPv6 firewall rules
+#      /etc/firewall.d/apps.d/*.rules     - app specific IPv4/IPv6 firewall rules
 #
 #      /etc/firewall.d/rules4             - host specific IPv4 firewall rules
 #      /etc/firewall.d/rules6             - host specific IPv6 firewall rules
 #      /etc/firewall.d/rules              - host specific IPv4/IPv6 firewall rules
 #
-#      /etc/firewall.d/apps.d/*.rules4    - app specific IPv4 firewall rules
-#      /etc/firewall.d/apps.d/*.rules6    - app specific IPv6 firewall rules
-#      /etc/firewall.d/apps.d/*.rules     - app specific IPv4/IPv6 firewall rules
+#      /etc/firewall.d/cluster/rules4     - cluster specific IPv4 firewall rules
+#      /etc/firewall.d/cluster/rules6     - cluster specific IPv6 firewall rules
+#      /etc/firewall.d/cluster/rules      - cluster specific IPv4/IPv6 firewall rules
 #
 #      /etc/firewall.d/global4            - centrally maintained IPv4 rules
 #      /etc/firewall.d/global6            - centrally maintained IPv6 rules
 #      /etc/firewall.d/global             - centrally maintained IPv4/IPv6 rules
 #
 #      /etc/firewall.d/global-post        - centrally maintained post-hook script
+#      /etc/firewall.d/apps.d/*.post      - app post-hook script
 #      /etc/firewall.d/cluster/rules-post - host specific post-hook script
 #      /etc/firewall.d/rules-post         - host specific post-hook script
-#      /etc/firewall.d/apps.d/*.post      - app post-hook script
 #
 
 
@@ -194,31 +194,19 @@ load()
 start() {
    # run pre-hooks
    run_hook start ${FW_PREFIX}global-pre        "running global pre-hook start ..."
-   run_hook start ${FW_PREFIX}cluster/rules-pre "running cluster pre-hook start ..."
-   run_hook start ${FW_PREFIX}rules-pre         "running local pre-hook start ..."
    for FILE in $( find_appfile pre );do
       run_hook start ${FILE}                    "running app pre-hook start (App: $(basename ${FILE})) ..."
    done
+   run_hook start ${FW_PREFIX}cluster/rules-pre "running cluster pre-hook start ..."
+   run_hook start ${FW_PREFIX}rules-pre         "running local pre-hook start ..."
 
    # create IP sets
    load ipset ${FW_PREFIX}globalsets            "adding global IP sets"
-   load ipset ${FW_PREFIX}cluster/ipsets        "adding cluster IP sets"
-   load ipset ${FW_PREFIX}ipsets                "adding local IP sets"
    for FILE in $( find_appfile ipsets );do
       load ipset ${FILE}                        "adding IP sets (App: $(basename ${FILE})) ..."
    done
-
-   # apply cluster specific firewall rules
-   load iptables  ${FW_PREFIX}cluster/rules4    "adding IPv4 cluster rules"
-   load ip6tables ${FW_PREFIX}cluster/rules6    "adding IPv6 cluster rules"
-   load iptables  ${FW_PREFIX}cluster/rules     "adding IPv4/IPv6 cluster rules"
-   load ip6tables ${FW_PREFIX}cluster/rules
-
-   # apply host specific firewall rules
-   load iptables  ${FW_PREFIX}rules4            "adding IPv4 local rules"
-   load ip6tables ${FW_PREFIX}rules6            "adding IPv6 local rules"
-   load iptables  ${FW_PREFIX}rules             "adding IPv4/IPv6 local rules"
-   load ip6tables ${FW_PREFIX}rules
+   load ipset ${FW_PREFIX}cluster/ipsets        "adding cluster IP sets"
+   load ipset ${FW_PREFIX}ipsets                "adding local IP sets"
 
    # Application rules
    for FILE in $( find_appfile rules4 );do
@@ -232,7 +220,6 @@ start() {
       load ip6tables ${FILE}
    done
 
-
    # LXC rules
    if test -d /var/lib/lxc/;then
       for LXCDIR in $(find /var/lib/lxc/ -type d -maxdepth 1);do
@@ -244,6 +231,18 @@ start() {
       done
    fi
 
+   # apply host specific firewall rules
+   load iptables  ${FW_PREFIX}rules4            "adding IPv4 local rules"
+   load ip6tables ${FW_PREFIX}rules6            "adding IPv6 local rules"
+   load iptables  ${FW_PREFIX}rules             "adding IPv4/IPv6 local rules"
+   load ip6tables ${FW_PREFIX}rules
+
+   # apply cluster specific firewall rules
+   load iptables  ${FW_PREFIX}cluster/rules4    "adding IPv4 cluster rules"
+   load ip6tables ${FW_PREFIX}cluster/rules6    "adding IPv6 cluster rules"
+   load iptables  ${FW_PREFIX}cluster/rules     "adding IPv4/IPv6 cluster rules"
+   load ip6tables ${FW_PREFIX}cluster/rules
+
    # apply company policy for firewall rules
    load iptables  ${FW_PREFIX}global4           "adding IPv4 global rules"
    load ip6tables ${FW_PREFIX}global6           "adding IPv6 global rules"
@@ -252,11 +251,11 @@ start() {
 
    # run post-hooks
    run_hook start ${FW_PREFIX}global-post        "running global post-hook start ..."
-   run_hook start ${FW_PREFIX}cluster/rules-post "running cluster post-hook start ..."
-   run_hook start ${FW_PREFIX}rules-post         "running local post-hook start ..."
    for FILE in $( find_appfile post );do
       run_hook start ${FILE}                     "running app post-hook start (App: $(basename ${FILE})) ..."
    done
+   run_hook start ${FW_PREFIX}cluster/rules-post "running cluster post-hook start ..."
+   run_hook start ${FW_PREFIX}rules-post         "running local post-hook start ..."
 }
 
 
@@ -264,11 +263,11 @@ start() {
 stop() {
    # run pre-hooks
    run_hook stop ${FW_PREFIX}global-pre         "running global pre-hook stop ..."
+   for FILE in $( find_appfile pre );do
+      run_hook stop ${FILE}                     "running app pre-hook stop (App: $(basename ${FILE})) ..."
+   done
    run_hook stop ${FW_PREFIX}cluster/rules-pre  "running cluster pre-hook stop ..."
    run_hook stop ${FW_PREFIX}rules-pre          "running local pre-hook stop ..."
-   for FILE in $( find_appfile pre );do
-      run_hook stop ${FILE} "running app pre-hook stop (App: $(basename ${FILE})) ..."
-   done
 
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv4)"
@@ -302,11 +301,11 @@ stop() {
 
    # run post-hooks
    run_hook stop ${FW_PREFIX}global-post         "running global post-hook stop ..."
+   for FILE in $( find_appfile post );do
+      run_hook stop ${FILE}                      "running app post-hook stop (App: $(basename ${FILE})) ..."
+   done
    run_hook stop ${FW_PREFIX}cluster/rules-post  "running cluster post-hook stop ..."
    run_hook stop ${FW_PREFIX}rules-post          "running local post-hook stop ..."
-   for FILE in $( find_appfile post );do
-      run_hook stop ${FILE} "running app post-hook stop (App: $(basename ${FILE})) ..."
-   done
 }
 
 
