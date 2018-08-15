@@ -95,10 +95,10 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/misc/pub-rsync-remotes.sh.in \
 					  src/slack/mkinitrd-all.sh.in \
 					  src/slack/rc.firewall.in \
-					  src/slack/global-example \
-					  src/slack/global4-example \
-					  src/slack/global6-example \
-					  src/slack/globalsets-example \
+					  src/slack/global-rules-example \
+					  src/slack/global-rules4-example \
+					  src/slack/global-rules6-example \
+					  src/slack/global-ipsets-example \
 					  src/slack/ipsets-example \
 					  src/slack/rules-example \
 					  src/slack/rules4-example \
@@ -145,10 +145,10 @@ sbin_SCRIPTS				+= src/slack/mkinitrd-all.sh \
 					   src/slack/slack-pkg-audit.sh
 slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 					   src/slack/rc.inet1_local
-firewall_DATA				=  src/slack/global-example \
-					   src/slack/global4-example \
-					   src/slack/global6-example \
-					   src/slack/globalsets-example \
+firewall_DATA				=  src/slack/global-rules-example \
+					   src/slack/global-rules4-example \
+					   src/slack/global-rules6-example \
+					   src/slack/global-ipsets-example \
 					   src/slack/ipsets-example \
 					   src/slack/rules-example \
 					   src/slack/rules4-example \
