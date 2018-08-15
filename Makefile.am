@@ -96,18 +96,18 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/misc/pub-rsync-remotes.sh.in \
 					  src/slack/mkinitrd-all.sh.in \
 					  src/slack/rc.firewall.in \
-					  src/slack/global-rules-example \
-					  src/slack/global-rules4-example \
-					  src/slack/global-rules6-example \
-					  src/slack/global-ipsets-example \
-					  src/slack/ipsets-example \
-					  src/slack/rules-example \
-					  src/slack/rules4-example \
-					  src/slack/rules6-example \
-					  src/slack/rc.inet1.conf \
+					  src/slack/firewall.d/global.d/rules-example \
+					  src/slack/firewall.d/global.d/rules4-example \
+					  src/slack/firewall.d/global.d/rules6-example \
+					  src/slack/firewall.d/global.d/ipsets-example \
+					  src/slack/firewall.d/ipsets-example \
+					  src/slack/firewall.d/rules-example \
+					  src/slack/firewall.d/rules4-example \
+					  src/slack/firewall.d/rules6-example \
 					  src/slack/rc.inet1_local.in \
-					  src/slack/rc.inet1_local_down-example \
-					  src/slack/rc.inet1_local_up-example \
+					  src/slack/rc.d/rc.inet1.conf \
+					  src/slack/rc.d/rc.inet1_local_down-example \
+					  src/slack/rc.d/rc.inet1_local_up-example \
 					  src/slack/slack-desc \
 					  src/slack/slack-net-check.sh.in \
 					  src/slack/slack-pkg-audit.sh.in \
@@ -146,17 +146,17 @@ sbin_SCRIPTS				+= src/slack/mkinitrd-all.sh \
 					   src/slack/slack-pkg-audit.sh
 slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 					   src/slack/rc.inet1_local
-firewallglobal_DATA			=  src/slack/global-rules-example \
-					   src/slack/global-rules4-example \
-					   src/slack/global-rules6-example \
-					   src/slack/global-ipsets-example
-firewall_DATA				=  src/slack/ipsets-example \
-					   src/slack/rules-example \
-					   src/slack/rules4-example \
-					   src/slack/rules6-example
-slackrcd_DATA				=  src/slack/rc.inet1.conf \
-					   src/slack/rc.inet1_local_down-example \
-					   src/slack/rc.inet1_local_up-example
+firewallglobal_DATA			=  src/slack/firewall.d/global.d/rules-example \
+					   src/slack/firewall.d/global.d/rules4-example \
+					   src/slack/firewall.d/global.d/rules6-example \
+					   src/slack/firewall.d/global.d/ipsets-example
+firewall_DATA				=  src/slack/firewall.d/ipsets-example \
+					   src/slack/firewall.d/rules-example \
+					   src/slack/firewall.d/rules4-example \
+					   src/slack/firewall.d/rules6-example
+slackrcd_DATA				=  src/slack/rc.d/rc.inet1.conf \
+					   src/slack/rc.d/rc.inet1_local_down-example \
+					   src/slack/rc.d/rc.inet1_local_up-example
 endif
 
 
