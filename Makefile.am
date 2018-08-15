@@ -55,6 +55,7 @@ DEFS					=
 
 LXCDIR					?= /var/lib/lxc
 firewalldir				= $(sysconfdir)/firewall.d
+firewallglobaldir			= $(firewalldir)/global.d
 slackrcddir				= $(sysconfdir)/rc.d
 bashprofiledir				= $(sysconfdir)/profile.d
 slackinstdir				= /install
@@ -145,11 +146,11 @@ sbin_SCRIPTS				+= src/slack/mkinitrd-all.sh \
 					   src/slack/slack-pkg-audit.sh
 slackrcd_SCRIPTS			=  src/slack/rc.firewall \
 					   src/slack/rc.inet1_local
-firewall_DATA				=  src/slack/global-rules-example \
+firewallglobaldir			=  src/slack/global-rules-example \
 					   src/slack/global-rules4-example \
 					   src/slack/global-rules6-example \
 					   src/slack/global-ipsets-example \
-					   src/slack/ipsets-example \
+firewall_DATA				=  src/slack/ipsets-example \
 					   src/slack/rules-example \
 					   src/slack/rules4-example \
 					   src/slack/rules6-example
