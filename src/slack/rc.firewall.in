@@ -39,10 +39,10 @@
 #
 #   Files are processed in the following order:
 #
-#      /etc/firewall.d/global.d/rules-pre  - centrally maintained pre-hook script
-#      /etc/firewall.d/apps.d/*.pre        - app pre-hook script
-#      /etc/firewall.d/cluster.d/rules-pre - cluster specific pre-hook script
-#      /etc/firewall.d/rules-pre           - host specific pre-hook script
+#      /etc/firewall.d/global.d/pre-hook   - centrally maintained pre-hook script
+#      /etc/firewall.d/apps.d/*/pre-hook   - app pre-hook script
+#      /etc/firewall.d/cluster.d/pre-hook  - cluster specific pre-hook script
+#      /etc/firewall.d/pre-hook            - host specific pre-hook script
 #
 #      /etc/firewall.d/global.d/ipsets     - centrally maintained IP sets
 #      /etc/firewall.d/apps.d/*.ipsets     - app specific IP sets
@@ -194,12 +194,12 @@ load()
 # Function to start the network:
 start() {
    # run pre-hooks
-   run_hook start ${FW_PREFIX}global.d/rules-pre "running global pre-hook start ..."
-   for FILE in $( find_appfile pre );do
+   run_hook start ${FW_PREFIX}global.d/pre-hook  "running global pre-hook start ..."
+   for FILE in $( find_appfile pre-hook );do
       run_hook start ${FILE}                     "running app pre-hook start (App: $(basename ${FILE})) ..."
    done
-   run_hook start ${FW_PREFIX}cluster.d/rules-pre  "running cluster pre-hook start ..."
-   run_hook start ${FW_PREFIX}rules-pre          "running local pre-hook start ..."
+   run_hook start ${FW_PREFIX}cluster.d/pre-hook "running cluster pre-hook start ..."
+   run_hook start ${FW_PREFIX}pre-hook           "running local pre-hook start ..."
 
    # create IP sets
    load ipset ${FW_PREFIX}global.d/ipsets        "adding global IP sets"
@@ -263,12 +263,12 @@ start() {
 # Function to stop the network:
 stop() {
    # run pre-hooks
-   run_hook stop ${FW_PREFIX}global.d/rules-pre   "running global pre-hook stop ..."
-   for FILE in $( find_appfile pre );do
+   run_hook stop ${FW_PREFIX}global.d/pre-hook    "running global pre-hook stop ..."
+   for FILE in $( find_appfile pre-hook );do
       run_hook stop ${FILE}                       "running app pre-hook stop (App: $(basename ${FILE})) ..."
    done
-   run_hook stop ${FW_PREFIX}cluster.d/rules-pre    "running cluster pre-hook stop ..."
-   run_hook stop ${FW_PREFIX}rules-pre            "running local pre-hook stop ..."
+   run_hook stop ${FW_PREFIX}cluster.d/pre-hook   "running cluster pre-hook stop ..."
+   run_hook stop ${FW_PREFIX}pre-hook             "running local pre-hook stop ..."
 
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv4)"
