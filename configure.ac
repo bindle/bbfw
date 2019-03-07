@@ -105,8 +105,9 @@ AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version
 
 # custom configure options
 AC_BINDLE_ENABLE_WARNINGS
-AC_BINDLE_WITH_PERL
-AC_BINDLEADMIN_SLACKWARE
+AC_BBFW_SLACKWARE
+AC_BBFW_INITD
+AC_BBFW_SYSTEMD
 
 # enables getopt_long if header and functions were found
 AC_CHECK_HEADERS([getopt.h], [AC_DEFINE_UNQUOTED(USE_GETOPT_LONG, 1, [Use GNU getopt_long])])
@@ -119,10 +120,10 @@ AC_OUTPUT
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Bindle Binaries Linux Firewall $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
 AC_MSG_NOTICE([ ])
-AC_MSG_NOTICE([   Features:])
-AC_MSG_NOTICE([      Slackware Version:        ${SLACKWARE_VERSION}])
-AC_MSG_NOTICE([      Slackware Scripts:        ${ENABLE_SLACKWARE}])
-AC_MSG_NOTICE([      Slackware PKG Scripts:    ${ENABLE_SLACKPKG}])
+AC_MSG_NOTICE([   Install:])
+AC_MSG_NOTICE([      Slackware Init Script:     ${ENABLE_SLACKWARE}])
+AC_MSG_NOTICE([      Init.d Scriptb:            ${ENABLE_INITD}])
+AC_MSG_NOTICE([      System Unit:               ${ENABLE_SYSTEMD}])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Please send suggestions to:   $PACKAGE_BUGREPORT])
 AC_MSG_NOTICE([ ])

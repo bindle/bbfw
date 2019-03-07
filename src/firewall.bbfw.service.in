@@ -1,0 +1,13 @@
+[Unit]
+Description=Bindle Binaries Linux Firewall
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=@sbindir@/bbfw start
+ExecStop=@sbindir@/bbfw stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

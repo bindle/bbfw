@@ -58,6 +58,8 @@ firewalldir				= $(sysconfdir)/firewall.d
 firewallglobaldir			= $(firewalldir)/global.d
 slackrcddir				= $(sysconfdir)/rc.d
 slackinstdir				= /install
+initddir				= $(sysconfdir)/init.d
+systemddir				= $(sysconfdir)/systemd/system
 
 
 # automake targets
@@ -110,7 +112,8 @@ EXTRA_DIST				= \
 					  src/firewall.d/rules-example \
 					  src/firewall.d/rules4-example \
 					  src/firewall.d/rules6-example \
-					  src/rc.firewall.in
+					  src/rc.firewall.in \
+					  src/firewall.bbfw.service.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -120,22 +123,28 @@ CLEANFILES				= \
 					  $(bin_SCRIPTS) \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
+					  src/firewall.bbfw \
 					  src/rc.firewall \
+					  src/rc.firewall.new \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.txz \
 					  @PACKAGE_TARNAME@-*.zip
-DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
+DISTCHECK_CONFIGURE_FLAGS		= \
+					  --enable-strictwarnings \
+					  --enable-initd \
+					  --enable-slackware \
+					  --enable-systemd
 
 
 # conditional targets for slackware
 if ENABLE_SLACKWARE
 slackrcd_SCRIPTS			=  src/rc.firewall.new
 endif
-
-
-# conditional targets for slackware package
-if ENABLE_SLACKPKG
-slackinst_DATA				=  src/slack/slack-desc
+if ENABLE_INITD
+initd_SCRIPTS				=  src/firewall.bbfw
+endif
+if ENABLE_SYSTEMD
+systemd_DATA				=  src/firewall.bbfw.service
 endif
 
 
@@ -159,25 +168,12 @@ src/rc.firewall: Makefile src/rc.firewall.in
 src/rc.firewall.new: src/rc.firewall
 	cp -p src/rc.firewall src/rc.firewall.new
 
-if ENABLE_SLACKPKG
-bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
-	sudo rm -Rf slackware-pkg-build
-	sudo rm -f  bindleadmin-*-noarch-1_bindle.txz
-	./config.status --recheck
-	mkdir -p slackware-pkg-build/slackware-package/install
-	cd slackware-pkg-build && $(abs_top_srcdir)/configure \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--libdir=/usr/lib64 \
-		--enable-slackware
-	cd slackware-pkg-build && $(MAKE) distcheck
-	cd slackware-pkg-build && $(MAKE) DESTDIR=slackware-package install
-	sudo chown -R 0:0 slackware-pkg-build/slackware-package
-	cd slackware-pkg-build/slackware-package && sudo makepkg -l y -p -c n ../../$(@)
-	sudo rm -Rf slackware-pkg-build
+src/firewall.bbfw: src/rc.firewall
+	cp -p src/rc.firewall src/firewall.bbfw
 
-slackware-package: bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz
-endif
+src/firewall.bbfw.service: Makefile src/firewall.bbfw.service.in
+	@$(do_subst_fn)
+
 
 # local targets
 install-exec-local:

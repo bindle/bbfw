@@ -34,9 +34,9 @@
 #   acinclude.m4 - custom m4 macros used by configure.ac
 #
 
-# AC_BINDLEADMIN_SLACKWARE()
+# AC_BBFW_SLACKWARE()
 # -----------------------------------
-AC_DEFUN([AC_BINDLEADMIN_SLACKWARE],[dnl
+AC_DEFUN([AC_BBFW_SLACKWARE],[dnl
 
    # display options
    enableval=""
@@ -45,14 +45,6 @@ AC_DEFUN([AC_BINDLEADMIN_SLACKWARE],[dnl
       [AS_HELP_STRING([--enable-slackware], [enable Slackware specific scripts [default=auto]])],
       [ ESLACKWARE=$enableval ],
       [ ESLACKWARE=$enableval ]
-   )
-   # display options
-   enableval=""
-   AC_ARG_ENABLE(
-      slackpkg,
-      [AS_HELP_STRING([--enable-slackpkg], [enable Slackware package scripts [default=no]])],
-      [ ESLACKWAREPKG=$enableval ],
-      [ ESLACKWAREPKG=$enableval ]
    )
 
    # determine slackware version
@@ -75,17 +67,67 @@ AC_DEFUN([AC_BINDLEADMIN_SLACKWARE],[dnl
       fi
    fi
 
-   # checks for slackware package
-   if test "x${ESLACKWAREPKG}" = "xyes" && "x${ENABLE_SLACKWARE}" != "xyes";then
-      AC_MSG_ERROR([--enable-slackpkg requires --enable-slackware to be specified or auto-detected.])
-   fi
-   ENABLE_SLACKPKG="no"
-   if test "x${ESLACKWAREPKG}" = "xyes";then
-      ENABLE_SLACKPKG="yes"
+   AM_CONDITIONAL([ENABLE_SLACKWARE], [test "${ENABLE_SLACKWARE}" == "yes"])
+])dnl
+
+
+# AC_BBFW_INITD()
+# -----------------------------------
+AC_DEFUN([AC_BBFW_INITD],[dnl
+
+   # display options
+   enableval=""
+   AC_ARG_ENABLE(
+      initd,
+      [AS_HELP_STRING([--enable-initd], [enable init.d script [default=auto]])],
+      [ EINITD=$enableval ],
+      [ EINITD=$enableval ]
+   )
+
+   # sets options
+   if test "x${EINITD}" == "xyes";then
+      ENABLE_INITD=yes
+   elif test "x${EINITD}" == "xno";then
+      ENABLE_INITD=no
+   else
+      if test -d "/etc/init.d/";then
+         ENABLE_INITD=yes
+      else
+         ENABLE_INITD=no
+      fi
    fi
 
-   AM_CONDITIONAL([ENABLE_SLACKWARE], [test "${ENABLE_SLACKWARE}" == "yes"])
-   AM_CONDITIONAL([ENABLE_SLACKPKG],  [test "${ENABLE_SLACKPKG}"  == "yes"])
+   AM_CONDITIONAL([ENABLE_INITD], [test "${ENABLE_INITD}" == "yes"])
+])dnl
+
+
+# AC_BBFW_SYSTEMD()
+# -----------------------------------
+AC_DEFUN([AC_BBFW_SYSTEMD],[dnl
+
+   # display options
+   enableval=""
+   AC_ARG_ENABLE(
+      systemd,
+      [AS_HELP_STRING([--enable-systemd], [enable systemd unit file [default=auto]])],
+      [ ESYSTEMD=$enableval ],
+      [ ESYSTEMD=$enableval ]
+   )
+
+   # sets options
+   if test "x${ESYSTEMD}" == "xyes";then
+      ENABLE_SYSTEMD=yes
+   elif test "x${ESYSTEMD}" == "xno";then
+      ENABLE_SYSTEMD=no
+   else
+      if test -d "/etc/systemd/system/";then
+         ENABLE_SYSTEMD=yes
+      else
+         ENABLE_SYSTEMD=no
+      fi
+   fi
+
+   AM_CONDITIONAL([ENABLE_SYSTEMD], [test "${ENABLE_SYSTEMD}" == "yes"])
 ])dnl
 
 # end of m4 file
