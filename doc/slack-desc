@@ -5,15 +5,15 @@
 # make exactly 11 lines for the formatting to be correct.  It's also
 # customary to leave one space after the ':'.
 
-             |-----handy-ruler------------------------------------------------------|
-bindleadmin: bindleadmin (Bindle Binaries Admin Tools)
-bindleadmin:
-bindleadmin: This package contains scripts, shell profiles, utilities, and
-bindleadmin: documentation used by Bindle Binaries to manage Slackware based
-bindleadmin: servers and development repositories.
-bindleadmin:
-bindleadmin: 
-bindleadmin: 
-bindleadmin:
-bindleadmin: http://github.com/bindle/bindleadmin.git
-bindleadmin:
+    |-----handy-ruler------------------------------------------------------|
+bbfw: bbfw (Bindle Binaries Linux Firewall)
+bbfw:
+bbfw: This package contains the Bindle Binaries firewall script for Linux
+bbfw: systems. BBFW allows an administrator to create separate configuration
+bbfw: files for  global rules (i.e. oraganizational rules), cluster specific
+bbfw: rules, application speciic rules, and server specific firewall rules.
+bbfw: The configuration files containing the rules are loaded in a set order
+bbfw: which allows each level or rules to build upon the previous rules.
+bbfw:
+bbfw: http://github.com/bindle/bbfw.git
+bbfw:

@@ -2,7 +2,12 @@
 Bindle Binaries Linux Firewall
 ===========================
 
-   Bindle Binaries Linux Firewall is script for managing firewall rules.
+This package contains the Bindle Binaries firewall script for Linux 
+systems. BBFW allows an administrator to create separate configuration
+files for  global rules (i.e. oraganizational rules), cluster specific
+rules, application speciic rules, and server specific firewall rules.
+The configuration files containing the rules are loaded in a set order 
+which allows each level or rules to build upon the previous rules. 
 
 
 Contents
