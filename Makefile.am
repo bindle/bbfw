@@ -118,7 +118,7 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 
 # conditional targets for slackware
 if ENABLE_SLACKWARE
-slackrcd_SCRIPTS			=  src/slack/rc.firewall
+slackrcd_SCRIPTS			=  src/rc.firewall.new
 endif
 
 
@@ -141,6 +141,12 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 
 src/bbfw: Makefile src/bbfw.in
 	@$(do_subst_fn)
+
+src/rc.firewall: Makefile src/rc.firewall.in
+	@$(do_subst_fn)
+
+src/rc.firewall.new: src/rc.firewall
+	cp -p src/rc.firewall src/rc.firewall.new
 
 if ENABLE_SLACKPKG
 bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
