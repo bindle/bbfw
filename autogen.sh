@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#   Bindle Binaries Admin Tools
+#   Bindle Binaries Linux Firewall
 #   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@

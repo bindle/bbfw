@@ -1,5 +1,5 @@
 #
-#   Bindle Binaries Admin Tools
+#   Bindle Binaries Linux Firewall
 #   Copyright (C) 2013,2017,2018 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@
@@ -38,7 +38,7 @@ AC_PREREQ([2.65])
 
 AC_COPYRIGHT([Copyright (c) 2015, 2017, 2018 Bindle Binaries <syzdek@bindlebinaries.com>.])
 AC_REVISION(0.1)
-AC_INIT([Bindle Binaries Admin Tools],[0.17],[syzdek@bindlebinaries.com],[bindleadmin])
+AC_INIT([Bindle Binaries Linux Firewall],[0.17],[syzdek@bindlebinaries.com],[bindleadmin])
 
 AC_SUBST([RELEASE_MONTH],["August 2018"])
 
@@ -93,7 +93,7 @@ AM_PROG_LEX
 AC_PROG_LN_S
 
 # GNU Libtool Support
-LT_INIT(dlopen disable-fast-install win32-dll)
+#LT_INIT(dlopen disable-fast-install win32-dll)
 
 # initiates bindle tools macros
 AC_BINDLE(contrib/bindletools)
@@ -116,7 +116,7 @@ AC_OUTPUT
 
 # Show local config
 AC_MSG_NOTICE([ ])
-AC_MSG_NOTICE([   Bindle Binaries Admin Tools $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
+AC_MSG_NOTICE([   Bindle Binaries Linux Firewall $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Features:])
 AC_MSG_NOTICE([      Slackware Version:        ${SLACKWARE_VERSION}])

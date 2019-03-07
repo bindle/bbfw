@@ -1,5 +1,5 @@
 #
-#   Bindle Binaries Admin Tools
+#   Bindle Binaries Linux Firewall
 #   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
 #
 #   @BINDLE_BINARIES_BSD_LICENSE_START@
@@ -57,12 +57,10 @@ LXCDIR					?= /var/lib/lxc
 firewalldir				= $(sysconfdir)/firewall.d
 firewallglobaldir			= $(firewalldir)/global.d
 slackrcddir				= $(sysconfdir)/rc.d
-bashprofiledir				= $(sysconfdir)/profile.d
 slackinstdir				= /install
 
 
 # automake targets
-bashprofile_SCRIPTS			= src/bash/bindle.sh
 check_PROGRAMS				=
 doc_DATA				= README COPYING ChangeLog AUTHORS
 include_HEADERS				=
@@ -74,28 +72,17 @@ noinst_HEADERS				=
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
-pkgdata_DATA				= src/misc/bindleadmin-script.profile
-sbin_SCRIPTS				= src/misc/cronmail.sh
+pkgdata_DATA				=
+sbin_SCRIPTS				=
 
 
 # lists
-AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bash/bindle.sh \
-					  src/slack/mkinitrd-all.sh \
-					  src/slack/rc.firewall \
-					  src/slack/rc.inet1_local
+AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/slack/rc.firewall
 BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
-EXTRA_DIST				= src/bash/bindle.sh \
-					  src/misc/bindleadmin-script.profile.in \
-					  src/misc/cronmail.sh.in \
-					  src/misc/git-proj-cleanup.sh.in \
-					  src/misc/git-proj-stats.sh.in \
-					  src/misc/pub-generate-readme.sh.in \
-					  src/misc/pub-rsync-remotes.sh.in \
-					  src/slack/mkinitrd-all.sh.in \
-					  src/slack/rc.firewall.in \
+EXTRA_DIST				= src/slack/rc.firewall.in \
 					  src/slack/firewall.d/global.d/rules-example \
 					  src/slack/firewall.d/global.d/rules4-example \
 					  src/slack/firewall.d/global.d/rules6-example \
@@ -104,15 +91,7 @@ EXTRA_DIST				= src/bash/bindle.sh \
 					  src/slack/firewall.d/rules-example \
 					  src/slack/firewall.d/rules4-example \
 					  src/slack/firewall.d/rules6-example \
-					  src/slack/rc.inet1_local.in \
-					  src/slack/rc.d/rc.inet1.conf \
-					  src/slack/rc.d/rc.inet1_local_down-example \
-					  src/slack/rc.d/rc.inet1_local_up-example \
-					  src/slack/slack-desc \
-					  src/slack/slack-net-check.sh.in \
-					  src/slack/slack-pkg-audit.sh.in \
-					  src/slack/slack-sync-auth.sh.in \
-					  src/slack/slack-update-mirrors.sh.in
+					  src/slack/slack-desc
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -122,17 +101,7 @@ CLEANFILES				= \
 					  $(bin_SCRIPTS) \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
-					  src/misc/cronmail.sh \
-					  src/misc/git-proj-cleanup.sh \
-					  src/misc/git-proj-stats.sh \
-					  src/misc/pub-generate-readme.sh \
-					  src/misc/pub-rsync-remotes.sh \
-					  src/slack/rc.firewall \
-					  src/slack/rc.inet1_local \
-					  src/slack/slack-net-check.sh \
-					  src/slack/slack-pkg-audit.sh \
-					  src/slack/slack-sync-auth.sh \
-					  src/slack/slack-update-mirrors.sh \
+					  src/rc.firewall \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.txz \
 					  @PACKAGE_TARNAME@-*.zip
@@ -141,11 +110,8 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 
 # conditional targets for slackware
 if ENABLE_SLACKWARE
-sbin_SCRIPTS				+= src/slack/mkinitrd-all.sh \
-					   src/slack/slack-net-check.sh \
-					   src/slack/slack-pkg-audit.sh
-slackrcd_SCRIPTS			=  src/slack/rc.firewall \
-					   src/slack/rc.inet1_local
+sbin_SCRIPTS				+=
+slackrcd_SCRIPTS			=  src/slack/rc.firewall
 firewallglobal_DATA			=  src/slack/firewall.d/global.d/rules-example \
 					   src/slack/firewall.d/global.d/rules4-example \
 					   src/slack/firewall.d/global.d/rules6-example \
@@ -154,9 +120,6 @@ firewall_DATA				=  src/slack/firewall.d/ipsets-example \
 					   src/slack/firewall.d/rules-example \
 					   src/slack/firewall.d/rules4-example \
 					   src/slack/firewall.d/rules6-example
-slackrcd_DATA				=  src/slack/rc.d/rc.inet1.conf \
-					   src/slack/rc.d/rc.inet1_local_down-example \
-					   src/slack/rc.d/rc.inet1_local_up-example
 endif
 
 
@@ -177,47 +140,8 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 # custom targets
 .PHONY: install-lxc slackware-package
 
-src/misc/bindleadmin-script.profile: Makefile src/misc/bindleadmin-script.profile.in
-	@$(do_subst_dt)
-
-src/misc/cronmail.sh: Makefile src/misc/cronmail.sh.in
-	@$(do_subst_fn)
-
-src/misc/git-proj-cleanup.sh: Makefile src/misc/git-proj-cleanup.sh.in
-	@$(do_subst_fn)
-
-src/misc/git-proj-stats.sh: Makefile src/misc/git-proj-stats.sh.in
-	@$(do_subst_fn)
-
-src/misc/pub-generate-readme.sh: Makefile src/misc/pub-generate-readme.sh.in
-	@$(do_subst_fn)
-
-src/misc/pub-rsync-remotes.sh: Makefile src/misc/pub-rsync-remotes.sh.in
-	@$(do_subst_fn)
-
-src/slack/mkinitrd-all.sh: Makefile src/slack/mkinitrd-all.sh.in
-	@$(do_subst_fn)
-
 src/slack/rc.firewall: Makefile src/slack/rc.firewall.in
 	@$(do_subst_fn)
-
-src/slack/rc.inet1_local: Makefile src/slack/rc.inet1_local.in
-	@$(do_subst_fn)
-
-src/slack/slack-pkg-audit.sh: Makefile src/slack/slack-pkg-audit.sh.in
-	@$(do_subst_fn)
-
-src/slack/slack-net-check.sh: Makefile src/slack/slack-net-check.sh.in
-	@$(do_subst_fn)
-
-src/slack/slack-sync-auth.sh: Makefile src/slack/slack-sync-auth.sh.in
-	@$(do_subst_fn)
-
-src/slack/slack-update-mirrors.sh: Makefile src/slack/slack-update-mirrors.sh.in
-	@$(do_subst_fn)
-
-install-lxc: install
-	for LXC in `ls $(LXCDIR)`;do $(MAKE) DESTDIR=/var/lib/lxc/$${LXC}/rootfs install;done
 
 if ENABLE_SLACKPKG
 bindleadmin-$(PACKAGE_VERSION)-noarch-1_bindle.txz: $(SCRIPTS) $(PROGRAMS) $(DATA)
