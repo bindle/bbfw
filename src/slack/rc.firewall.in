@@ -81,11 +81,7 @@ export PATH
 
 
 # determine prefix of conf files
-if test -f /etc/rc.d/rc.firewall.global;then
-   FW_PREFIX=/etc/rc.d/rc.firewall.
-else
-   FW_PREFIX=/etc/firewall.d/
-fi
+FW_PREFIX=/etc/firewall.d/
 
 
 ###########
