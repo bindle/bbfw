@@ -62,7 +62,13 @@ slackinstdir				= /install
 
 # automake targets
 check_PROGRAMS				=
-doc_DATA				= README COPYING ChangeLog AUTHORS
+doc_DATA				= \
+					  README.md \
+					  ChangeLog.md \
+					  COPYING \
+					  NEWS.md \
+					  AUTHORS \
+					  doc/slack-desc
 include_HEADERS				=
 lib_LTLIBRARIES				=
 man_MANS				=
@@ -85,12 +91,17 @@ firewall_DATA				= src/firewall.d/ipsets-example \
 
 
 # lists
-AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bbfw
+AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bbfw src/rc.firewall.new
 BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
-EXTRA_DIST				= src/bbfw.in \
+EXTRA_DIST				= \
+					  ChangeLog.md \
+					  NEWS.md \
+					  README.md \
+					  doc/slack-desc \
+					  src/bbfw.in \
 					  src/firewall.d/global.d/rules-example \
 					  src/firewall.d/global.d/rules4-example \
 					  src/firewall.d/global.d/rules6-example \
@@ -99,7 +110,7 @@ EXTRA_DIST				= src/bbfw.in \
 					  src/firewall.d/rules-example \
 					  src/firewall.d/rules4-example \
 					  src/firewall.d/rules6-example \
-					  src/doc/slack-desc
+					  src/rc.firewall.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \

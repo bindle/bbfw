@@ -55,7 +55,8 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 # configures for automake
-AM_INIT_AUTOMAKE(gnu std-options subdir-objects no-dist-gzip dist-xz)
+#AM_INIT_AUTOMAKE(gnu std-options subdir-objects no-dist-gzip dist-xz)
+AM_INIT_AUTOMAKE(gnu std-options subdir-objects no-dist-gzip dist-xz foreign)
 
 # Compilers
 AC_PROG_CC

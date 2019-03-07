@@ -2,6 +2,9 @@
 Bindle Binaries Linux Firewall
 Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 
+0.18
+  - forked rc.firewall to bbfw (syzdek)
+
 0.17
   - Moving global firewall rules to separate directory (syzdek)
   - Switch to tar.xz for source distributions (syzdek)
