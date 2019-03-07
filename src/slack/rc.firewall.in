@@ -89,18 +89,17 @@ FW_PREFIX=/etc/firewall.d/
 ###########
 
 # sets script/package information
-PROGRAM_NAME="$(basename ${0})"
+PROGRAM_NAME="$(basename "${0}")"
 PACKAGE_NAME="$(echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g')"
 PACKAGE_VERSION="$(echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g')"
 PACKAGE_BUGREPORT="$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')"
 
 
 # If possible, log events in /var/log/messages:
-PROG=rc.firewall
 if [ -f /var/run/syslogd.pid -a -x logger ]; then
-  LOGGER="logger -s -t ${PROG}[$$]"
+  LOGGER="logger -s -t ${PROGRAM_NAME}[$$]"
 else # output to stdout/stderr:
-  LOGGER="sed -e s/^/${PROG}:/g"
+  LOGGER="sed -e s/^/${PROGRAM_NAME}: /g"
 fi
 
 
