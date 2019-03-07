@@ -73,25 +73,33 @@ noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				=
-sbin_SCRIPTS				=
+sbin_SCRIPTS				= src/bbfw
+firewallglobal_DATA			= src/firewall.d/global.d/rules-example \
+					  src/firewall.d/global.d/rules4-example \
+					  src/firewall.d/global.d/rules6-example \
+					  src/firewall.d/global.d/ipsets-example
+firewall_DATA				= src/firewall.d/ipsets-example \
+					  src/firewall.d/rules-example \
+					  src/firewall.d/rules4-example \
+					  src/firewall.d/rules6-example
 
 
 # lists
-AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/slack/rc.firewall
+AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bbfw
 BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
 EXTRA_MANS				=
-EXTRA_DIST				= src/slack/rc.firewall.in \
-					  src/slack/firewall.d/global.d/rules-example \
-					  src/slack/firewall.d/global.d/rules4-example \
-					  src/slack/firewall.d/global.d/rules6-example \
-					  src/slack/firewall.d/global.d/ipsets-example \
-					  src/slack/firewall.d/ipsets-example \
-					  src/slack/firewall.d/rules-example \
-					  src/slack/firewall.d/rules4-example \
-					  src/slack/firewall.d/rules6-example \
-					  src/slack/slack-desc
+EXTRA_DIST				= src/bbfw.in \
+					  src/firewall.d/global.d/rules-example \
+					  src/firewall.d/global.d/rules4-example \
+					  src/firewall.d/global.d/rules6-example \
+					  src/firewall.d/global.d/ipsets-example \
+					  src/firewall.d/ipsets-example \
+					  src/firewall.d/rules-example \
+					  src/firewall.d/rules4-example \
+					  src/firewall.d/rules6-example \
+					  src/doc/slack-desc
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -110,16 +118,7 @@ DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings --enable-slackware
 
 # conditional targets for slackware
 if ENABLE_SLACKWARE
-sbin_SCRIPTS				+=
 slackrcd_SCRIPTS			=  src/slack/rc.firewall
-firewallglobal_DATA			=  src/slack/firewall.d/global.d/rules-example \
-					   src/slack/firewall.d/global.d/rules4-example \
-					   src/slack/firewall.d/global.d/rules6-example \
-					   src/slack/firewall.d/global.d/ipsets-example
-firewall_DATA				=  src/slack/firewall.d/ipsets-example \
-					   src/slack/firewall.d/rules-example \
-					   src/slack/firewall.d/rules4-example \
-					   src/slack/firewall.d/rules6-example
 endif
 
 
@@ -140,7 +139,7 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 # custom targets
 .PHONY: install-lxc slackware-package
 
-src/slack/rc.firewall: Makefile src/slack/rc.firewall.in
+src/bbfw: Makefile src/bbfw.in
 	@$(do_subst_fn)
 
 if ENABLE_SLACKPKG

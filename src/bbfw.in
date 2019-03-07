@@ -35,7 +35,7 @@
 #   Possible locations for firewall script:
 #
 #      /etc/rc.d/rc.firewall  - slackware init script
-#      /usr/sbin/firewall     - generic firewall script location
+#      /usr/sbin/bbfw         - generic firewall script location
 #
 #   Files are processed in the following order:
 #
