@@ -2,8 +2,7 @@
 Bindle Binaries Linux Firewall
 ===========================
 
-   Bindle Binaries Linux Firewall is a collection of scripts and files which aid
-   in the management of projects. 
+   Bindle Binaries Linux Firewall is script for managing firewall rules.
 
 
 Contents
@@ -11,7 +10,6 @@ Contents
 
    1. Disclaimer
    2. Software Requirements
-   3. Tested Platforms
    4. Maintainers
    5. Community
    6. Source Code
@@ -37,10 +35,8 @@ Disclaimer
 Software Requirements
 =====================
 
-   GNU GCC 4.2.1
-   GNU Libtool 2.4
-   GNU Autoconf 2.65
-   GNU Automake 1.11.1
+   iptables
+   ipset
    Git 1.7.2.3
    Bash Shell
 
@@ -50,7 +46,7 @@ Maintainers
 
    David M. Syzdek
    Bindle Binaries
-   syzdek@bindlebinaries.com
+   david@syzdek.net
 
 
 Source Code
@@ -61,18 +57,15 @@ Source Code
    source code from the git repository.
 
    Browse Source:
-      https://github.com/bindle/bindleadmin
-      http://scm.bindlebinaries.com/scm/com.bindlebinaries/bindleadmin.git
+      https://github.com/bindle/bbfw
 
    Git URLs:
-      git://github.com/bindle/bindleadmin.git
-      git://git.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindleadmin.git
-      http://http.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindleadmin.git
-      ssh://ssh.scm.bindlebinaries.com/pub/scm/com.bindlebinaries/bindleadmin.git
+      git@github.com:bindle/bbfw.git
+      https://github.com/bindle/bbfw.git
 
    Downloading Source:
 
-      $ git clone git://github.com/bindle/bindleadmin.git
+      $ git clone https://github.com/bindle/bbfw.git
 
    Preparing Source:
 
@@ -109,3 +102,5 @@ Package Maintence Notes
       $ make update
       $ make distcheck
       $ make dist-bzip2
+
+
