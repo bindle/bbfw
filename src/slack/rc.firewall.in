@@ -65,10 +65,10 @@
 #      /etc/firewall.d/global.d/rules6     - centrally maintained IPv6 rules
 #      /etc/firewall.d/global.d/rules      - centrally maintained IPv4/IPv6 rules
 #
-#      /etc/firewall.d/global.d/rules-post - centrally maintained post-hook script
-#      /etc/firewall.d/apps.d/*.post       - app post-hook script
-#      /etc/firewall.d/cluster.d/rules-post - host specific post-hook script
-#      /etc/firewall.d/rules-post          - host specific post-hook script
+#      /etc/firewall.d/global.d/post-hook  - centrally maintained post-hook script
+#      /etc/firewall.d/apps.d/*/post-hook  - app post-hook script
+#      /etc/firewall.d/cluster.d/post-hook - host specific post-hook script
+#      /etc/firewall.d/post-hook           - host specific post-hook script
 #
 
 
@@ -251,12 +251,12 @@ start() {
    load ip6tables ${FW_PREFIX}global.d/rules
 
    # run post-hooks
-   run_hook start ${FW_PREFIX}global.d/rules-post "running global post-hook start ..."
-   for FILE in $( find_appfile post );do
+   run_hook start ${FW_PREFIX}global.d/post-hook  "running global post-hook start ..."
+   for FILE in $( find_appfile post-hook );do
       run_hook start ${FILE}                      "running app post-hook start (App: $(basename ${FILE})) ..."
    done
-   run_hook start ${FW_PREFIX}cluster.d/rules-post  "running cluster post-hook start ..."
-   run_hook start ${FW_PREFIX}rules-post          "running local post-hook start ..."
+   run_hook start ${FW_PREFIX}cluster.d/post-hook "running cluster post-hook start ..."
+   run_hook start ${FW_PREFIX}post-hook           "running local post-hook start ..."
 }
 
 
@@ -301,12 +301,12 @@ stop() {
    done
 
    # run post-hooks
-   run_hook stop ${FW_PREFIX}global.d/rules-post "running global post-hook stop ..."
-   for FILE in $( find_appfile post );do
+   run_hook stop ${FW_PREFIX}global.d/post-hook  "running global post-hook stop ..."
+   for FILE in $( find_appfile post-hook );do
       run_hook stop ${FILE}                      "running app post-hook stop (App: $(basename ${FILE})) ..."
    done
-   run_hook stop ${FW_PREFIX}cluster.d/rules-post  "running cluster post-hook stop ..."
-   run_hook stop ${FW_PREFIX}rules-post          "running local post-hook stop ..."
+   run_hook stop ${FW_PREFIX}cluster.d/post-hook "running cluster post-hook stop ..."
+   run_hook stop ${FW_PREFIX}post-hook           "running local post-hook stop ..."
 }
 
 
