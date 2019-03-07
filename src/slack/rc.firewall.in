@@ -143,7 +143,8 @@ find_appfile()
    find -L \
       /etc/firewall.d/apps.d/ \
       -executable \
-      -name "*.${1}" \
+      -regextype posix-extended \
+      -regex "^/etc/firewall.d/apps.d/[-.a-zA-Z0-9]+[./]${1}$" \
       -type f \
       2> /dev/null
 }
