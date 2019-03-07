@@ -216,17 +216,6 @@ start() {
       load ip6tables ${FILE}
    done
 
-   # LXC rules
-   if test -d /var/lib/lxc/;then
-      for LXCDIR in $(find /var/lib/lxc/ -type d -maxdepth 1);do
-         LXC="$(basename ${LXCDIR})"
-         load iptables  ${LXCDIR}/rc.d/rc.firewall.rules4 "adding IPv4 rules (LXC: ${LXC})"
-         load ip6tables ${LXCDIR}/rc.d/rc.firewall.rules6 "adding IPv6 rules (LXC: ${LXC})"
-         load iptables  ${LXCDIR}/rc.d/rc.firewall.rules  "adding IPv4/IPv6 rules (LXC: ${LXC})"
-         load ip6tables ${LXCDIR}/rc.d/rc.firewall.rules
-      done
-   fi
-
    # apply host specific firewall rules
    load iptables  ${FW_PREFIX}rules4             "adding IPv4 local rules"
    load ip6tables ${FW_PREFIX}rules6             "adding IPv6 local rules"
