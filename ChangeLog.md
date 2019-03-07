@@ -4,6 +4,9 @@ Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
 
 0.18
   - forked rc.firewall to bbfw (syzdek)
+  - added ability to group app specific rules in dedicated directory (syzdek)
+  - renamed rules-pre/rules-post to pre-hook/post-hook (syzdek)
+  - dropped support for LXC firewall rules (syzdek)
 
 0.17
   - Moving global firewall rules to separate directory (syzdek)
