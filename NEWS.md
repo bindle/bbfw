@@ -1,6 +1,6 @@
 
 Bindle Binaries Linux Firewall
-Copyright (C) 2013 Bindle Binaries <syzdek@bindlebinaries.com>.
+Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
 
 
 2011-04-24 by David M. Syzdek

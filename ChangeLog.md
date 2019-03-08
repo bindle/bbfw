@@ -1,6 +1,6 @@
 
 Bindle Binaries Linux Firewall
-Copyright (C) 2014, 2017 Bindle Binaries <syzdek@bindlebinaries.com>.
+Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
 
 0.18
   - forked rc.firewall to bbfw (syzdek)
