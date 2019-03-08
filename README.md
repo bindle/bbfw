@@ -40,68 +40,74 @@ Disclaimer
 Software Requirements
 =====================
 
-   iptables
-   ipset
-   Git 1.7.2.3
-   Bash Shell
+   * iptables
+   * ipset
+   * Git 1.7.2.3
+   * Bash Shell
 
 
 Maintainers
 ===========
 
-   David M. Syzdek
-   Bindle Binaries
-   david@syzdek.net
+   David M. Syzdek  
+   david@syzdek.net  
 
 
 Source Code
 ===========
 
-   The source code for this project is maintained using git
-   (http://git-scm.com).  The following contains information to checkout the
-   source code from the git repository.
+The source code for this project is maintained using git.  The following
+contains information to checkout the source code from the git repository.
 
-   Browse Source:
-      https://github.com/bindle/bbfw
+Browse Source:
 
-   Git URLs:
-      git@github.com:bindle/bbfw.git
-      https://github.com/bindle/bbfw.git
+   * [https://github.com/bindle/bbfw](https://github.com/bindle/bbfw)
 
-   Downloading Source:
+Git URLs:
+
+   * [git@github.com:bindle/bbfw.git](git@github.com:bindle/bbfw.git)
+   * [https://github.com/bindle/bbfw.git](https://github.com/bindle/bbfw.git)
+
+Downloading Source:
 
       $ git clone https://github.com/bindle/bbfw.git
 
-   Preparing Source:
+Preparing Source:
 
       $ cd bindleadmin
       $ ./build-aux/autogen.sh
+      $ ./configure --prefix=/usr --sysconfdir=/etc
+      $ make
+      $ make install
 
-   Git Branches:
-      master - Current release of packages.
-      next   - changes staged for next release
-      pu     - proposed updates for next release
-      xx/yy+ - branch for testing new changes before merging to 'pu' branch
+Git Branches:
+
+   - master - Current release of packages.
+   - next   - changes staged for next release
+   - pu     - proposed updates for next release
+   - xx/yy+ - branch for testing new changes before merging to 'pu' branch
 
 
 Package Maintence Notes
 =======================
 
-   This is a collection of notes for developers to use when maintaining this
-   package.
+This is a collection of notes for developers to use when maintaining this package.
 
-   New Release Checklist:
+New Release Checklist:
 
-      - Switch to 'master' branch in Git repository.
-      - Update version in configure.ac.
-      - Update date and version in ChangeLog.
-      - Commit configure.ac and ChangeLog changes to repository.
-      - Create tag in git repository:
+   - Switch to 'master' branch in Git repository.
+   - Update version in configure.ac.
+   - Update date and version in ChangeLog.
+   - Commit configure.ac and ChangeLog changes to repository.
+   - Create tag in git repository:
+
            $ git tag -s v${MAJOR}.${MINOR}
-      - Push repository to publishing server:
+
+   - Push repository to publishing server:
+
            $ git push --tags origin master:master next:next pu:pu
 
-   Creating Source Distribution Archives:
+Creating Source Distribution Archives:
 
       $ ./configure
       $ make update
