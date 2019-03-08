@@ -51,18 +51,17 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 # configures for automake
-#AM_INIT_AUTOMAKE(gnu std-options subdir-objects no-dist-gzip dist-xz)
 AM_INIT_AUTOMAKE(gnu std-options subdir-objects no-dist-gzip dist-xz foreign)
 
 # Compilers
-AC_PROG_CC
-#AC_PROG_OBJC
-AC_PROG_CXX
-AM_PROG_CC_C_O
+#AC_PROG_CC
+##AC_PROG_OBJC
+#AC_PROG_CXX
+#AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_USE_SYSTEM_EXTENSIONS # replaces AC_AIX AC_GNU_SOURCE AC_MINIX
-AC_C_BIGENDIAN
+#AC_USE_SYSTEM_EXTENSIONS # replaces AC_AIX AC_GNU_SOURCE AC_MINIX
+#AC_C_BIGENDIAN
 
 # Version Info:
 #    Current    -- the current version number of this API
@@ -76,11 +75,11 @@ AC_BINDLE_LIBTOOL_VERSION_INFO(0, 0, 0)
 
 # binary locations
 AC_PATH_PROG([SHELL],   sh bash,        [AC_MSG_ERROR([missing "sh"])], [$PATH])
-AC_CHECK_TOOLS(AR,      ar gar,         [AC_MSG_ERROR([missing binutil "ar"])])
-AC_CHECK_TOOLS(LD,      ld gld,         [AC_MSG_ERROR([missing binutil "ld"])])
-AC_CHECK_TOOLS(NM,      nm gnm,         [AC_MSG_ERROR([missing binutil "nm"])])
-AC_CHECK_TOOLS(RANLIB,  ranlib granlib, [AC_MSG_ERROR([missing binutil "ranlib"])])
-AC_CHECK_TOOLS(STRIP,   strip gstrip,   [AC_MSG_ERROR([missing binutil "strip"])])
+#AC_CHECK_TOOLS(AR,      ar gar,         [AC_MSG_ERROR([missing binutil "ar"])])
+#AC_CHECK_TOOLS(LD,      ld gld,         [AC_MSG_ERROR([missing binutil "ld"])])
+#AC_CHECK_TOOLS(NM,      nm gnm,         [AC_MSG_ERROR([missing binutil "nm"])])
+#AC_CHECK_TOOLS(RANLIB,  ranlib granlib, [AC_MSG_ERROR([missing binutil "ranlib"])])
+#AC_CHECK_TOOLS(STRIP,   strip gstrip,   [AC_MSG_ERROR([missing binutil "strip"])])
 
 # shell programs
 AC_PROG_AWK
@@ -100,13 +99,10 @@ AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version
 
 
 # custom configure options
-AC_BINDLE_ENABLE_WARNINGS
 AC_BBFW_SLACKWARE
 AC_BBFW_INITD
 AC_BBFW_SYSTEMD
 
-# enables getopt_long if header and functions were found
-AC_CHECK_HEADERS([getopt.h], [AC_DEFINE_UNQUOTED(USE_GETOPT_LONG, 1, [Use GNU getopt_long])])
 
 # Creates outputs
 AC_CONFIG_FILES([Makefile])
