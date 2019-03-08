@@ -124,6 +124,7 @@ CLEANFILES				= \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
 					  src/firewall.bbfw \
+					  src/firewall.bbfw.service \
 					  src/rc.firewall \
 					  src/rc.firewall.new \
 					  @PACKAGE_TARNAME@-*.tar.* \
