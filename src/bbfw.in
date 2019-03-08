@@ -99,7 +99,7 @@ PACKAGE_BUGREPORT="$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')"
 if [ -f /var/run/syslogd.pid -a -x logger ]; then
   LOGGER="logger -s -t ${PROGRAM_NAME}[$$]"
 else # output to stdout/stderr:
-  LOGGER="sed -e s/^/${PROGRAM_NAME}: /g"
+  LOGGER="sed -e s/^/${PROGRAM_NAME}:/g"
 fi
 
 
