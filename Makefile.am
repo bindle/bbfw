@@ -49,11 +49,9 @@ AM_MAKEINFOFLAGS                        = --no-split
 DEFS					=
 
 
-LXCDIR					?= /var/lib/lxc
 firewalldir				= $(sysconfdir)/firewall.d
 firewallglobaldir			= $(firewalldir)/global.d
 slackrcddir				= $(sysconfdir)/rc.d
-slackinstdir				= /install
 initddir				= $(sysconfdir)/init.d
 systemddir				= $(sysconfdir)/systemd/system
 
@@ -89,7 +87,7 @@ firewall_DATA				= src/firewall.d/ipsets-example \
 
 
 # lists
-AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	= src/bbfw src/rc.firewall.new
+AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	=
 BUILT_SOURCES				=
 TESTS					=
 XFAIL_TESTS				=
@@ -154,7 +152,7 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 
 
 # custom targets
-.PHONY: install-lxc slackware-package
+.PHONY:
 
 src/bbfw: Makefile src/bbfw.in
 	@$(do_subst_fn)
