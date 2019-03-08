@@ -298,27 +298,43 @@ stop() {
 ### MAIN ###
 ############
 
-echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER 2>&1
 case "$1" in
+   -h|--help)
+      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump ]"
+      echo "       ${PROGRAM_NAME} [ -h | --help ]"
+      echo "       ${PROGRAM_NAME} [ -v | --version ]"
+      echo ""
+   ;;
+
+   -v|--version)
+      echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)"
+   ;;
+
    'dump')
       dump
    ;;
 
    'start') # "start" brings up all configured interfaces:
+      echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
       start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
+      echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
       stop  2>&1 | $LOGGER
    ;;
 
    'restart') # "restart" restarts the network:
+      echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
       stop  2>&1 | $LOGGER
       start 2>&1 | $LOGGER
    ;;
 
    *) # The default is to bring up all configured interfaces:
-     start  2>&1 | $LOGGER
+      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump ]"
+      echo "       ${PROGRAM_NAME} [ -h | --help ]"
+      echo "       ${PROGRAM_NAME} [ -v | --version ]"
+      echo ""
    ;;
 esac
 
