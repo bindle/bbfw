@@ -130,6 +130,12 @@ dump()
 }
 
 
+name_appfile()
+{
+   basename "$(dirname "${1}")"
+}
+
+
 find_appfile()
 {
    find -L \
@@ -187,7 +193,7 @@ start() {
    # run pre-hooks
    run_hook start ${FW_PREFIX}global.d/pre-hook  "running global pre-hook start ..."
    for FILE in $( find_appfile pre-hook );do
-      run_hook start ${FILE}                     "running app pre-hook start (App: $(basename ${FILE})) ..."
+      run_hook start ${FILE}                     "running app pre-hook start (App: $(name_appfile ${FILE})) ..."
    done
    run_hook start ${FW_PREFIX}cluster.d/pre-hook "running cluster pre-hook start ..."
    run_hook start ${FW_PREFIX}pre-hook           "running local pre-hook start ..."
@@ -195,20 +201,20 @@ start() {
    # create IP sets
    load ipset ${FW_PREFIX}global.d/ipsets        "adding global IP sets"
    for FILE in $( find_appfile ipsets );do
-      load ipset ${FILE}                         "adding IP sets (App: $(basename ${FILE})) ..."
+      load ipset ${FILE}                         "adding IP sets (App: $(name_appfile ${FILE})) ..."
    done
    load ipset ${FW_PREFIX}cluster.d/ipsets         "adding cluster IP sets"
    load ipset ${FW_PREFIX}ipsets                 "adding local IP sets"
 
    # Application rules
    for FILE in $( find_appfile rules4 );do
-      load iptables ${FILE}                      "adding IPv4 rules (App: $(basename ${FILE})) ..."
+      load iptables ${FILE}                      "adding IPv4 rules (App: $(name_appfile ${FILE})) ..."
    done
    for FILE in $( find_appfile rules6 );do
-      load ip6tables ${FILE}                     "adding IPv6 rules (App: $(basename ${FILE})) ..."
+      load ip6tables ${FILE}                     "adding IPv6 rules (App: $(name_appfile ${FILE})) ..."
    done
    for FILE in $( find_appfile rules );do
-      load iptables ${FILE}                      "adding IPv4/IPv6 rules (App: $(basename ${FILE})) ..."
+      load iptables ${FILE}                      "adding IPv4/IPv6 rules (App: $(name_appfile ${FILE})) ..."
       load ip6tables ${FILE}
    done
 
@@ -233,7 +239,7 @@ start() {
    # run post-hooks
    run_hook start ${FW_PREFIX}global.d/post-hook  "running global post-hook start ..."
    for FILE in $( find_appfile post-hook );do
-      run_hook start ${FILE}                      "running app post-hook start (App: $(basename ${FILE})) ..."
+      run_hook start ${FILE}                      "running app post-hook start (App: $(name_appfile ${FILE})) ..."
    done
    run_hook start ${FW_PREFIX}cluster.d/post-hook "running cluster post-hook start ..."
    run_hook start ${FW_PREFIX}post-hook           "running local post-hook start ..."
@@ -245,7 +251,7 @@ stop() {
    # run pre-hooks
    run_hook stop ${FW_PREFIX}global.d/pre-hook    "running global pre-hook stop ..."
    for FILE in $( find_appfile pre-hook );do
-      run_hook stop ${FILE}                       "running app pre-hook stop (App: $(basename ${FILE})) ..."
+      run_hook stop ${FILE}                       "running app pre-hook stop (App: $(name_appfile ${FILE})) ..."
    done
    run_hook stop ${FW_PREFIX}cluster.d/pre-hook   "running cluster pre-hook stop ..."
    run_hook stop ${FW_PREFIX}pre-hook             "running local pre-hook stop ..."
@@ -283,7 +289,7 @@ stop() {
    # run post-hooks
    run_hook stop ${FW_PREFIX}global.d/post-hook  "running global post-hook stop ..."
    for FILE in $( find_appfile post-hook );do
-      run_hook stop ${FILE}                      "running app post-hook stop (App: $(basename ${FILE})) ..."
+      run_hook stop ${FILE}                      "running app post-hook stop (App: $(name_appfile ${FILE})) ..."
    done
    run_hook stop ${FW_PREFIX}cluster.d/post-hook "running cluster post-hook stop ..."
    run_hook stop ${FW_PREFIX}post-hook           "running local post-hook stop ..."
