@@ -30,6 +30,33 @@
 #   acinclude.m4 - custom m4 macros used by configure.ac
 #
 
+
+# AC_BBFW_EXAMPLES()
+# -----------------------------------
+AC_DEFUN([AC_BBFW_EXAMPLES],[dnl
+
+   # display options
+   enableval=""
+   AC_ARG_ENABLE(
+      examples,
+      [AS_HELP_STRING([--disable-examples], [install example files [default=yes]])],
+      [ EEXAMPLES=$enableval ],
+      [ EEXAMPLES=$enableval ]
+   )
+
+   # sets options
+   if test "x${EEXAMPLES}" == "xyes";then
+      ENABLE_EXAMPLES=yes
+   elif test "x${EEXAMPLES}" == "xno";then
+      ENABLE_EXAMPLES=no
+   else
+      ENABLE_EXAMPLES=yes
+   fi
+
+   AM_CONDITIONAL([ENABLE_EXAMPLES], [test "${ENABLE_EXAMPLES}" == "yes"])
+])dnl
+
+
 # AC_BBFW_SLACKWARE()
 # -----------------------------------
 AC_DEFUN([AC_BBFW_SLACKWARE],[dnl

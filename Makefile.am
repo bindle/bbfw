@@ -76,14 +76,6 @@ bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				=
 sbin_SCRIPTS				= src/bbfw
-firewallglobal_DATA			= src/firewall.d/global.d/rules-example \
-					  src/firewall.d/global.d/rules4-example \
-					  src/firewall.d/global.d/rules6-example \
-					  src/firewall.d/global.d/ipsets-example
-firewall_DATA				= src/firewall.d/ipsets-example \
-					  src/firewall.d/rules-example \
-					  src/firewall.d/rules4-example \
-					  src/firewall.d/rules6-example
 
 
 # lists
@@ -132,6 +124,16 @@ DISTCHECK_CONFIGURE_FLAGS		= \
 
 
 # conditional targets for slackware
+if ENABLE_EXAMPLES
+firewallglobal_DATA			= src/firewall.d/global.d/rules-example \
+					  src/firewall.d/global.d/rules4-example \
+					  src/firewall.d/global.d/rules6-example \
+					  src/firewall.d/global.d/ipsets-example
+firewall_DATA				= src/firewall.d/ipsets-example \
+					  src/firewall.d/rules-example \
+					  src/firewall.d/rules4-example \
+					  src/firewall.d/rules6-example
+endif
 if ENABLE_SLACKWARE
 slackrcd_SCRIPTS			=  src/rc.firewall.new
 endif
