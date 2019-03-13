@@ -1,0 +1,131 @@
+#!/bin/sh
+#
+#   Bindle Binaries Linux Firewall
+#   Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of David M. Syzdek nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVID M. SYZDEK BE LIABLE FOR
+#   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+#
+
+
+###############
+# ENVIRONMENT #
+###############
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+
+# sets script/package information
+PROG_NAME="$(basename "${0}")"
+PACKAGE_NAME="$(echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]/ /g')"
+PACKAGE_VERSION="$(echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]/ /g')"
+PACKAGE_BUGREPORT="$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]/ /g')"
+
+
+
+#############
+# FUNCTIONS #
+#############
+
+usage()
+{
+   printf "Usage: ${PROG_NAME} [OPTIONS]\n"
+   printf "OPTIONS:\n"
+   printf "  -h, --help                print this help and exit\n"
+   printf "  -k, --kerneltime          print kernel timestamp\n"
+   printf "  -n, --notime              do not print timestamp\n"
+   printf "  -t, --timestamp           print human readable timestamp\n"
+   printf "  -v, --version             print version and exit\n"
+   printf "  -w, --follow              wait for new messages\n"
+   printf "\n"
+   printf "Please send bug reports to ${PACKAGE_BUGREPORT}.\n"
+}
+
+
+version()
+{
+   printf "${PROG_NAME} (${PACKAGE_NAME}) ${PACKAGE_VERSION}\n"
+   printf "\n"
+   printf "Please send bug reports to ${PACKAGE_BUGREPORT}.\n"
+}
+
+
+############
+### MAIN ###
+############
+
+DMESG_TIME="-T"
+DMESG_FOLLOW=""
+DMESG_PATTERN=" IN=[-.:/a-zA-Z0-9]{0,} OUT=[-.:/a-zA-Z0-9]{0,} MAC=[:a-fA-F0-9]{0,} SRC=[:.0-9a-fA-F]{0,} DST=[:.0-9a-fA-F]{0,} "
+
+while true; do
+   case "$@" in
+      -h|--help)       usage; exit 0;;
+      -k|--kerneltime) DMESG_TIME=""; shift ;;
+      -n|--notime)     DMESG_TIME="-t"; shift ;;
+      -t|--timestamp)  DMESG_TIME="-T"; shift ;;
+      -v|--version)    version; exit 0;;
+      -w|--follow)     DMESG_FOLLOW="-w"; shift ;;
+      "") break ;;
+      --) shift; break ;;
+      *) usage; exit 1 ;;
+   esac
+done
+
+
+/bin/dmesg ${DMESG_TIME} ${DMESG_FOLLOW} \
+   |egrep "${DMESG_PATTERN}" \
+   |sed \
+      -e 's/[^[:graph:]]/ /g' \
+      -e 's/ip6tables drop: /,in,/g' \
+      -e 's/ip6tables input: /,in,/g' \
+      -e 's/ip6tables forward: /,fwd,/g' \
+      -e 's/ip6tables output: /,out,/g' \
+      -e 's/ip6tables blackhole: /,blkhol,/g' \
+      -e 's/ip6tables \([-_a-z0-9:;,]\{1,\}\): /,\1,/gi' \
+      -e 's/[[:space:][:cntrl:]]\{1,\}/ /g' \
+      -e 's/ [[:upper:]]\{1,\} / /g' \
+      -e 's/ MAC=[:[:xdigit:]]\{1,\} / /g' \
+      -e 's/ ID=[[:digit:]]\{1,\} / /g' \
+      -e 's/ TTL=[[:digit:]]\{1,\} / /g' \
+      -e 's/ LEN=[[:digit:]]\{1,\} / /g' \
+      -e 's/ URGP=[[:digit:]]\{1,\} / /g' \
+      -e 's/ WINDOW=[[:digit:]]\{1,\} / /g' \
+      -e 's/ PREC=0x[[:xdigit:]]\{1,\} / /g' \
+      -e 's/ RES=0x[[:xdigit:]]\{1,\} / /g' \
+      -e 's/ TOS=0x[[:xdigit:]]\{1,\} / /g' \
+      -e 's/ ACK / /g' \
+      -e 's/ CWR / /g' \
+      -e 's/ DF / /g' \
+      -e 's/ ECE / /g' \
+      -e 's/ RST / /g' \
+      -e 's/ SYN / /g' \
+      -e 's/ PSH / /g' \
+      -e 's/ \([A-Z]\{1,\}=\)/,\1/g' \
+   |column -t -s ','
+
+
+# End of scripts

@@ -75,7 +75,7 @@ noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				=
-sbin_SCRIPTS				= src/bbfw
+sbin_SCRIPTS				= src/bbfw src/bbfw-log
 
 
 # lists
@@ -90,6 +90,7 @@ EXTRA_DIST				= \
 					  README.md \
 					  doc/slack-desc \
 					  src/bbfw.in \
+					  src/bbfw-log.in \
 					  src/firewall.d/global.d/rules-example \
 					  src/firewall.d/global.d/rules4-example \
 					  src/firewall.d/global.d/rules6-example \
@@ -157,6 +158,9 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 .PHONY:
 
 src/bbfw: Makefile src/bbfw.in
+	@$(do_subst_fn)
+
+src/bbfw-log: Makefile src/bbfw-log.in
 	@$(do_subst_fn)
 
 src/rc.firewall: Makefile src/rc.firewall.in
