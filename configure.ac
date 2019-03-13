@@ -34,7 +34,7 @@ AC_PREREQ([2.65])
 
 AC_COPYRIGHT([Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.])
 AC_REVISION(0.1)
-AC_INIT([Bindle Binaries Linux Firewall],[0.18],[david@syzdek.net],[bbfw])
+AC_INIT([Bindle Binaries Linux Firewall],[0.19],[david@syzdek.net],[bbfw])
 
 AC_SUBST([RELEASE_MONTH],["March 2019"])
 
