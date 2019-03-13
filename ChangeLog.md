@@ -2,6 +2,12 @@
 Bindle Binaries Linux Firewall
 Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
 
+0.19
+  - bbfw: added ability to disable examples (syzdek)
+  - bbfw: fixed app name when processing app specific files (syzdek)
+  - bbfw: removed requirement for executable bit on app specific files (syzdek)
+  - bbfw-log: added utility (syzdek)
+
 0.18
   - forked rc.firewall to bbfw (syzdek)
   - added ability to group app specific rules in dedicated directory (syzdek)
