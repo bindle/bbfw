@@ -283,6 +283,7 @@ stop() {
    run_hook stop ${FW_PREFIX}/cluster.d/pre-hook    "running cluster pre-hook stop ..."
    run_hook stop ${FW_PREFIX}/pre-hook              "running local pre-hook stop ..."
 
+   # flushes iptables
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       if test -z "${FW_QUIET}";then
          echo "Flushing rules from ${TABLE} table (IPv4)"
@@ -296,6 +297,7 @@ stop() {
       done
    done 2> /dev/null
 
+   # flushes ip6tables
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       if test -z "${FW_QUIET}";then
          echo "Flushing rules from ${TABLE} table (IPv6)"
@@ -309,6 +311,7 @@ stop() {
       done
    done 2> /dev/null
 
+   # flushes ipsets
    if test -z "${FW_QUIET}";then
       echo "Destroying all IP sets ..."
    fi
