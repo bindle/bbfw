@@ -81,6 +81,7 @@ export PATH
 FW_PREFIX=@sysconfdir@/firewall.d/
 FW_CONF=@sysconfdir@/bbfw.conf
 FW_QUIET=no
+FW_VERBOSE=no
 
 
 ###########
@@ -206,8 +207,8 @@ load()
 
    case "${TYPE}" in
       'ipset')     clean_file ${FILE} |ipset -! restore;;
-      'iptables')  clean_file ${FILE} |iptables-restore -n;;
-      'ip6tables') clean_file ${FILE} |ip6tables-restore -n;;
+      'iptables')  clean_file ${FILE} |iptables-restore -n ${FW_VERBOSE};;
+      'ip6tables') clean_file ${FILE} |ip6tables-restore -n ${FW_VERBOSE};;
       *) ;;
    esac
 }
@@ -351,6 +352,7 @@ stop() {
 # sets options from configuration file
 FW_PREFIX="$(  config_option firewall_dir "${FW_PREFIX}" )"
 FW_QUIET="$(   config_option quiet        "${FW_QUIET}"   A-Z a-z )"
+FW_VERBOSE="$( config_option verbose      "${FW_VERBOSE}" A-Z a-z )"
 
 
 # checks and normalizes options
@@ -359,6 +361,14 @@ if test "x${FW_QUIET}" == "xno";then
 elsif test "x${FW_QUIET}" != "xno";then
    echo "${PROGRAM_NAME}: invalid value for option 'quiet'" 1>&2
    exit 1
+fi
+if test "x${FW_VERBOSE}" == "xno";then
+   unset FW_VERBOSE
+elsif test "x${FW_VERBOSE}" != "xno";then
+   echo "${PROGRAM_NAME}: invalid value for verbose 'quiet'" 1>&2
+   exit 1
+else
+   FW_VERBOSE=-v
 fi
 
 

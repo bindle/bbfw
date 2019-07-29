@@ -39,4 +39,10 @@
 # quiet = no
 
 
+#   The `verbose` option enables verbose output for utilities which support
+#   verbose flags (currently only iptables).  To enable verbose output,
+#   uncomment the line below and change the value to 'yes'.
+# verbose = yes
+
+
 # end of configuration
