@@ -34,4 +34,9 @@
 # firewall_dir = @sysconfdir@/firewall.d    
 
 
+#   The `quiet` option surpresses normal output of bbfw.  To enable quiet mode,
+#   uncomment the line below and change the value to 'yes'.
+# quiet = no
+
+
 # end of configuration

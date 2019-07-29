@@ -80,6 +80,7 @@ export PATH
 # determine prefix of conf files
 FW_PREFIX=@sysconfdir@/firewall.d/
 FW_CONF=@sysconfdir@/bbfw.conf
+FW_QUIET=no
 
 
 ###########
@@ -181,7 +182,7 @@ run_hook()
       return 0;
    fi
 
-   if test ! -z "${DESC}";then
+   if test ! -z "${DESC}" && test -z "${FW_QUIET}";then
       echo "${DESC}"
    fi
 
@@ -199,7 +200,7 @@ load()
       return 0;
    fi
 
-   if test ! -z "${DESC}";then
+   if test ! -z "${DESC}" && test -z "${FW_QUIET}";then
       echo "${DESC}"
    fi
 
@@ -281,7 +282,9 @@ stop() {
    run_hook stop ${FW_PREFIX}/pre-hook              "running local pre-hook stop ..."
 
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
-      echo "Flushing rules from ${TABLE} table (IPv4)"
+      if test -z "${FW_QUIET}";then
+         echo "Flushing rules from ${TABLE} table (IPv4)"
+      fi
       for CHAIN in $(iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
          iptables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
@@ -292,7 +295,9 @@ stop() {
    done 2> /dev/null
 
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
-      echo "Flushing rules from ${TABLE} table (IPv6)"
+      if test -z "${FW_QUIET}";then
+         echo "Flushing rules from ${TABLE} table (IPv6)"
+      fi
       for CHAIN in $(ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
          ip6tables -t ${TABLE} -P ${CHAIN} ACCEPT
       done
@@ -302,7 +307,9 @@ stop() {
       done
    done 2> /dev/null
 
-   echo "Destroying all IP sets ..."
+   if test -z "${FW_QUIET}";then
+      echo "Destroying all IP sets ..."
+   fi
    for SET in $(ipset save |grep '^create' |grep ' list:' |awk '{print$2}');do
       ipset destroy "${SET}"
    done
@@ -326,11 +333,18 @@ stop() {
 
 # sets options from configuration file
 FW_PREFIX="$(  config_option firewall_dir "${FW_PREFIX}" )"
+FW_QUIET="$(   config_option quiet        "${FW_QUIET}"   A-Z a-z )"
 
 
 # checks and normalizes options
 if test ! -d "${FW_PREFIX}";then
    echo "${PROGRAM_NAME}: ${FW_PREFIX}: firewall directory does not exist" 1>&2
+   exit 1
+fi
+if test "x${FW_QUIET}" == "xno";then
+   unset FW_QUIET
+elsif test "x${FW_QUIET}" != "xno";then
+   echo "${PROGRAM_NAME}: invalid value for option 'quiet'" 1>&2
    exit 1
 fi
 
