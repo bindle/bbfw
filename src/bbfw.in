@@ -337,9 +337,9 @@ stop() {
 ############
 
 # sets options from configuration file
-FW_PREFIX="$(  config_option firewall_dir "${FW_PREFIX}" )"
-FW_QUIET="$(   config_option quiet        "${FW_QUIET}"   A-Z a-z )"
-FW_VERBOSE="$( config_option verbose      "${FW_VERBOSE}" A-Z a-z )"
+FW_PREFIX="$(         config_option firewall_dir     "${FW_PREFIX}" )"
+FW_QUIET="$(          config_option quiet            "${FW_QUIET}"          A-Z a-z )"
+FW_VERBOSE="$(        config_option verbose          "${FW_VERBOSE}"        A-Z a-z )"
 
 
 # checks and normalizes options
