@@ -45,4 +45,51 @@
 # verbose = yes
 
 
+#   Options which specify order of executions or loading of rules use the
+#   following keywords:
+#
+#   global  - files within %{firewall_dir}/global.d/
+#   apps    - files within %{firewall_dir}/apps.d/%{app}/
+#   cluster - files within %{firewall_dir}/cluster.d/
+#   local   - files within %{firewall_dir}/
+#
+#   Types of files are always processed in the following order:
+#
+#   pre-hooks       (start and stop)
+#   ipsets load     (start only)
+#   iptables load   (start only)
+#   iptables flush  (stop only / not user definable)
+#   ipsets flush    (stop only / not user definable)
+#   post-hooks      (start and stop)
+#
+
+
+#   The `order_prehook` option defines the order in which pre-hooks are
+#   executed.  To modify the order in which pre-hooks are executed, uncomment
+#   the line below and modify the order of the key words.  See above for
+#   keyword descriptions.
+# order_prehook = global apps cluster local
+
+
+#   The `order_posthook` option defines the order in which post-hooks are
+#   executed.  To modify the order in which post-hooks are executed, uncomment
+#   the line below and modify the order of the key words.  See above for
+#   keyword descriptions.
+# order_posthook = global apps cluster local
+
+
+#   The `order_ipsets` option defines the order in which ipsets are
+#   loaded.  To modify the order in which ipsets are loaded, uncomment
+#   the line below and modify the order of the key words.  See above for
+#   keyword descriptions.
+# order_ipsets = global apps cluster local
+
+
+#   The `order_iptables` option defines the order in which iptables
+#   and ip6tables  are loaded.  To modify the order in which rules are loaded,
+#   uncomment the line below and modify the order of the key words.  See above
+#   for keyword descriptions.
+# order_iptables = apps local cluster global
+
+
 # end of configuration
