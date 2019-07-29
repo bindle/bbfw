@@ -79,6 +79,7 @@ export PATH
 
 # determine prefix of conf files
 FW_PREFIX=@sysconfdir@/firewall.d/
+FW_CONF=@sysconfdir@/bbfw.conf
 
 
 ###########
@@ -113,6 +114,29 @@ clean_file()
 }
 
 
+config_option()
+{
+   if test ! -f "${FW_CONF}";then
+      return 0
+   fi
+   TMP_STR="$(
+      egrep \
+         -i \
+         "^[[:space:]]{0,}${1}[[:space:]]{0,}=" \
+         "${FW_CONF}" \
+         |sed \
+            -e "s/^[[:space:]]\{0,\}${1}[[:space:]]\{0,\}=[[:space:]]\{0,\}//g" \
+            -e "s/[[:space:]]\{0,\}$//g" \
+         |tr "${3:-0}" "${4:-0}"
+   )"
+   if test -z "${TMP_STR}";then
+      echo "${2}"
+   else
+      echo "${TMP_STR}"
+   fi
+}
+
+
 dump()
 {
    ipset list |sed -e "s/^/ipset: /g"
@@ -139,9 +163,9 @@ name_appfile()
 find_appfile()
 {
    find -L \
-      /etc/firewall.d/apps.d/ \
+      ${FW_PREFIX}/apps.d/ \
       -regextype posix-extended \
-      -regex "^/etc/firewall.d/apps.d/[-.a-zA-Z0-9]+[./]${1}$" \
+      -regex "^${FW_PREFIX}/apps.d/[-.a-zA-Z0-9]+[./]${1}$" \
       -type f \
       2> /dev/null
 }
@@ -191,20 +215,20 @@ load()
 # Function to start the network:
 start() {
    # run pre-hooks
-   run_hook start ${FW_PREFIX}global.d/pre-hook     "running global pre-hook start ..."
+   run_hook start ${FW_PREFIX}/global.d/pre-hook    "running global pre-hook start ..."
    for FILE in $( find_appfile pre-hook );do
       run_hook start ${FILE}                        "running app pre-hook start (App: $(name_appfile ${FILE})) ..."
    done
-   run_hook start ${FW_PREFIX}cluster.d/pre-hook    "running cluster pre-hook start ..."
-   run_hook start ${FW_PREFIX}pre-hook              "running local pre-hook start ..."
+   run_hook start ${FW_PREFIX}/cluster.d/pre-hook   "running cluster pre-hook start ..."
+   run_hook start ${FW_PREFIX}/pre-hook             "running local pre-hook start ..."
 
    # create IP sets
-   load ipset ${FW_PREFIX}global.d/ipsets           "adding global IP sets"
+   load ipset ${FW_PREFIX}/global.d/ipsets          "adding global IP sets"
    for FILE in $( find_appfile ipsets );do
       load ipset ${FILE}                            "adding IP sets (App: $(name_appfile ${FILE})) ..."
    done
-   load ipset ${FW_PREFIX}cluster.d/ipsets          "adding cluster IP sets"
-   load ipset ${FW_PREFIX}ipsets                    "adding local IP sets"
+   load ipset ${FW_PREFIX}/cluster.d/ipsets         "adding cluster IP sets"
+   load ipset ${FW_PREFIX}/ipsets                   "adding local IP sets"
 
    # Application rules
    for FILE in $( find_appfile rules4 );do
@@ -219,42 +243,42 @@ start() {
    done
 
    # apply host specific firewall rules
-   load iptables  ${FW_PREFIX}rules4                "adding IPv4 local rules"
-   load ip6tables ${FW_PREFIX}rules6                "adding IPv6 local rules"
-   load iptables  ${FW_PREFIX}rules                 "adding IPv4/IPv6 local rules"
-   load ip6tables ${FW_PREFIX}rules
+   load iptables  ${FW_PREFIX}/rules4               "adding IPv4 local rules"
+   load ip6tables ${FW_PREFIX}/rules6               "adding IPv6 local rules"
+   load iptables  ${FW_PREFIX}/rules                "adding IPv4/IPv6 local rules"
+   load ip6tables ${FW_PREFIX}/rules
 
    # apply cluster specific firewall rules
-   load iptables  ${FW_PREFIX}cluster.d/rules4      "adding IPv4 cluster rules"
-   load ip6tables ${FW_PREFIX}cluster.d/rules6      "adding IPv6 cluster rules"
-   load iptables  ${FW_PREFIX}cluster.d/rules       "adding IPv4/IPv6 cluster rules"
-   load ip6tables ${FW_PREFIX}cluster.d/rules
+   load iptables  ${FW_PREFIX}/cluster.d/rules4     "adding IPv4 cluster rules"
+   load ip6tables ${FW_PREFIX}/cluster.d/rules6     "adding IPv6 cluster rules"
+   load iptables  ${FW_PREFIX}/cluster.d/rules      "adding IPv4/IPv6 cluster rules"
+   load ip6tables ${FW_PREFIX}/cluster.d/rules
 
    # apply company policy for firewall rules
-   load iptables  ${FW_PREFIX}global.d/rules4       "adding IPv4 global rules"
-   load ip6tables ${FW_PREFIX}global.d/rules6       "adding IPv6 global rules"
-   load iptables  ${FW_PREFIX}global.d/rules        "adding IPv4/IPv6 global rules"
-   load ip6tables ${FW_PREFIX}global.d/rules
+   load iptables  ${FW_PREFIX}/global.d/rules4      "adding IPv4 global rules"
+   load ip6tables ${FW_PREFIX}/global.d/rules6      "adding IPv6 global rules"
+   load iptables  ${FW_PREFIX}/global.d/rules       "adding IPv4/IPv6 global rules"
+   load ip6tables ${FW_PREFIX}/global.d/rules
 
    # run post-hooks
-   run_hook start ${FW_PREFIX}global.d/post-hook    "running global post-hook start ..."
+   run_hook start ${FW_PREFIX}/global.d/post-hook   "running global post-hook start ..."
    for FILE in $( find_appfile post-hook );do
       run_hook start ${FILE}                        "running app post-hook start (App: $(name_appfile ${FILE})) ..."
    done
-   run_hook start ${FW_PREFIX}cluster.d/post-hook   "running cluster post-hook start ..."
-   run_hook start ${FW_PREFIX}post-hook             "running local post-hook start ..."
+   run_hook start ${FW_PREFIX}/cluster.d/post-hook  "running cluster post-hook start ..."
+   run_hook start ${FW_PREFIX}/post-hook            "running local post-hook start ..."
 }
 
 
 # Function to stop the network:
 stop() {
    # run pre-hooks
-   run_hook stop ${FW_PREFIX}global.d/pre-hook      "running global pre-hook stop ..."
+   run_hook stop ${FW_PREFIX}/global.d/pre-hook     "running global pre-hook stop ..."
    for FILE in $( find_appfile pre-hook );do
       run_hook stop ${FILE}                         "running app pre-hook stop (App: $(name_appfile ${FILE})) ..."
    done
-   run_hook stop ${FW_PREFIX}cluster.d/pre-hook     "running cluster pre-hook stop ..."
-   run_hook stop ${FW_PREFIX}pre-hook               "running local pre-hook stop ..."
+   run_hook stop ${FW_PREFIX}/cluster.d/pre-hook    "running cluster pre-hook stop ..."
+   run_hook stop ${FW_PREFIX}/pre-hook              "running local pre-hook stop ..."
 
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       echo "Flushing rules from ${TABLE} table (IPv4)"
@@ -287,18 +311,29 @@ stop() {
    done
 
    # run post-hooks
-   run_hook stop ${FW_PREFIX}global.d/post-hook    "running global post-hook stop ..."
+   run_hook stop ${FW_PREFIX}/global.d/post-hook   "running global post-hook stop ..."
    for FILE in $( find_appfile post-hook );do
       run_hook stop ${FILE}                        "running app post-hook stop (App: $(name_appfile ${FILE})) ..."
    done
-   run_hook stop ${FW_PREFIX}cluster.d/post-hook   "running cluster post-hook stop ..."
-   run_hook stop ${FW_PREFIX}post-hook             "running local post-hook stop ..."
+   run_hook stop ${FW_PREFIX}/cluster.d/post-hook  "running cluster post-hook stop ..."
+   run_hook stop ${FW_PREFIX}/post-hook            "running local post-hook stop ..."
 }
 
 
 ############
 ### MAIN ###
 ############
+
+# sets options from configuration file
+FW_PREFIX="$(  config_option firewall_dir "${FW_PREFIX}" )"
+
+
+# checks and normalizes options
+if test ! -d "${FW_PREFIX}";then
+   echo "${PROGRAM_NAME}: ${FW_PREFIX}: firewall directory does not exist" 1>&2
+   exit 1
+fi
+
 
 case "$1" in
    -h|--help)

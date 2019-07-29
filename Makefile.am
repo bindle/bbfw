@@ -91,6 +91,7 @@ EXTRA_DIST				= \
 					  doc/slack-desc \
 					  src/bbfw.in \
 					  src/bbfw-log.in \
+					  src/bbfw.conf-example.in \
 					  src/firewall.d/global.d/rules-example \
 					  src/firewall.d/global.d/rules4-example \
 					  src/firewall.d/global.d/rules6-example \
@@ -107,6 +108,7 @@ CLEANFILES				= \
 					  config.h.in~ $(srcdir)/config.h.in~ \
 					  $(man_MANS) \
 					  $(pkgdata_DATA) \
+					  $(sysconf_DATA) \
 					  $(bin_SCRIPTS) \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
@@ -126,6 +128,7 @@ DISTCHECK_CONFIGURE_FLAGS		= \
 
 # conditional targets for slackware
 if ENABLE_EXAMPLES
+sysconf_DATA				= src/bbfw.conf-example
 firewallglobal_DATA			= src/firewall.d/global.d/rules-example \
 					  src/firewall.d/global.d/rules4-example \
 					  src/firewall.d/global.d/rules6-example \
@@ -159,6 +162,9 @@ include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
 
 src/bbfw: Makefile src/bbfw.in
 	@$(do_subst_fn)
+
+src/bbfw.conf-example: Makefile src/bbfw.conf-example.in
+	@$(do_subst_dt)
 
 src/bbfw-log: Makefile src/bbfw-log.in
 	@$(do_subst_fn)
