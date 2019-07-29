@@ -119,6 +119,7 @@ clean_file()
 config_option()
 {
    if test ! -f "${FW_CONF}";then
+      echo "${2}" |tr "${3:-0}" "${4:-0}"
       return 0
    fi
    TMP_STR="$(
@@ -129,13 +130,13 @@ config_option()
          |sed \
             -e "s/^[[:space:]]\{0,\}${1}[[:space:]]\{0,\}=[[:space:]]\{0,\}//g" \
             -e "s/[[:space:]]\{0,\}$//g" \
-         |tr "${3:-0}" "${4:-0}"
+            -e "s/^[[:space:]]\{0,\}$//g"
    )"
    if test -z "${TMP_STR}";then
       echo "${2}"
    else
       echo "${TMP_STR}"
-   fi
+   fi |tr "${3:-0}" "${4:-0}"
 }
 
 
