@@ -2,6 +2,11 @@
 Bindle Binaries Linux Firewall
 Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
 
+0.20
+  - bbfw: added support for bbfw.conf to override defaults (syzdek)
+  - conf: added ability to change order of file processing (syzdek)
+  - conf: added ability to change firewall.d directory (syzdek)
+
 0.19
   - bbfw: added ability to disable examples (syzdek)
   - bbfw: fixed app name when processing app specific files (syzdek)
