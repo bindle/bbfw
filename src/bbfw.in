@@ -214,25 +214,8 @@ load()
 }
 
 
-restart() {
-   if test ! -d "${FW_PREFIX}";then
-      echo "${PROGRAM_NAME}: ${FW_PREFIX}: firewall directory does not exist" 1>&2
-      return 1
-   fi
-
-   stop
-   start
-}
-
-
 # Function to start the network:
 start() {
-   # checks for firewall directory
-   if test ! -d "${FW_PREFIX}";then
-      echo "${PROGRAM_NAME}: ${FW_PREFIX}: firewall directory does not exist" 1>&2
-      return 1
-   fi
-
    # run pre-hooks
    run_hook start ${FW_PREFIX}/global.d/pre-hook    "running global pre-hook start ..."
    for FILE in $( find_appfile pre-hook );do
@@ -356,6 +339,10 @@ FW_VERBOSE="$( config_option verbose      "${FW_VERBOSE}" A-Z a-z )"
 
 
 # checks and normalizes options
+if test ! -d "${FW_PREFIX}";then
+   echo "${PROGRAM_NAME}: ${FW_PREFIX}: firewall directory does not exist" 1>&2
+   exit 1
+fi
 if test "x${FW_QUIET}" == "xno";then
    unset FW_QUIET
 elsif test "x${FW_QUIET}" != "xno";then
@@ -400,7 +387,8 @@ case "$1" in
 
    'restart') # "restart" restarts the network:
       echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
-      restart 2>&1 | $LOGGER
+      stop  2>&1 | $LOGGER
+      start 2>&1 | $LOGGER
    ;;
 
    *) # The default is to bring up all configured interfaces:
