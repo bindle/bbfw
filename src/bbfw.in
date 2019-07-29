@@ -339,10 +339,6 @@ FW_VERBOSE="$( config_option verbose      "${FW_VERBOSE}" A-Z a-z )"
 
 
 # checks and normalizes options
-if test ! -d "${FW_PREFIX}";then
-   echo "${PROGRAM_NAME}: ${FW_PREFIX}: firewall directory does not exist" 1>&2
-   exit 1
-fi
 if test "x${FW_QUIET}" == "xno";then
    unset FW_QUIET
 elsif test "x${FW_QUIET}" != "xno";then
