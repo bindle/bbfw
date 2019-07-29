@@ -342,13 +342,13 @@ FW_VERBOSE="$( config_option verbose      "${FW_VERBOSE}" A-Z a-z )"
 # checks and normalizes options
 if test "x${FW_QUIET}" == "xno";then
    unset FW_QUIET
-elif test "x${FW_QUIET}" != "xno";then
+elif test "x${FW_QUIET}" != "xyes";then
    echo "${PROGRAM_NAME}: invalid value for option 'quiet'" 1>&2
    exit 1
 fi
 if test "x${FW_VERBOSE}" == "xno";then
    unset FW_VERBOSE
-elif test "x${FW_VERBOSE}" != "xno";then
+elif test "x${FW_VERBOSE}" != "xyes";then
    echo "${PROGRAM_NAME}: invalid value for verbose 'quiet'" 1>&2
    exit 1
 else
