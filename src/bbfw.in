@@ -298,7 +298,7 @@ stop() {
    done 2> /dev/null
 
    # flushes ip6tables
-   for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
+   for TABLE in $(ip6tables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       if test -z "${FW_QUIET}";then
          echo "Flushing rules from ${TABLE} table (IPv6)"
       fi
