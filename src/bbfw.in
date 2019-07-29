@@ -78,7 +78,7 @@ export PATH
 
 
 # determine prefix of conf files
-FW_PREFIX=/etc/firewall.d/
+FW_PREFIX=@sysconfdir@/firewall.d/
 
 
 ###########
