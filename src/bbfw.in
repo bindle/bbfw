@@ -468,6 +468,12 @@ stop() {
 }
 
 
+version()
+{
+   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)"
+}
+
+
 ############
 ### MAIN ###
 ############
@@ -491,7 +497,7 @@ case "$1" in
    ;;
 
    -v|--version)
-      echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)"
+      version
    ;;
 
    'dump')
@@ -499,19 +505,19 @@ case "$1" in
    ;;
 
    'start') # "start" brings up all configured interfaces:
-      echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
+      version    | $LOGGER
       conftest  || exit 1
       start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
-      echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
+      version    | $LOGGER
       conftest  || exit 1
       stop  2>&1 | $LOGGER
    ;;
 
    'restart') # "restart" restarts the network:
-      echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
+      version    | $LOGGER
       conftest  || exit 1
       stop  2>&1 | $LOGGER
       start 2>&1 | $LOGGER
