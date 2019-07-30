@@ -126,6 +126,17 @@ config_option()
       echo "${2}" |tr "${3:-0}" "${4:-0}"
       return 0
    fi
+   TMP_COUNT="$(
+      egrep \
+         -i \
+         "^[[:space:]]{0,}${1}[[:space:]]{0,}=" \
+         "${FW_CONF}" \
+         |wc -l \
+         |awk '{print$1}'
+   )"
+   if test ${TMP_COUNT} -gt 1;then
+      return 1
+   fi
    TMP_STR="$(
       egrep \
          -i \
