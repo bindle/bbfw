@@ -144,6 +144,30 @@ config_option()
 }
 
 
+conftest()
+{
+   # quiet option
+   if test "x${FW_QUIET}" == "xno";then
+      unset FW_QUIET
+   elif test "x${FW_QUIET}" != "xyes";then
+      echo "invalid value for option 'quiet'" |$LOGGER
+      return 1
+   fi
+
+   # verbose option
+   if test "x${FW_VERBOSE}" == "xno";then
+      unset FW_VERBOSE
+   elif test "x${FW_VERBOSE}" != "xyes";then
+      echo "invalid value for verbose 'quiet'" |$LOGGER
+      return 1
+   else
+      FW_VERBOSE=-v
+   fi
+
+   return 0
+}
+
+
 dump()
 {
    ipset list |sed -e "s/^/ipset: /g"
@@ -458,23 +482,6 @@ FW_ORDER_IPTABLES="$( config_option order_iptables   "${FW_ORDER_IPTABLES}" A-Z 
 FW_ORDER_IPSETS="$(   config_option order_ipsets     "${FW_ORDER_IPSETS}"   A-Z a-z )"
 
 
-# checks and normalizes options
-if test "x${FW_QUIET}" == "xno";then
-   unset FW_QUIET
-elif test "x${FW_QUIET}" != "xyes";then
-   echo "${PROGRAM_NAME}: invalid value for option 'quiet'" 1>&2
-   exit 1
-fi
-if test "x${FW_VERBOSE}" == "xno";then
-   unset FW_VERBOSE
-elif test "x${FW_VERBOSE}" != "xyes";then
-   echo "${PROGRAM_NAME}: invalid value for verbose 'quiet'" 1>&2
-   exit 1
-else
-   FW_VERBOSE=-v
-fi
-
-
 case "$1" in
    -h|--help)
       echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump ]"
@@ -493,16 +500,19 @@ case "$1" in
 
    'start') # "start" brings up all configured interfaces:
       echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
+      conftest  || exit 1
       start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
       echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
+      conftest  || exit 1
       stop  2>&1 | $LOGGER
    ;;
 
    'restart') # "restart" restarts the network:
       echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER
+      conftest  || exit 1
       stop  2>&1 | $LOGGER
       start 2>&1 | $LOGGER
    ;;
