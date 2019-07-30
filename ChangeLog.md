@@ -4,6 +4,7 @@ Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
 
 0.20
   - bbfw: added support for bbfw.conf to override defaults (syzdek)
+  - bbfw: added 'checkconfig' action (syzdek)
   - conf: added ability to change order of file processing (syzdek)
   - conf: added ability to change firewall.d directory (syzdek)
 
