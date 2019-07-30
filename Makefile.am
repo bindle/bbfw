@@ -61,6 +61,7 @@ check_PROGRAMS				=
 doc_DATA				= \
 					  README.md \
 					  ChangeLog.md \
+					  TODO.md \
 					  COPYING \
 					  NEWS.md \
 					  AUTHORS \
@@ -88,6 +89,7 @@ EXTRA_DIST				= \
 					  ChangeLog.md \
 					  NEWS.md \
 					  README.md \
+					  TODO.md \
 					  doc/slack-desc \
 					  src/bbfw.in \
 					  src/bbfw-log.in \
