@@ -155,6 +155,102 @@ config_option()
 }
 
 
+checkconfig()
+{
+   if test ! -f "${FW_CONF}";then
+      return 0;
+   fi
+
+   CONFIG_OK=yes
+
+   {
+      for OPT in order_prehook order_posthook order_ipsets order_iptables;do
+         # checks for duplicates
+         config_option ${OPT} > /dev/null
+         if test $? -ne 0;then
+            echo "config error: duplicate config entry for '${OPT}'"
+            CONFIG_OK=no
+         fi
+
+         # checks for invalid values
+         TMP_GLOBAL=no
+         TMP_LOCAL=no
+         TMP_CLUSTER=no
+         TMP_APPS=no
+         OPTVALS="$(config_option ${OPT} "global local apps cluster" A-Z a-z)"
+         for VAL in ${OPTVALS};do
+            case "${VAL}" in
+               global)  TMP_GLOBAL=YES ;;
+               local)   TMP_LOCAL=YES ;;
+               cluster) TMP_CLUSTER=YES ;;
+               apps)    TMP_APPS=YES ;;
+               *)
+                  echo "config error: unknown level order in '${OPT}'"
+                  CONFIG_OK=no
+               ;;
+            esac
+         done
+         if test "${TMP_GLOBAL}" == "no";then
+            echo "config warning: option '${OPT}' does not have 'global' level"
+         fi
+         if test "${TMP_LOCAL}" == "no";then
+            echo "config warning: option '${OPT}' does not have 'local' level"
+         fi
+         if test "${TMP_CLUSTER}" == "no";then
+            echo "config warning: option '${OPT}' does not have 'cluster' level"
+         fi
+         if test "${TMP_APPS}" == "no";then
+            echo "config warning: option '${OPT}' does not have 'apps' level"
+         fi
+      done
+
+      # checks verbose option
+      config_option verbose |egrep -i '^yes$|^no$|^$' > /dev/null
+      TMPSTATUS=( ${PIPESTATUS[@]} )
+      if test ${TMPSTATUS[0]} -ne 0;then
+         echo "config error: duplicate config entry for 'verbose'"
+         CONFIG_OK=no
+      elif test ${TMPSTATUS[1]} -ne 0;then
+         echo "config error: invalid config value for 'verbose'"
+         CONFIG_OK=no
+      fi
+
+      # checks quiet option
+      config_option quiet |egrep -i '^yes$|^no$|^$' > /dev/null
+      TMPSTATUS=( ${PIPESTATUS[@]} )
+      if test ${TMPSTATUS[0]} -ne 0;then
+         echo "config error: duplicate config entry for 'quiet'"
+         CONFIG_OK=no
+      elif test ${TMPSTATUS[1]} -ne 0;then
+         echo "config error: invalid config value for 'quiet'"
+         CONFIG_OK=no
+      fi
+
+      # checks firewall_dir option
+      config_option firewall_dir |egrep -i '^yes$|^no$|^$' > /dev/null
+      TMPSTATUS=( ${PIPESTATUS[@]} )
+      if test ${TMPSTATUS[0]} -ne 0;then
+         echo "config error: duplicate config entry for 'quiet'"
+         CONFIG_OK=no
+      fi
+
+      # checks for firewall directory
+      if test ! -d "${FW_PREFIX}";then
+         echo "error: firewall directory not found"
+         CONFIG_OK=no
+      fi
+
+   } 1>&2
+
+   if test "x${CONFIG_OK}" == "xno";then
+      return 1
+   fi
+
+   echo "config ok"
+   return 0
+}
+
+
 conftest()
 {
    # quiet option
@@ -485,6 +581,7 @@ version()
 }
 
 
+
 ############
 ### MAIN ###
 ############
@@ -501,7 +598,7 @@ FW_ORDER_IPSETS="$(   config_option order_ipsets     "${FW_ORDER_IPSETS}"   A-Z 
 
 case "$1" in
    -h|--help)
-      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump ]"
+      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
       echo "       ${PROGRAM_NAME} [ -h | --help ]"
       echo "       ${PROGRAM_NAME} [ -v | --version ]"
       echo ""
@@ -513,6 +610,10 @@ case "$1" in
 
    'dump')
       dump
+   ;;
+
+   'checkconfig')
+      checkconfig || { echo "configuration error"; exit 1; }
    ;;
 
    'start') # "start" brings up all configured interfaces:
@@ -535,7 +636,7 @@ case "$1" in
    ;;
 
    *) # The default is to bring up all configured interfaces:
-      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump ]"
+      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
       echo "       ${PROGRAM_NAME} [ -h | --help ]"
       echo "       ${PROGRAM_NAME} [ -v | --version ]"
       echo ""
