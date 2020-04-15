@@ -1,16 +1,17 @@
-# /etc/rc.d/rc.firewall.rules4
-#
-#  Host Specific IPv4 Firewall Rules for Slackware Server
+# /etc/firewall.d/rules4
+# 
+#  Host specific IP Sets for local server
 #
 #  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES SPECIFIC TO AN INDIVIDUAL
 #  SERVER.
 #
 #  USE ONE OF THE FOLLOWING FILES FOR GLOBAL RULES:
-#     /etc/rc.d/rc.firewall.global
-#     /etc/rc.d/rc.firewall.global4
-#     /etc/rc.d/rc.firewall.global6
-#     /etc/rc.d/rc.firewall.globalsets
+#     /etc/firewall.d/global.d/ipsets
+#     /etc/firewall.d/global.d/rules
+#     /etc/firewall.d/global.d/rules4
+#     /etc/firewall.d/global.d/rules6
 #
+
 
 #########################
 #                       #
