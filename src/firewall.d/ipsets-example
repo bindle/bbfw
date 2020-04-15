@@ -19,8 +19,8 @@
 #                    #
 ######################
 
-create PRIVATE4 hash:ip family inet  hashsize 1024 comment
-create PRIVATE6 hash:ip family inet6 hashsize 1024 comment
+create PRIVATE4 hash:net family inet  hashsize 1024 comment
+create PRIVATE6 hash:net family inet6 hashsize 1024 comment
 create PRIVATE  list:set
 add PRIVATE PRIVATE4
 add PRIVATE PRIVATE6
