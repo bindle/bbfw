@@ -24,11 +24,11 @@ create PRIVATE6 hash:net family inet6 hashsize 1024 comment
 create PRIVATE  list:set
 add PRIVATE PRIVATE4
 add PRIVATE PRIVATE6
-add PRIVATE4 10.0.0.0/8    "rfc1918"
-add PRIVATE4 172.16.0.0/12 "rfc1918"
-add PRIVATE4 192.168.0.0/1 "rfc1918"
-add PRIVATE6 fc00::/7      "rfc4193"
-add PRIVATE6 fe80::/10     "rfc4291""
+add PRIVATE4 10.0.0.0/8    comment "rfc1918"
+add PRIVATE4 172.16.0.0/12 comment "rfc1918"
+add PRIVATE4 192.168.0.0/1 comment "rfc1918"
+add PRIVATE6 fc00::/7      comment "rfc4193"
+add PRIVATE6 fe80::/10     comment "rfc4291""
 
 
 # end of rules
