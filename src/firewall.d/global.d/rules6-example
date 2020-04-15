@@ -1,16 +1,16 @@
-# /etc/rc.d/rc.firewall.global6
-#
-#  Global Organization IPv6 Firewall Rules for Slackware Servers
+# /etc/firewall.d/global.d/rules6
+# 
+#  Global Organization IP Sets 
 #
 #  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES PUSHED OUT FROM A
 #  CENTRALIZED LOCATION IN ORDER TO ALLOW AN ORGANIZATION TO CREATE GLOBAL
 #  FIREWALL RULES ACROSS ALL SYSTEMS.
 #
 #  PLACE HOST SPECIFIC RULES IN ONE OF THE FOLLOWING FILES:
-#     /etc/rc.d/rc.firewall.ipsets
-#     /etc/rc.d/rc.firewall.rules
-#     /etc/rc.d/rc.firewall.rules4
-#     /etc/rc.d/rc.firewall.rules6
+#     /etc/firewall.d/ipsets
+#     /etc/firewall.d/rules
+#     /etc/firewall.d/rules4
+#     /etc/firewall.d/rules6
 #
 
 
