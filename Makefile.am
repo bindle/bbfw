@@ -37,6 +37,10 @@ SUBDIRS					=
 DIST_SUBDIRS				=
 
 
+# GNU make options
+V					= 0
+
+
 # Global flags
 AM_LIBS					=
 AM_LDFLAGS				=
