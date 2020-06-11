@@ -158,9 +158,10 @@ endif
 # Makefile includes
 GIT_PACKAGE_VERSION_DIR=build-aux
 SUBST_EXPRESSIONS =
-include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-autotools.am
-include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-subst.am
-include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
+include $(srcdir)/contrib/bindletools/build-aux/makefile-bindle.am
+include $(srcdir)/contrib/bindletools/build-aux/makefile-autotools.am
+include $(srcdir)/contrib/bindletools/build-aux/makefile-subst.am
+include $(srcdir)/contrib/bindletools/build-aux/makefile-version.am
 
 
 # custom targets
