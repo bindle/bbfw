@@ -41,55 +41,23 @@ AC_SUBST([RELEASE_MONTH],["March 2019"])
 # directory locations
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([build-aux/git-tar-name.txt])
-#AC_CONFIG_LIBOBJ_DIR(compat)
-AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-
-# determines host type
-AC_CANONICAL_BUILD
-AC_CANONICAL_HOST
-AC_CANONICAL_TARGET
 
 # configures for automake
 AM_INIT_AUTOMAKE(gnu std-options subdir-objects no-dist-gzip dist-xz foreign)
 
 # Compilers
-#AC_PROG_CC
-##AC_PROG_OBJC
-#AC_PROG_CXX
-#AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-#AC_USE_SYSTEM_EXTENSIONS # replaces AC_AIX AC_GNU_SOURCE AC_MINIX
-#AC_C_BIGENDIAN
-
-# Version Info:
-#    Current    -- the current version number of this API
-#    Revision   -- the revision of the implementation of the API version
-#    Age        -- How many seqential past API versions is supported by
-#                  this implementation
-# Format => Current:Revision:Age
-# Convenience macro:
-#    AC_BINDLE_LIBTOOL_VERSION_INFO(current, revision, age)
-AC_BINDLE_LIBTOOL_VERSION_INFO(0, 0, 0)
 
 # binary locations
 AC_PATH_PROG([SHELL],   sh bash,        [AC_MSG_ERROR([missing "sh"])], [$PATH])
-#AC_CHECK_TOOLS(AR,      ar gar,         [AC_MSG_ERROR([missing binutil "ar"])])
-#AC_CHECK_TOOLS(LD,      ld gld,         [AC_MSG_ERROR([missing binutil "ld"])])
-#AC_CHECK_TOOLS(NM,      nm gnm,         [AC_MSG_ERROR([missing binutil "nm"])])
-#AC_CHECK_TOOLS(RANLIB,  ranlib granlib, [AC_MSG_ERROR([missing binutil "ranlib"])])
-#AC_CHECK_TOOLS(STRIP,   strip gstrip,   [AC_MSG_ERROR([missing binutil "strip"])])
 
 # shell programs
 AC_PROG_AWK
 AC_PROG_EGREP
 AC_PROG_FGREP
-AM_PROG_LEX
 AC_PROG_LN_S
-
-# GNU Libtool Support
-#LT_INIT(dlopen disable-fast-install win32-dll)
 
 # initiates bindle tools macros
 AC_BINDLE(contrib/bindletools)
