@@ -1,8 +1,10 @@
 *~
+*.8
 *.lo
 *.mode1v3
 *.o
 *.pbxuser
+*.swp
 .DS_Store
 .deps
 .dirstamp
