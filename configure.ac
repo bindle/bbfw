@@ -68,9 +68,7 @@ AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version
 
 # custom configure options
 AC_BBFW_EXAMPLES
-AC_BBFW_SLACKWARE
-AC_BBFW_INITD
-AC_BBFW_SYSTEMD
+AC_BBFW_INIT
 
 
 # Creates outputs
@@ -82,9 +80,7 @@ AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Bindle Binaries Linux Firewall $GIT_PACKAGE_VERSION ($GIT_PACKAGE_BUILD)])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Install:])
-AC_MSG_NOTICE([      Slackware Init Script:     ${ENABLE_SLACKWARE}])
-AC_MSG_NOTICE([      Init.d Scriptb:            ${ENABLE_INITD}])
-AC_MSG_NOTICE([      System Unit:               ${ENABLE_SYSTEMD}])
+AC_MSG_NOTICE([      Init Files:                ${ENABLE_INIT}])
 AC_MSG_NOTICE([      Example Files:             ${ENABLE_EXAMPLES}])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Please send suggestions to:   $PACKAGE_BUGREPORT])

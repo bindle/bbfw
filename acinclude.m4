@@ -57,100 +57,65 @@ AC_DEFUN([AC_BBFW_EXAMPLES],[dnl
 ])dnl
 
 
-# AC_BBFW_SLACKWARE()
+# AC_BBFW_INIT()
 # -----------------------------------
-AC_DEFUN([AC_BBFW_SLACKWARE],[dnl
+AC_DEFUN([AC_BBFW_INIT],[dnl
 
    # display options
+   withval=""
+   AC_ARG_WITH(
+      init,
+      [AS_HELP_STRING([--with-init=type], [init system type of slackware, systemd, or init.d [default=auto]])],
+      [ WINIT=$withval ],
+      [ WINIT=$withval ]
+   )
    enableval=""
    AC_ARG_ENABLE(
-      slackware,
-      [AS_HELP_STRING([--enable-slackware], [enable Slackware specific scripts [default=auto]])],
-      [ ESLACKWARE=$enableval ],
-      [ ESLACKWARE=$enableval ]
+      init,
+      [AS_HELP_STRING([--disable-init], [install init scripts [default=auto]])],
+      [ EINIT=$enableval ],
+      [ EINIT=$enableval ]
    )
 
-   # determine slackware version
-   SLACKWARE_VERSION="unknown"
-   if test -f /etc/slackware-version;then
-      SLACKWARE_VERSION=`cat /etc/slackware-version`
-   fi
-   KERNEL_NAME=`uname -s`
-
-   # sets options
-   if test "x${ESLACKWARE}" == "xyes";then
-      ENABLE_SLACKWARE=yes
-   elif test "x${ESLACKWARE}" == "xno";then
-      ENABLE_SLACKWARE=no
-   else
-      if test "x${SLACKWARE_VERSION}" = "xunknown" || test "x${KERNEL_NAME}" != "xLinux";then
-         ENABLE_SLACKWARE=no
-      else
-         ENABLE_SLACKWARE=yes
-      fi
-   fi
-
-   AM_CONDITIONAL([ENABLE_SLACKWARE], [test "${ENABLE_SLACKWARE}" == "yes"])
-])dnl
-
-
-# AC_BBFW_INITD()
-# -----------------------------------
-AC_DEFUN([AC_BBFW_INITD],[dnl
-
-   # display options
-   enableval=""
-   AC_ARG_ENABLE(
-      initd,
-      [AS_HELP_STRING([--enable-initd], [enable init.d script [default=auto]])],
-      [ EINITD=$enableval ],
-      [ EINITD=$enableval ]
-   )
-
-   # sets options
-   if test "x${EINITD}" == "xyes";then
+   # used specified init system
+   ENABLE_INIT=auto
+   if test "x${EINIT}" == "xno";then
+      ENABLE_INIT=no
+   elif test "x${WINIT}" == "xinit.d";then
+      ENABLE_INIT=init.d
       ENABLE_INITD=yes
-   elif test "x${EINITD}" == "xno";then
-      ENABLE_INITD=no
-   else
-      if test -d "/etc/init.d/";then
-         ENABLE_INITD=yes
-      else
-         ENABLE_INITD=no
-      fi
-   fi
-
-   AM_CONDITIONAL([ENABLE_INITD], [test "${ENABLE_INITD}" == "yes"])
-])dnl
-
-
-# AC_BBFW_SYSTEMD()
-# -----------------------------------
-AC_DEFUN([AC_BBFW_SYSTEMD],[dnl
-
-   # display options
-   enableval=""
-   AC_ARG_ENABLE(
-      systemd,
-      [AS_HELP_STRING([--enable-systemd], [enable systemd unit file [default=auto]])],
-      [ ESYSTEMD=$enableval ],
-      [ ESYSTEMD=$enableval ]
-   )
-
-   # sets options
-   if test "x${ESYSTEMD}" == "xyes";then
+   elif test "x${WINIT}" == "xslackware";then
+      ENABLE_INIT=slackware
+      ENABLE_SLACKWARE=yes
+   elif test "x${WINIT}" == "xsystemd";then
+      ENABLE_INIT=systemd
       ENABLE_SYSTEMD=yes
-   elif test "x${ESYSTEMD}" == "xno";then
-      ENABLE_SYSTEMD=no
-   else
-      if test -d "/etc/systemd/system/";then
+   elif test ""x${WINIT}" != "xno" && test ""x${WINIT}" != "xyes" && test "x${WINIT}" != "x";then
+      AC_MSG_ERROR([unknown init system, must be slackware, systemd, or init.d.])
+   fi
+
+   # auto detects init system
+   if test "${ENABLE_INIT}" == "auto";then
+      if test -f /etc/slackware-version;then
+         ENABLE_INIT=slackware
+         ENABLE_SLACKWARE=yes
+      elif test -d "/etc/systemd/system/";then
+         ENABLE_INIT=systemd
          ENABLE_SYSTEMD=yes
+      elif test -d "/etc/init.d/";then
+         ENABLE_INIT=init.d
+         ENABLE_INITD=yes
+      elif test "x${EINIT}" == "xyes";then
+         AC_MSG_ERROR([unable to determine init system type])
       else
-         ENABLE_SYSTEMD=no
+         ENABLE_INIT=no
       fi
    fi
 
-   AM_CONDITIONAL([ENABLE_SYSTEMD], [test "${ENABLE_SYSTEMD}" == "yes"])
+   AM_CONDITIONAL([ENABLE_SLACKWARE], [test "x${ENABLE_SLACKWARE}" == "xyes"])
+   AM_CONDITIONAL([ENABLE_INITD],     [test "x${ENABLE_INITD}"     == "xyes"])
+   AM_CONDITIONAL([ENABLE_SYSTEMD],   [test "x${ENABLE_SYSTEMD}"   == "xyes"])
 ])dnl
+
 
 # end of m4 file
