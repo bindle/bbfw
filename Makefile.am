@@ -108,7 +108,7 @@ EXTRA_DIST				= \
 					  src/firewall.d/rules6-example \
 					  src/openrc/bbfw.firewall.in \
 					  src/rc.firewall.in \
-					  src/firewall.bbfw.service.in
+					  src/systemd/bbfw.firewall.service.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -120,7 +120,7 @@ CLEANFILES				= \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
 					  src/firewall.bbfw \
-					  src/firewall.bbfw.service \
+					  src/systemd/bbfw.firewall.service \
 					  src/openrc/bbfw.firewall \
 					  src/rc.firewall \
 					  src/rc.firewall.new \
@@ -156,7 +156,7 @@ if ENABLE_INITD
 initd_SCRIPTS				=  src/firewall.bbfw
 endif
 if ENABLE_SYSTEMD
-systemd_DATA				=  src/firewall.bbfw.service
+systemd_DATA				=  src/systemd/bbfw.firewall.service
 endif
 
 
@@ -190,7 +190,7 @@ src/rc.firewall.new: src/rc.firewall
 src/firewall.bbfw: src/rc.firewall
 	cp -p src/rc.firewall src/firewall.bbfw
 
-src/firewall.bbfw.service: Makefile src/firewall.bbfw.service.in
+src/systemd/bbfw.firewall.service: Makefile src/systemd/bbfw.firewall.service.in
 	@$(do_subst_fn)
 
 src/openrc/bbfw.firewall: Makefile src/openrc/bbfw.firewall.in
