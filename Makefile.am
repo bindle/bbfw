@@ -106,6 +106,7 @@ EXTRA_DIST				= \
 					  src/firewall.d/rules-example \
 					  src/firewall.d/rules4-example \
 					  src/firewall.d/rules6-example \
+					  src/openrc/bbfw.firewall.in \
 					  src/rc.firewall.in \
 					  src/firewall.bbfw.service.in
 CLEANFILES				= \
@@ -120,6 +121,7 @@ CLEANFILES				= \
 					  $(slackrcd_SCRIPTS) \
 					  src/firewall.bbfw \
 					  src/firewall.bbfw.service \
+					  src/openrc/bbfw.firewall \
 					  src/rc.firewall \
 					  src/rc.firewall.new \
 					  @PACKAGE_TARNAME@-*.tar.* \
@@ -146,6 +148,9 @@ firewall_DATA				= src/firewall.d/ipsets-example \
 endif
 if ENABLE_SLACKWARE
 slackrcd_SCRIPTS			=  src/rc.firewall.new
+endif
+if ENABLE_OPENRC
+initd_SCRIPTS				=  src/openrc/bbfw.firewall
 endif
 if ENABLE_INITD
 initd_SCRIPTS				=  src/firewall.bbfw
@@ -186,6 +191,9 @@ src/firewall.bbfw: src/rc.firewall
 	cp -p src/rc.firewall src/firewall.bbfw
 
 src/firewall.bbfw.service: Makefile src/firewall.bbfw.service.in
+	@$(do_subst_fn)
+
+src/openrc/bbfw.firewall: Makefile src/openrc/bbfw.firewall.in
 	@$(do_subst_fn)
 
 

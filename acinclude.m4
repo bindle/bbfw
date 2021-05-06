@@ -65,7 +65,7 @@ AC_DEFUN([AC_BBFW_INIT],[dnl
    withval=""
    AC_ARG_WITH(
       init,
-      [AS_HELP_STRING([--with-init=type], [init system type of slackware, systemd, or init.d [default=auto]])],
+      [AS_HELP_STRING([--with-init=type], [init system type of init.d, openrc, slackware, or systemd [default=auto]])],
       [ WINIT=$withval ],
       [ WINIT=$withval ]
    )
@@ -84,6 +84,9 @@ AC_DEFUN([AC_BBFW_INIT],[dnl
    elif test "x${WINIT}" == "xinit.d";then
       ENABLE_INIT=init.d
       ENABLE_INITD=yes
+   elif test "x${WINIT}" == "xopenrc";then
+      ENABLE_INIT=OpenRC
+      ENABLE_OPENRC=yes
    elif test "x${WINIT}" == "xslackware";then
       ENABLE_INIT=slackware
       ENABLE_SLACKWARE=yes
@@ -91,7 +94,7 @@ AC_DEFUN([AC_BBFW_INIT],[dnl
       ENABLE_INIT=systemd
       ENABLE_SYSTEMD=yes
    elif test ""x${WINIT}" != "xno" && test ""x${WINIT}" != "xyes" && test "x${WINIT}" != "x";then
-      AC_MSG_ERROR([unknown init system, must be slackware, systemd, or init.d.])
+      AC_MSG_ERROR([unknown init system, must be init.d, openrc, slackware, or systemd.])
    fi
 
    # auto detects init system
@@ -99,6 +102,9 @@ AC_DEFUN([AC_BBFW_INIT],[dnl
       if test -f /etc/slackware-version;then
          ENABLE_INIT=slackware
          ENABLE_SLACKWARE=yes
+      elif test -f /sbin/openrc;then
+         ENABLE_INIT=OpenRC
+         ENABLE_OPENRC=yes
       elif test -d "/etc/systemd/system/";then
          ENABLE_INIT=systemd
          ENABLE_SYSTEMD=yes
@@ -112,8 +118,9 @@ AC_DEFUN([AC_BBFW_INIT],[dnl
       fi
    fi
 
-   AM_CONDITIONAL([ENABLE_SLACKWARE], [test "x${ENABLE_SLACKWARE}" == "xyes"])
    AM_CONDITIONAL([ENABLE_INITD],     [test "x${ENABLE_INITD}"     == "xyes"])
+   AM_CONDITIONAL([ENABLE_OPENRC],    [test "x${ENABLE_OPENRC}"    == "xyes"])
+   AM_CONDITIONAL([ENABLE_SLACKWARE], [test "x${ENABLE_SLACKWARE}" == "xyes"])
    AM_CONDITIONAL([ENABLE_SYSTEMD],   [test "x${ENABLE_SYSTEMD}"   == "xyes"])
 ])dnl
 
