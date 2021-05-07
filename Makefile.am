@@ -130,9 +130,7 @@ CLEANFILES				= \
 					  @PACKAGE_TARNAME@-*.zip
 DISTCHECK_CONFIGURE_FLAGS		= \
 					  --enable-strictwarnings \
-					  --enable-initd \
-					  --enable-slackware \
-					  --enable-systemd
+					  --disable-init
 
 
 # conditional targets for slackware
