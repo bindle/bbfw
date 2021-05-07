@@ -122,6 +122,7 @@ CLEANFILES				= \
 					  src/firewall.bbfw \
 					  src/slackware/rc.firewall \
 					  src/slackware/rc.firewall.new \
+					  src/slackware/bbfw.firewall \
 					  src/systemd/bbfw.firewall.service \
 					  src/openrc/bbfw.firewall \
 					  @PACKAGE_TARNAME@-*.tar.* \
