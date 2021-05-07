@@ -107,7 +107,7 @@ EXTRA_DIST				= \
 					  src/firewall.d/rules4-example \
 					  src/firewall.d/rules6-example \
 					  src/openrc/bbfw.firewall.in \
-					  src/rc.firewall.in \
+					  src/slackware/rc.firewall.in \
 					  src/systemd/bbfw.firewall.service.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
@@ -120,10 +120,10 @@ CLEANFILES				= \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
 					  src/firewall.bbfw \
+					  src/slackware/rc.firewall \
+					  src/slackware/rc.firewall.new \
 					  src/systemd/bbfw.firewall.service \
 					  src/openrc/bbfw.firewall \
-					  src/rc.firewall \
-					  src/rc.firewall.new \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.txz \
 					  @PACKAGE_TARNAME@-*.zip
@@ -147,13 +147,13 @@ firewall_DATA				= src/firewall.d/ipsets-example \
 					  src/firewall.d/rules6-example
 endif
 if ENABLE_SLACKWARE
-slackrcd_SCRIPTS			=  src/rc.firewall.new
+slackrcd_SCRIPTS			=  src/slackware/rc.firewall.new
 endif
 if ENABLE_OPENRC
 initd_SCRIPTS				=  src/openrc/bbfw.firewall
 endif
 if ENABLE_INITD
-initd_SCRIPTS				=  src/firewall.bbfw
+initd_SCRIPTS				=  src/slackware/bbfw.firewall
 endif
 if ENABLE_SYSTEMD
 systemd_DATA				=  src/systemd/bbfw.firewall.service
@@ -181,16 +181,16 @@ src/bbfw.conf-example: Makefile src/bbfw.conf-example.in
 src/bbfw-log: Makefile src/bbfw-log.in
 	@$(do_subst_fn)
 
-src/rc.firewall: Makefile src/rc.firewall.in
+src/slackware/rc.firewall: Makefile src/slackware/rc.firewall.in
 	@$(do_subst_fn)
 
-src/rc.firewall.new: src/rc.firewall
-	cp -p src/rc.firewall src/rc.firewall.new
+src/slackware/rc.firewall.new: src/slackware/rc.firewall
+	@$(do_copy_fn)
 
-src/firewall.bbfw: src/rc.firewall
-	cp -p src/rc.firewall src/firewall.bbfw
+src/slackware/bbfw.firewall: src/slackware/rc.firewall
+	@$(do_copy_fn)
 
-src/systemd/bbfw.firewall.service: Makefile src/systemd/bbfw.firewall.service.in
+src/systemd/bbfw.firewall.service: src/systemd/bbfw.firewall.service.in
 	@$(do_subst_fn)
 
 src/openrc/bbfw.firewall: Makefile src/openrc/bbfw.firewall.in
