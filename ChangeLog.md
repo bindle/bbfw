@@ -7,6 +7,10 @@ Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
   - bbfw: added 'checkconfig' action (syzdek)
   - conf: added ability to change order of file processing (syzdek)
   - conf: added ability to change firewall.d directory (syzdek)
+  - init: added support for OpenRC (syzdek)
+  - autotools: updated configure options for init systems (syzdek)
+  - autotools: fixed dependency loop (syzdek)
+  - autotools: removed unneeded compiler checks (syzdek)
 
 0.19
   - bbfw: added ability to disable examples (syzdek)
