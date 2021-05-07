@@ -1,6 +1,6 @@
 
 Bindle Binaries Linux Firewall
-Copyright (c) 2019 David M. Syzdek <david@syzdek.net>.
+Copyright (c) 2019, 2021 David M. Syzdek <david@syzdek.net>.
 
 0.20
   - bbfw: added support for bbfw.conf to override defaults (syzdek)
