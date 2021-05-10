@@ -31,6 +31,9 @@
 #########################
 *filter
 
+# allow all ICMPv6 traffic
+-I INPUT   -p icmpv6   -j ACCEPT
+
 ## accept SSH connections from link-local and RFC4193 addresses
 #-A INPUT -p tcp   -s fc00::/7    --dport ssh   -j ACCEPT
 #-A INPUT -p tcp   -s fe80::/10   --dport ssh   -j ACCEPT

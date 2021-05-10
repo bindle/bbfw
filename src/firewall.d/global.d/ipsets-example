@@ -13,26 +13,54 @@
 #     @sysconfdir@/firewall.d/rules6
 #
 
-#######################
-#                     #
-#  Standard Services  #
-#                     #
-#######################
+######################
+#                    #
+#  Private Networks  #
+#                    #
+######################
 
-create SERVICES bitmap:port range 1-1024 comment
-add SERVICES 20   comment "FTP data"
-add SERVICES 21   comment "FTP"
-add SERVICES 22   comment "SSH"
-add SERVICES 23   comment "Telnet"
-add SERVICES 25   comment "SMTP"
-add SERVICES 53   comment "DNS"
-add SERVICES 69   comment "TFTP"
-add SERVICES 80   comment "HTTP"
-add SERVICES 110  comment "POP3"
-add SERVICES 123  comment "NTP"
-add SERVICES 143  comment "IMAP"
-add SERVICES 389  comment "LDAP"
-add SERVICES 443  comment "HTTPS"
+create   PRIVATE4             hash:ip family inet  hashsize 1024 comment
+create   PRIVATE6             hash:ip family inet6 hashsize 1024 comment
+create   PRIVATE              list:set
+add      PRIVATE              PRIVATE4
+add      PRIVATE              PRIVATE6
+add      PRIVATE4             10.0.0.0/8      "rfc1918"
+add      PRIVATE4             172.16.0.0/12   "rfc1918"
+add      PRIVATE4             192.168.0.0/1   "rfc1918"
+add      PRIVATE6             fc00::/7        "rfc4193"
+add      PRIVATE6             fe80::/10       "rfc4291"
+
+
+#################
+#               #
+#  Black Holes  #
+#               #
+#################
+
+# dynamic blackhole lists
+create   DYNAMIC_BLACKHOLE4   hash:ip family inet  hashsize 1024 timeout 600
+create   DYNAMIC_BLACKHOLE6   hash:ip family inet6 hashsize 1024 timeout 600
+create   DYNAMIC_BLACKHOLE    list:set 
+add      DYNAMIC_BLACKHOLE    DYNAMIC_BLACKHOLE4
+add      DYNAMIC_BLACKHOLE    DYNAMIC_BLACKHOLE6
+
+# dynamic blackhole exemptions
+create   DYNAMIC_EXEMPTION4   hash:net family inet  hashsize 1024 comment
+create   DYNAMIC_EXEMPTION6   hash:net family inet6 hashsize 1024 comment
+create   DYNAMIC_EXEMPTION    list:set 
+add      DYNAMIC_EXEMPTION    DYNAMIC_EXEMPTION4
+add      DYNAMIC_EXEMPTION    DYNAMIC_EXEMPTION6
+add      DYNAMIC_EXEMPTION    PRIVATE4
+add      DYNAMIC_EXEMPTION    PRIVATE6
+
+# static blackhole lists
+create   BLACKHOLE4           hash:ip family inet  hashsize 1024 
+create   BLACKHOLE6           hash:ip family inet6 hashsize 1024 
+create   BLACKHOLE            list:set
+add      BLACKHOLE            BLACKHOLE4
+add      BLACKHOLE            BLACKHOLE6
+add      BLACKHOLE            DYNAMIC_BLACKHOLE4
+add      BLACKHOLE            DYNAMIC_BLACKHOLE6
 
 
 # end of rules

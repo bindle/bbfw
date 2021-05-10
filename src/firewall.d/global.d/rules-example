@@ -29,14 +29,30 @@
 # allow all local host traffic
 -I INPUT -i lo   -j ACCEPT
 
-# reject ident loopups (fixes delays when connecting to misconfigured hosts)
--A INPUT  -p tcp   --dport ident   -j REJECT --reject-with tcp-reset
+# drop black hole traffic
+-I INPUT   -m set   --match-set BLACKHOLE src -j DROP
+-I INPUT   -m set   --match-set BLACKHOLE src \
+           -m limit --limit 1/minute \
+           -j LOG   --log-level 7 --log-prefix "iptables blackhole: "
+
+# reject ident lookups (fixes delays when connecting to misconfigured hosts)
+-A INPUT  -m set --match-set PRIVATE src \
+          -p tcp --dport ident \
+          -j REJECT --reject-with tcp-reset
 
 # allow established connections
--A INPUT  -m conntrack --ctstate ESTABLISHED,RELATED   -j ACCEPT
+-I INPUT  -m conntrack --ctstate ESTABLISHED,RELATED   -j ACCEPT
+
+# allow local networks to access services
+-A INPUT  -m set --match-set PRIVATE src  -p tcp  --dport ssh     -j ACCEPT
+-A INPUT  -m set --match-set PRIVATE src  -p tcp  --dport domain  -j ACCEPT
+-A INPUT  -m set --match-set PRIVATE src  -p udp  --dport domain  -j ACCEPT
 
 # log everything else
 -A INPUT  -m limit --limit 10/minute -j LOG --log-level 7 --log-prefix "iptables drop input: "
+
+# blackhole filter misses
+-A INPUT   -m set ! --match-set DYNAMIC_EXEMPTION src -j SET --add-set DYNAMIC_BLACKHOLE src
 
 COMMIT
 

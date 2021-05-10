@@ -40,7 +40,7 @@ add PRIVATE4 10.0.0.0/8    "rfc1918"
 add PRIVATE4 172.16.0.0/12 "rfc1918"
 add PRIVATE4 192.168.0.0/1 "rfc1918"
 add PRIVATE6 fc00::/7      "rfc4193"
-add PRIVATE6 fe80::/10     "rfc4291""
+add PRIVATE6 fe80::/10     "rfc4291"
 
 
 # end of rules

@@ -20,11 +20,6 @@
 #                       #
 #########################
 *filter
-
-# allow all ICMPv6 traffic
--I INPUT   -p icmpv6   -j ACCEPT
--I FORWARD -p icmpv6   -j ACCEPT
-
 COMMIT
 
 
@@ -34,11 +29,6 @@ COMMIT
 #                    #
 ######################
 *raw
-
-# ICMP traffic
--I PREROUTING -p icmpv6   -j NOTRACK
--I OUTPUT     -p icmpv6   -j NOTRACK
-
 COMMIT
 
 # end of rules

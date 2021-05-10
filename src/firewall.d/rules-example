@@ -32,6 +32,14 @@
 ##############################
 *filter
 
+# set default policies
+:INPUT DROP
+:FORWARD DROP
+:OUTPUT ACCEPT
+
+# allow all local host traffic
+-I INPUT -i lo  -j ACCEPT
+
 ## accept HTTP/HTTPS connections
 #-A INPUT -p tcp --dport http   -j  ACCEPT
 #-A INPUT -p tcp --dport https  -j  ACCEPT

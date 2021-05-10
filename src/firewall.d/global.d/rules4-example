@@ -19,11 +19,6 @@
 #                       #
 #########################
 *filter
-
-# allow all ICMP traffic
--I INPUT   -p icmp   -j ACCEPT
--I FORWARD -p icmp   -j ACCEPT
-
 COMMIT
 
 
@@ -42,11 +37,6 @@ COMMIT
 #                    #
 ######################
 *raw
-
-# ICMP traffic
--I PREROUTING -p icmp   -j NOTRACK
--I OUTPUT     -p icmp   -j NOTRACK
-
 COMMIT
 
 # end of rules

@@ -31,6 +31,9 @@
 #########################
 *filter
 
+# allow all ICMP traffic
+-I INPUT   -p icmp   -j ACCEPT
+
 ## accept SSH connections from RFC1918 addresses
 #-A INPUT -p tcp   -s 10.0.0.0/8       --dport ssh   -j ACCEPT
 #-A INPUT -p tcp   -s 172.16.0.0/12    --dport ssh   -j ACCEPT
