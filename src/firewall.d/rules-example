@@ -1,15 +1,27 @@
-# /etc/rc.d/rc.firewall.rules
+# @sysconfdir@/firewall.d/rules
 #
-#  Host Specific IPv4/IPv6 Firewall Rules for Slackware Server
+#  Host Specific IPv4/IPv6 Firewall Rules for Linux Server
 #
 #  THIS FILE IS INTENDED TO CONTAIN FIREWALL RULES SPECIFIC TO AN INDIVIDUAL
 #  SERVER.
 #
 #  USE ONE OF THE FOLLOWING FILES FOR GLOBAL RULES:
-#     /etc/rc.d/rc.firewall.global
-#     /etc/rc.d/rc.firewall.global4
-#     /etc/rc.d/rc.firewall.global6
-#     /etc/rc.d/rc.firewall.globalsets
+#     @sysconfdir@/firewall.d/global.d/ipsets
+#     @sysconfdir@/firewall.d/global.d/rules
+#     @sysconfdir@/firewall.d/global.d/rules4
+#     @sysconfdir@/firewall.d/global.d/rules6
+#
+#  USE ONE OF THE FOLLOWING FILES FOR SERVER CLUSTER RULES:
+#     @sysconfdir@/firewall.d/cluster.d/ipsets
+#     @sysconfdir@/firewall.d/cluster.d/rules
+#     @sysconfdir@/firewall.d/cluster.d/rules4
+#     @sysconfdir@/firewall.d/cluster.d/rules6
+#
+#  USE ONE OF THE FOLLOWING FILES FOR APPLICATION RULES:
+#     @sysconfdir@/firewall.d/apps.d/<app name>/ipsets
+#     @sysconfdir@/firewall.d/apps.d/<app name>/rules
+#     @sysconfdir@/firewall.d/apps.d/<app name>/rules4
+#     @sysconfdir@/firewall.d/apps.d/<app name>/rules6
 #
 
 
