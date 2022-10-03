@@ -1,7 +1,7 @@
 #!/sbin/openrc-run
 #
 #   Bindle Binaries Linux Firewall
-#   Copyright (c) 2021 David M. Syzdek <david@syzdek.net>.
+#   Copyright (c) 2021, 2022 David M. Syzdek <david@syzdek.net>.
 #
 #   Redistribution and use in source and binary forms, with or without
 #   modification, are permitted provided that the following conditions are
@@ -41,6 +41,8 @@ bbfw_bin="@sbindir@/bbfw"
 bbfw_log_bin="@sbindir@/bbfw-log"
 
 depend() {
+	need localmount
+	after bootmisc hwdrivers modules
 	before net
 	use logger
 	provide firewall
