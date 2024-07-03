@@ -57,6 +57,32 @@ AC_DEFUN([AC_BBFW_EXAMPLES],[dnl
 ])dnl
 
 
+# AC_BBFW_FIREWALL()
+# -----------------------------------
+AC_DEFUN([AC_BBFW_FIREWALL],[dnl
+
+   # display options
+   enableval=""
+   AC_ARG_ENABLE(
+      firewall,
+      [AS_HELP_STRING([--disable-firewall], [install firewall script [default=yes]])],
+      [ EFIREWALL=$enableval ],
+      [ EFIREWALL=$enableval ]
+   )
+
+   # sets options
+   if test "x${EFIREWALL}" == "xyes";then
+      ENABLE_FIREWALL=yes
+   elif test "x${EFIREWALL}" == "xno";then
+      ENABLE_FIREWALL=no
+   else
+      ENABLE_FIREWALL=yes
+   fi
+
+   AM_CONDITIONAL([ENABLE_FIREWALL], [test "${ENABLE_FIREWALL}" == "yes"])
+])dnl
+
+
 # AC_BBFW_INIT()
 # -----------------------------------
 AC_DEFUN([AC_BBFW_INIT],[dnl

@@ -74,13 +74,17 @@ include_HEADERS				=
 lib_LTLIBRARIES				=
 man_MANS				=
 info_TEXINFOS				=
+initd_SCRIPTS				=
 noinst_LTLIBRARIES			=
 noinst_HEADERS				=
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				=
-sbin_SCRIPTS				= src/bbfw src/bbfw-log
+sbin_SCRIPTS				=
+slackrcd_SCRIPTS			=
+sysconf_DATA				=
+systemd_DATA				=
 
 
 # lists
@@ -133,29 +137,33 @@ DISTCHECK_CONFIGURE_FLAGS		= \
 					  --disable-init
 
 
-# conditional targets for slackware
+# conditional targets for bbfw
+if ENABLE_FIREWALL
+sbin_SCRIPTS				+= src/bbfw \
+					   src/bbfw-log
 if ENABLE_EXAMPLES
-sysconf_DATA				= src/bbfw.conf-example
-firewallglobal_DATA			= src/firewall.d/global.d/rules-example \
-					  src/firewall.d/global.d/rules4-example \
-					  src/firewall.d/global.d/rules6-example \
-					  src/firewall.d/global.d/ipsets-example
-firewall_DATA				= src/firewall.d/ipsets-example \
-					  src/firewall.d/rules-example \
-					  src/firewall.d/rules4-example \
-					  src/firewall.d/rules6-example
+sysconf_DATA				+= src/bbfw.conf-example
+firewallglobal_DATA			=  src/firewall.d/global.d/rules-example \
+					   src/firewall.d/global.d/rules4-example \
+					   src/firewall.d/global.d/rules6-example \
+					   src/firewall.d/global.d/ipsets-example
+firewall_DATA				=  src/firewall.d/ipsets-example \
+					   src/firewall.d/rules-example \
+					   src/firewall.d/rules4-example \
+					   src/firewall.d/rules6-example
 endif
 if ENABLE_SLACKWARE
-slackrcd_SCRIPTS			=  src/slackware/rc.firewall.new
+slackrcd_SCRIPTS			+= src/slackware/rc.firewall.new
 endif
 if ENABLE_OPENRC
-initd_SCRIPTS				=  src/openrc/bbfw.firewall
+initd_SCRIPTS				+= src/openrc/bbfw.firewall
 endif
 if ENABLE_INITD
-initd_SCRIPTS				=  src/slackware/bbfw.firewall
+initd_SCRIPTS				+= src/slackware/bbfw.firewall
 endif
 if ENABLE_SYSTEMD
-systemd_DATA				=  src/systemd/bbfw.firewall.service
+systemd_DATA				+= src/systemd/bbfw.firewall.service
+endif
 endif
 
 
