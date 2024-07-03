@@ -1,0 +1,123 @@
+#! /bin/sh
+#
+#   Bindle Binaries Admin Tools
+#   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_START@
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of Bindle Binaries nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BINDLE BINARIES BE LIABLE FOR
+#   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+#
+#   @BINDLE_BINARIES_BSD_LICENSE_END@
+#
+
+# Load Kernel Modules
+echo "loading modules..."
+/sbin/modprobe 8021q
+/sbin/modprobe bonding max_bonds=0
+
+
+# interface: eth0
+print_up "eth0"
+/usr/sbin/ip link set eth0 up
+/usr/sbin/ethtool -K eth0 gro off
+/usr/sbin/ethtool -K eth0 gso off
+/usr/sbin/ethtool -K eth0 tso off
+/sbin/sysctl -q -w net.ipv6.conf.eth0.disable_ipv6=0
+
+
+# Interface: eth1
+print_up "eth1"
+/usr/sbin/ip link set eth1 up
+/usr/sbin/ethtool -K eth1 gro off
+/usr/sbin/ethtool -K eth1 gso off
+/usr/sbin/ethtool -K eth1 tso off
+/sbin/sysctl -q -w net.ipv6.conf.eth1.disable_ipv6=1
+
+
+# Interface: eth1.42
+print_up "eth1.42"
+/sbin/vconfig add                                 eth1 42
+/usr/sbin/ip link set                             eth1.42 up
+/usr/sbin/ip addr add 63.140.112.161/28       dev eth1.42
+/sbin/sysctl -q -w net.ipv6.conf.eth1/42.disable_ipv6=1
+
+
+# Interface: eth1.81
+print_up "eth1.81"
+/sbin/vconfig add                                 eth1 81
+/usr/sbin/ip link set                             eth1.81 up
+/usr/sbin/ip addr add 10.19.81.2/25           dev eth1.81
+/usr/sbin/ip addr add 2001:470:ea85:81::2/64  dev eth1.81
+/sbin/sysctl -q -w net.ipv6.conf.eth1/81.disable_ipv6=0
+
+
+# Interface: eth2
+print_up "eth2"
+/usr/sbin/ip link set                dev eth2 up
+/usr/sbin/ip link set mtu 9000       dev eth2
+/usr/sbin/ethtool -K eth2 gro off
+/usr/sbin/ethtool -K eth2 gso off
+/usr/sbin/ethtool -K eth2 tso off
+/sbin/sysctl -q -w net.ipv6.conf.eth2.disable_ipv6=1
+
+
+# Interface: eth3
+print_up "eth3"
+/usr/sbin/ip link set eth3 up
+/usr/sbin/ethtool -K eth3 gro off
+/usr/sbin/ethtool -K eth3 gso off
+/usr/sbin/ethtool -K eth3 tso off
+/sbin/sysctl -q -w net.ipv6.conf.eth3.disable_ipv6=1
+
+
+# interface: bond0
+print_up "bond0"
+/usr/bin/echo '+bond0'     > /sys/class/net/bonding_masters
+/usr/bin/echo '100'        > /sys/class/net/bond0/bonding/miimon
+/usr/bin/echo '802.3ad'    > /sys/class/net/bond0/bonding/mode
+/usr/bin/echo 'layer3+4'   > /sys/class/net/bond0/bonding/xmit_hash_policy
+/usr/sbin/ip addr add 192.168.11.12/24 dev bond0
+/usr/sbin/ip link set eth2 master bond0
+/usr/sbin/ip link set eth3 master bond0
+/usr/sbin/ip link set                 dev bond0 up
+/usr/sbin/ip link set mtu        9000 dev bond0
+
+
+# Routes
+echo "adding routes"
+/usr/sbin/ip route add 127.0.0.0/8  dev lo
+/usr/sbin/ip route add default      via 63.140.112.174
+/usr/sbin/ip route add 10.0.0.0/8   via 10.19.81.1
+/usr/sbin/ip route add default      via fe80::1
+
+
+# enable forwarding
+echo "configuring forwarding"
+echo 0 > /proc/sys/net/ipv4/ip_forward
+echo 0 >  /proc/sys/net/ipv6/conf/all/forwarding
+
+
+# End of /etc/rc.d/rc.inet1
