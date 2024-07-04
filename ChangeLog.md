@@ -1,6 +1,6 @@
 
 Bindle Binaries Linux Firewall
-Copyright (c) 2019, 2021, 2022 David M. Syzdek <david@syzdek.net>.
+Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
 0.23
   - bbnet: adding initial script
