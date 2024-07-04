@@ -29,9 +29,21 @@
 
 
 #   The `firewall_dir` option overrides the default directory used to store
-#   firewall rules, ipset files, and pre/post hooks.  Uncomment the line below
-#   to change the default location of the firewall rules.
+#   host specific network scripts and hooks.  Uncomment the line below to
+#   change the default location of the network scripts.
 # network_dir = @sysconfdir@/network.d    
+
+
+#   The `cluster_dir` option overrides the default directory used to store
+#   cluster network scripts and hooks.  Uncomment the line below to
+#   change the default location of the network scripts.
+# cluster_dir = @sysconfdir@/network.d/cluster.d
+
+
+#   The `global_dir` option overrides the default directory used to store
+#   global network scripts and hooks.  Uncomment the line below to
+#   change the default location of the network scripts.
+# global_dir = @sysconfdir@/network.d/global.d
 
 
 #   The `quiet` option surpresses normal output of bbfw.  To enable quiet mode,
@@ -45,15 +57,65 @@
 # verbose = yes
 
 
-#   The `netup` option overrides the name of the script used to bring the
-#   network interfaces up.  This is to provide backwards support for systems
-#   using the up/down scripts from bindleadmin.
-# netup_script = netup
+#   The `net_up_script` option overrides the name of the script used to bring
+#   the network interfaces up.  This is to provide backwards support for
+#   systems using the up/down scripts from bindleadmin.
+# net_up_script = net-up
 
 
-#   The `netup` option overrides the name of the script used to bring the
-#   network interfaces up.  This is to provide backwards support for systems
-#   using the up/down scripts from bindleadmin.
-# netdown_script = netdown
+#   The `net_down_script` option overrides the name of the script used to
+#   bring the network interfaces down.  This is to provide backwards support
+#   for systems using the up/down scripts from bindleadmin.
+# net_down_script = net-down
+
+
+#   The `pre_hook_script` option overrides the name of the pre-hook script
+#   which is run prior to bringing the network interfaces up or down.
+#   Uncomment the line below to change the default pre-hook name.
+# pre_hook_script = pre-hook
+
+
+#   The `post_hook_script` option overrides the name of the psot-hook script
+#   which is run after bringing the network interfaces up or down.  Uncomment
+#   the line below to change the default post-hook name.
+# post_hook_script = post-hook
+
+
+#   Options which specify order of executions of network scripts and hooks use
+#   the following keywords:
+#
+#   global  - files within %{global_dir}/
+#   cluster - files within %{cluster_dir}/
+#   local   - files within %{network_dir}/
+#   builtin - built-in routines
+
+
+#   The `order_prehook` option defines the order in which pre-hooks are
+#   executed.  To modify the order in which pre-hooks are executed, uncomment
+#   the line below and modify the order of the key words.  See above for
+#   keyword descriptions.
+# order_prehook = builtin global cluster local
+
+
+#   The `order_posthook` option defines the order in which post-hooks are
+#   executed.  To modify the order in which post-hooks are executed, uncomment
+#   the line below and modify the order of the key words.  See above for
+#   keyword descriptions.
+# order_posthook = builtin global cluster local
+
+
+#   The `order_up` option defines the order in which network up scripts are
+#   executed.  To modify the order in which post-hooks are executed, uncomment
+#   the line below and modify the order of the key words.  See above for
+#   keyword descriptions.
+# order_up = builtin global cluster local
+
+
+#   The `order_down` option defines the order in which network down scripts
+#   are executed.  To modify the order in which post-hooks are executed,
+#   uncomment the line below and modify the order of the key words.  See above
+#   for keyword descriptions.
+# order_down = builtin global cluster local
+
 
 # end of configuration
