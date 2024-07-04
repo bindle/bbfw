@@ -151,4 +151,30 @@ AC_DEFUN([AC_BBFW_INIT],[dnl
 ])dnl
 
 
+# AC_BBFW_NETWORK()
+# -----------------------------------
+AC_DEFUN([AC_BBFW_NETWORK],[dnl
+
+   # display options
+   enableval=""
+   AC_ARG_ENABLE(
+      network,
+      [AS_HELP_STRING([--disable-network], [install network script [default=no]])],
+      [ ENETWORK=$enableval ],
+      [ ENETWORK=$enableval ]
+   )
+
+   # sets options
+   if test "x${ENETWORK}" == "xyes";then
+      ENABLE_NETWORK=yes
+   elif test "x${ENETWORK}" == "xno";then
+      ENABLE_NETWORK=no
+   else
+      ENABLE_NETWORK=no
+   fi
+
+   AM_CONDITIONAL([ENABLE_NETWORK], [test "${ENABLE_NETWORK}" == "yes"])
+])dnl
+
+
 # end of m4 file

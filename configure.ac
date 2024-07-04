@@ -70,6 +70,7 @@ AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version
 AC_BBFW_EXAMPLES
 AC_BBFW_FIREWALL
 AC_BBFW_INIT
+AC_BBFW_NETWORK
 
 
 # Creates outputs
@@ -84,6 +85,7 @@ AC_MSG_NOTICE([   Install:])
 AC_MSG_NOTICE([      Init Files:                ${ENABLE_INIT}])
 AC_MSG_NOTICE([      Example Files:             ${ENABLE_EXAMPLES}])
 AC_MSG_NOTICE([      Firewall Script:           ${ENABLE_FIREWALL}])
+AC_MSG_NOTICE([      Network Script:            ${ENABLE_NETWORK}])
 AC_MSG_NOTICE([ ])
 AC_MSG_NOTICE([   Please send suggestions to:   $PACKAGE_BUGREPORT])
 AC_MSG_NOTICE([ ])

@@ -55,6 +55,7 @@ DEFS					=
 
 firewalldir				= $(sysconfdir)/firewall.d
 firewallglobaldir			= $(firewalldir)/global.d
+networkdir				= $(sysconfdir)/network.d
 slackrcddir				= $(sysconfdir)/rc.d
 initddir				= $(sysconfdir)/init.d
 systemddir				= $(sysconfdir)/systemd/system
@@ -102,6 +103,8 @@ EXTRA_DIST				= \
 					  src/bbfw.in \
 					  src/bbfw-log.in \
 					  src/bbfw.conf-example.in \
+					  src/bbnet.in \
+					  src/bbnet.conf-example.in \
 					  src/firewall.d/global.d/rules-example \
 					  src/firewall.d/global.d/rules4-example \
 					  src/firewall.d/global.d/rules6-example \
@@ -111,9 +114,14 @@ EXTRA_DIST				= \
 					  src/firewall.d/rules4-example \
 					  src/firewall.d/rules6-example \
 					  src/init.d/bbfw.firewall.in \
+					  src/init.d/bbfw.network.in \
+					  src/network.d/net-down-example \
+					  src/network.d/net-up-example \
 					  src/openrc/bbfw.firewall.in \
+					  src/openrc/bbfw.network.in \
 					  src/slackware/rc.firewall.in \
-					  src/systemd/bbfw.firewall.service.in
+					  src/systemd/bbfw.firewall.service.in \
+					  src/systemd/bbfw.network.service.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -126,15 +134,19 @@ CLEANFILES				= \
 					  $(slackrcd_SCRIPTS) \
 					  src/firewall.bbfw \
 					  src/init.d/bbfw.firewall \
+					  src/init.d/bbfw.network \
 					  src/slackware/rc.firewall \
 					  src/slackware/rc.firewall.new \
 					  src/systemd/bbfw.firewall.service \
+					  src/systemd/bbfw.network.service \
 					  src/openrc/bbfw.firewall \
+					  src/openrc/bbfw.network \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.txz \
 					  @PACKAGE_TARNAME@-*.zip
 DISTCHECK_CONFIGURE_FLAGS		= \
 					  --enable-strictwarnings \
+					  --enable-network \
 					  --disable-init
 
 
@@ -168,6 +180,29 @@ endif
 endif
 
 
+# conditional targets for bbnet
+if ENABLE_NETWORK
+sbin_SCRIPTS				+= src/bbnet
+if ENABLE_EXAMPLES
+sysconf_DATA				+= src/bbnet.conf-example
+network_DATA				=  src/network.d/net-up-example \
+					   src/network.d/net-down-example
+endif
+if ENABLE_SLACKWARE
+slackrcd_SCRIPTS			+= src/slackware/rc.inet1.conf.new
+endif
+if ENABLE_OPENRC
+initd_SCRIPTS				+= src/openrc/bbfw.network
+endif
+if ENABLE_INITD
+initd_SCRIPTS				+= src/init.d/bbfw.network
+endif
+if ENABLE_SYSTEMD
+systemd_DATA				+= src/systemd/bbfw.network.service
+endif
+endif
+
+
 # Makefile includes
 GIT_PACKAGE_VERSION_DIR=build-aux
 SUBST_EXPRESSIONS =
@@ -189,19 +224,40 @@ src/bbfw.conf-example: Makefile src/bbfw.conf-example.in
 src/bbfw-log: Makefile src/bbfw-log.in
 	@$(do_subst_fn)
 
-src/slackware/rc.firewall: Makefile src/slackware/rc.firewall.in
+src/bbnet: Makefile src/bbnet.in
 	@$(do_subst_fn)
 
+src/bbnet.conf-example: Makefile src/bbnet.conf-example.in
+	@$(do_subst_dt)
+
+src/slackware/rc.firewall: Makefile src/slackware/rc.firewall.in
+	@$(do_copy_fn)
+
 src/slackware/rc.firewall.new: src/slackware/rc.firewall
+	@$(do_copy_fn)
+
+src/slackware/rc.inet1.conf: Makefile src/slackware/rc.inet1.conf.in
+	@$(do_copy_fn)
+
+src/slackware/rc.inet1.conf.new: src/slackware/rc.inet1.conf
 	@$(do_copy_fn)
 
 src/init.d/bbfw.firewall: Makefile src/init.d/bbfw.firewall.in
 	@$(do_subst_fn)
 
+src/init.d/bbfw.network: Makefile src/init.d/bbfw.network.in
+	@$(do_subst_fn)
+
 src/systemd/bbfw.firewall.service: src/systemd/bbfw.firewall.service.in
 	@$(do_subst_fn)
 
+src/systemd/bbfw.network.service: src/systemd/bbfw.network.service.in
+	@$(do_subst_fn)
+
 src/openrc/bbfw.firewall: Makefile src/openrc/bbfw.firewall.in
+	@$(do_subst_fn)
+
+src/openrc/bbfw.network: Makefile src/openrc/bbfw.network.in
 	@$(do_subst_fn)
 
 
