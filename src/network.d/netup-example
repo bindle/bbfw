@@ -1,9 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
-#   Bindle Binaries Admin Tools
-#   Copyright (C) 2014 Bindle Binaries <syzdek@bindlebinaries.com>.
-#
-#   @BINDLE_BINARIES_BSD_LICENSE_START@
+#   Bindle Binaries Linux Firewall
+#   Copyright (c) 2024 David M. Syzdek <david@syzdek.net>.
 #
 #   Redistribution and use in source and binary forms, with or without
 #   modification, are permitted provided that the following conditions are
@@ -14,14 +12,14 @@
 #      * Redistributions in binary form must reproduce the above copyright
 #        notice, this list of conditions and the following disclaimer in the
 #        documentation and/or other materials provided with the distribution.
-#      * Neither the name of Bindle Binaries nor the
+#      * Neither the name of David M. Syzdek nor the
 #        names of its contributors may be used to endorse or promote products
 #        derived from this software without specific prior written permission.
 #
 #   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 #   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 #   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BINDLE BINARIES BE LIABLE FOR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVID M. SYZDEK BE LIABLE FOR
 #   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 #   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
 #   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
@@ -30,8 +28,6 @@
 #   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #   SUCH DAMAGE.
 #
-#   @BINDLE_BINARIES_BSD_LICENSE_END@
-#
 
 # Load Kernel Modules
 echo "loading modules..."
@@ -39,85 +35,102 @@ echo "loading modules..."
 /sbin/modprobe bonding max_bonds=0
 
 
+################
+#              #
+#  Interfaces  #
+#              #
+################
+
 # interface: eth0
 print_up "eth0"
-/usr/sbin/ip link set eth0 up
-/usr/sbin/ethtool -K eth0 gro off
-/usr/sbin/ethtool -K eth0 gso off
-/usr/sbin/ethtool -K eth0 tso off
-/sbin/sysctl -q -w net.ipv6.conf.eth0.disable_ipv6=0
+/usr/sbin/ip link set mtu 9000        dev eth0 up
+/usr/sbin/ip link set                 dev eth0 alias "shared with IPMI"
+/sbin/sysctl -q -w net.ipv6.conf.eth0.disable_ipv6=1
 
 
-# Interface: eth1
+# interface: eth1
 print_up "eth1"
-/usr/sbin/ip link set eth1 up
-/usr/sbin/ethtool -K eth1 gro off
-/usr/sbin/ethtool -K eth1 gso off
-/usr/sbin/ethtool -K eth1 tso off
+/usr/sbin/ip link set mtu 9000        dev eth1 up
+/usr/sbin/ip link set                 dev eth1 alias "Network uplink"
 /sbin/sysctl -q -w net.ipv6.conf.eth1.disable_ipv6=1
 
 
-# Interface: eth1.42
-print_up "eth1.42"
-/sbin/vconfig add                                 eth1 42
-/usr/sbin/ip link set                             eth1.42 up
-/usr/sbin/ip addr add 63.140.112.161/28       dev eth1.42
-/sbin/sysctl -q -w net.ipv6.conf.eth1/42.disable_ipv6=1
-
-
-# Interface: eth1.81
-print_up "eth1.81"
-/sbin/vconfig add                                 eth1 81
-/usr/sbin/ip link set                             eth1.81 up
-/usr/sbin/ip addr add 10.19.81.2/25           dev eth1.81
-/usr/sbin/ip addr add 2001:470:ea85:81::2/64  dev eth1.81
-/sbin/sysctl -q -w net.ipv6.conf.eth1/81.disable_ipv6=0
-
-
-# Interface: eth2
+# interface: eth2
 print_up "eth2"
-/usr/sbin/ip link set                dev eth2 up
-/usr/sbin/ip link set mtu 9000       dev eth2
-/usr/sbin/ethtool -K eth2 gro off
-/usr/sbin/ethtool -K eth2 gso off
-/usr/sbin/ethtool -K eth2 tso off
+/usr/sbin/ip link set                 dev eth2 down
+/usr/sbin/ip link set                 dev eth2 alias "member of bond0"
 /sbin/sysctl -q -w net.ipv6.conf.eth2.disable_ipv6=1
 
 
-# Interface: eth3
+# interface: eth3
 print_up "eth3"
-/usr/sbin/ip link set eth3 up
-/usr/sbin/ethtool -K eth3 gro off
-/usr/sbin/ethtool -K eth3 gso off
-/usr/sbin/ethtool -K eth3 tso off
+/usr/sbin/ip link set                 dev eth3 up
+/usr/sbin/ip link set                 dev eth2 alias "member of bond0"
 /sbin/sysctl -q -w net.ipv6.conf.eth3.disable_ipv6=1
 
 
 # interface: bond0
 print_up "bond0"
-/usr/bin/echo '+bond0'     > /sys/class/net/bonding_masters
+/usr/sbin/ip link add                  name bond0 type bond
 /usr/bin/echo '100'        > /sys/class/net/bond0/bonding/miimon
 /usr/bin/echo '802.3ad'    > /sys/class/net/bond0/bonding/mode
 /usr/bin/echo 'layer3+4'   > /sys/class/net/bond0/bonding/xmit_hash_policy
-/usr/sbin/ip addr add 192.168.11.12/24 dev bond0
-/usr/sbin/ip link set eth2 master bond0
-/usr/sbin/ip link set eth3 master bond0
-/usr/sbin/ip link set                 dev bond0 up
-/usr/sbin/ip link set mtu        9000 dev bond0
+/usr/bin/echo 'bandwidth'  > /sys/class/net/bond0/bonding/ad_select
+/usr/bin/echo '1'          > /sys/class/net/bond0/bonding/min_links
+/usr/sbin/ip link set eth2           master bond0
+/usr/sbin/ip link set eth3           master bond0
+/usr/sbin/ip link set mtu 9000          dev bond0 up
+/usr/sbin/ip link set                   dev bond0 alias "DRBD network"
+/usr/sbin/ip addr add 10.0.255.50/24    dev bond0
+/sbin/sysctl -q -w net.ipv6.conf.bond0.disable_ipv6=1
 
+
+###########
+#         #
+#  VLANs  #
+#         #
+###########
+
+# Interface: eth1.155
+print_up "eth1.155"
+/usr/sbin/ip link add link eth1              name eth1.155 type vlan id 155
+/usr/sbin/ip link set mtu 1500                dev eth1.155 up
+/usr/sbin/ip addr add 203.0.113.243/27        dev eth1.155
+/usr/sbin/ip addr add 2001:db8:1da:ff::12/64  dev eth1.155
+/usr/sbin/ip link set                         dev eth1.155 alias "Internet"
+/sbin/sysctl -q -w net.ipv6.conf.eth1/2140.disable_ipv6=0
+
+
+# Interface: eth1.200
+print_up "eth1.200"
+/usr/sbin/ip link add link eth1              name eth1.200 type vlan id 200
+/usr/sbin/ip link set mtu 1500                dev eth1.200 up
+/usr/sbin/ip addr add 10.32.100.45/25         dev eth1.200
+/usr/sbin/ip addr add fd98:5e92:bd06:1::5/64  dev eth1.200
+/usr/sbin/ip link set                         dev eth1.200 alias "Mgmt Network"
+/sbin/sysctl -q -w net.ipv6.conf.eth1/200.disable_ipv6=0
+
+
+##########################
+#                        #
+#  Routing & Forwarding  #
+#                        #
+##########################
 
 # Routes
 echo "adding routes"
-/usr/sbin/ip route add 127.0.0.0/8  dev lo
-/usr/sbin/ip route add default      via 63.140.112.174
-/usr/sbin/ip route add 10.0.0.0/8   via 10.19.81.1
-/usr/sbin/ip route add default      via fe80::1
+/usr/sbin/ip -4 route add 127.0.0.0/8     dev lo
+/usr/sbin/ip -4 route add 10.0.0.0/8      via 10.32.100.1
+/usr/sbin/ip -4 route add 172.16.0.0/12   via 10.32.100.1
+/usr/sbin/ip -4 route add 192.168.0.0/16  via 10.32.100.1
+/usr/sbin/ip -4 route add default         via 203.0.113.225
+/usr/sbin/ip -6 route add fc00::/7        via fd98:5e92:bd06:10::1
+/usr/sbin/ip -6 route add default         via 2001:db8:10da:ff::1
 
 
 # enable forwarding
 echo "configuring forwarding"
 echo 0 > /proc/sys/net/ipv4/ip_forward
-echo 0 >  /proc/sys/net/ipv6/conf/all/forwarding
+echo 0 > /proc/sys/net/ipv6/conf/all/forwarding
 
-
-# End of /etc/rc.d/rc.inet1
+# End of /etc/network.d/netup
