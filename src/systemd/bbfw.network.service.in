@@ -1,0 +1,20 @@
+[Unit]
+Description=Bindle Binaries Linux Network
+Documentation=man:ip(8)
+Wants=network.target
+After=network-pre.target dbus.service
+Before=network.target network.service
+BindsTo=dbus.service
+
+[Service]
+Type=oneshot
+ExecStart=@sbindir@/bbnet start
+ExecStop=@sbindir@/bbnet stop
+ExecReload=@sbin@/bbnet restart
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+Also=NetworkManager-dispatcher.service
+Also=NetworkManager-wait-online.service
+
