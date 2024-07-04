@@ -2,6 +2,9 @@
 Bindle Binaries Linux Firewall
 Copyright (c) 2019, 2021, 2022 David M. Syzdek <david@syzdek.net>.
 
+0.23
+  - bbnet: adding initial script
+
 0.22
   - examples: fixing ipsets example
 
