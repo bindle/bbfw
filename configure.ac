@@ -32,11 +32,11 @@
 
 AC_PREREQ([2.65])
 
-AC_COPYRIGHT([Copyright (c) 2019, 2021, 2022 David M. Syzdek <david@syzdek.net>.])
+AC_COPYRIGHT([Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.])
 AC_REVISION(0.1)
-AC_INIT([Bindle Binaries Linux Firewall],[0.22],[david@syzdek.net],[bbfw])
+AC_INIT([Bindle Binaries Linux Firewall],[0.23],[david@syzdek.net],[bbfw])
 
-AC_SUBST([RELEASE_MONTH],["October 2022"])
+AC_SUBST([RELEASE_MONTH],["July 2024"])
 
 # directory locations
 AC_CONFIG_AUX_DIR([build-aux])
