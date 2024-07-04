@@ -120,6 +120,7 @@ EXTRA_DIST				= \
 					  src/openrc/bbfw.firewall.in \
 					  src/openrc/bbfw.network.in \
 					  src/slackware/rc.firewall.in \
+					  src/slackware/rc.inet1.conf.in \
 					  src/systemd/bbfw.firewall.service.in \
 					  src/systemd/bbfw.network.service.in
 CLEANFILES				= \
