@@ -31,6 +31,7 @@
 
 # Load Kernel Modules
 echo "loading modules..."
+/sbin/modprobe ipv6
 /sbin/modprobe 8021q
 /sbin/modprobe bonding max_bonds=0
 
