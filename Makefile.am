@@ -75,7 +75,6 @@ include_HEADERS				=
 lib_LTLIBRARIES				=
 man_MANS				=
 info_TEXINFOS				=
-initd_SCRIPTS				=
 noinst_LTLIBRARIES			=
 noinst_HEADERS				=
 noinst_PROGRAMS				=
@@ -83,9 +82,7 @@ bin_PROGRAMS				=
 bin_SCRIPTS				=
 pkgdata_DATA				=
 sbin_SCRIPTS				=
-slackrcd_SCRIPTS			=
 sysconf_DATA				=
-systemd_DATA				=
 
 
 # lists
@@ -149,6 +146,21 @@ DISTCHECK_CONFIGURE_FLAGS		= \
 					  --enable-strictwarnings \
 					  --enable-network \
 					  --disable-init
+
+
+# initializes directories
+if ENABLE_SLACKWARE
+slackrcd_SCRIPTS			=
+endif
+if ENABLE_OPENRC
+initd_SCRIPTS				=
+endif
+if ENABLE_INITD
+initd_SCRIPTS				=
+endif
+if ENABLE_SYSTEMD
+systemd_DATA				=
+endif
 
 
 # conditional targets for bbfw
