@@ -33,42 +33,216 @@
 #   @BINDLE_BINARIES_BSD_LICENSE_END@
 #
 
+###############
+# ENVIRONMENT #
+###############
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+
+# determine prefix of conf files
+NET_CONF=@sysconfdir@/bbnet.conf
+
+
+NET_LOCAL=@sysconfdir@/network.d/
+NET_QUIET=no
+NET_VERBOSE=no
+NET_NET_UP="net-up"
+NET_NET_DOWN="net-down"
+NET_PRE_HOOK="pre-hook"
+NET_POST_HOOK="post-hook"
+NET_ORDER_PRE="builtin global cluster local"
+NET_ORDER_POST="builtin global cluster local"
+NET_ORDER_UP="builtin global cluster local"
+NET_ORDER_DOWN="builtin global cluster local"
+
+
 ###########
 # LOGGING #
 ###########
 
 # sets script/package information
-PROGRAM_NAME=$(basename ${0})
-PACKAGE_NAME=$(echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g')
-PACKAGE_VERSION=$(echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g')
-PACKAGE_BUGREPORT=$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')
+PROGRAM_NAME="$(basename "${0}")"
+PACKAGE_NAME="$(echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g')"
+PACKAGE_VERSION="$(echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g')"
+PACKAGE_BUGREPORT="$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')"
 
 
 # If possible, log events in /var/log/messages:
-PROG=rc.inet1_local
-if [ -f /var/run/syslogd.pid -a -x /usr/bin/logger ]; then
-  LOGGER="/usr/bin/logger -s -t ${PROG}[$$]"
+if [ -f /var/run/syslogd.pid -a -x logger ]; then
+  LOGGER="logger -s -t ${PROGRAM_NAME}[$$]"
 else # output to stdout/stderr:
-  LOGGER="/usr/bin/sed -e s/^/${PROG}:/g"
+  LOGGER="sed -e s/^/${PROGRAM_NAME}:/g"
 fi
-
-
-print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
-print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
 
 
 #############
 # FUNCTIONS #
 #############
 
+config_option()
+{
+   if test ! -f "${NET_CONF}";then
+      echo "${2}" |tr "${3:-0}" "${4:-0}"
+      return 0
+   fi
+   TMP_COUNT="$(
+      egrep \
+         -i \
+         "^[[:space:]]{0,}${1}[[:space:]]{0,}=" \
+         "${NET_CONF}" \
+         |wc -l \
+         |awk '{print$1}'
+   )"
+   if test ${TMP_COUNT} -gt 1;then
+      return 1
+   fi
+   TMP_STR="$(
+      egrep \
+         -i \
+         "^[[:space:]]{0,}${1}[[:space:]]{0,}=" \
+         "${NET_CONF}" \
+         |sed \
+            -e "s/^[[:space:]]\{0,\}${1}[[:space:]]\{0,\}=[[:space:]]\{0,\}//g" \
+            -e "s/[[:space:]]\{0,\}$//g" \
+            -e "s/^[[:space:]]\{0,\}$//g"
+   )"
+   if test -z "${TMP_STR}";then
+      echo "${2}"
+   else
+      echo "${TMP_STR}"
+   fi |tr "${3:-0}" "${4:-0}"
+}
+
+
+print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
+print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
+
+
+run_hook()
+{
+   TYPE="${1}"
+   FILE="${2}"
+   DESC="${3}"
+
+   if test ! -x "${FILE}";then
+      return 0;
+   fi
+
+   if test ! -z "${DESC}" && test "${NET_QUIET}" != "xno";then
+      echo "${DESC}"
+   fi
+
+   ${FILE} ${TYPE}
+}
+
+
+run_net()
+{
+   FILE="${1}"
+   DESC="${2}"
+
+   if test ! -f "${FILE}";then
+      return 0;
+   fi
+
+   if test ! -z "${DESC}" && test "${NET_QUIET}" != "xno";then
+      echo "${DESC}"
+   fi
+
+   . "${FILE}"
+}
+
+
 # Function to start the network:
 start()
 {
+   # run pre-hooks
+   for LEVEL in ${NET_ORDER_PRE};do
+      case "${LEVEL}" in
+         builtin)
+         ;;
+
+         global)
+            run_hook start "${NET_GLOBAL}/${NET_PRE_HOOK}"  "running global pre-hook start ..."
+         ;;
+
+         cluster)
+            run_hook start "${NET_CLUSTER}/${NET_PRE_HOOK}" "running cluster pre-hook start ..."
+         ;;
+
+         local)
+            run_hook start "${NET_LOCAL}/${NET_PRE_HOOK}"   "running local pre-hook start ..."
+         ;;
+
+         *)
+            echo "Unknown pre-hook order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   # run network
+   for LEVEL in ${NET_ORDER_UP};do
+      case "${LEVEL}" in
+         builtin)
+            start_builtin
+         ;;
+
+         global)
+            run_net "${NET_GLOBAL}/${NET_NET_UP}"  "starting global network ..."
+         ;;
+
+         cluster)
+            run_net "${NET_CLUSTER}/${NET_NET_UP}" "starting cluster network ..."
+         ;;
+
+         local)
+            run_net "${NET_LOCAL}/${NET_NET_UP}"   "starting local network ..."
+         ;;
+
+         *)
+            echo "Unknown network up order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   # run post-hooks
+   for LEVEL in ${NET_ORDER_POST};do
+      case "${LEVEL}" in
+         builtin)
+         ;;
+
+         global)
+            run_hook start "${NET_GLOBAL}/${NET_POST_HOOK}"  "running global post-hook start ..."
+         ;;
+
+         cluster)
+            run_hook start "${NET_CLUSTER}/${NET_POST_HOOK}" "running cluster post-hook start ..."
+         ;;
+
+         local)
+            run_hook start "${NET_LOCAL}/${NET_POST_HOOK}"   "running local post-hook start ..."
+         ;;
+
+         *)
+            echo "Unknown post-hook order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   return 0
+}
+
+
+start_builtin()
+{
+   echo "starting builtin network ..."
+
    # Load Kernel Modules
    echo "loading modules..."
    /sbin/modprobe ipv6    > /dev/null 2>&1
    /sbin/modprobe 8021q   > /dev/null 2>&1
-
 
    # Interface: lo
    print_up "lo"
@@ -76,10 +250,7 @@ start()
    /usr/sbin/ip addr add 127.0.0.1/8 dev lo > /dev/null 2>&1
    /usr/sbin/ip addr add ::1         dev lo > /dev/null 2>&1
 
-   # load local rules
-   if test -f /etc/rc.d/rc.inet1_local_up;then
-      . /etc/rc.d/rc.inet1_local_up
-   fi
+   return 0;
 }
 
 
@@ -97,11 +268,85 @@ list_links()
 # Function to stop the network:
 stop()
 {
-   # load local rules
-   if test -f /etc/rc.d/rc.inet1_local_down;then
-      . /etc/rc.d/rc.inet1_local_down
-   fi
+   # run pre-hooks
+   for LEVEL in ${NET_ORDER_PRE};do
+      case "${LEVEL}" in
+         builtin)
+         ;;
 
+         global)
+            run_hook stop "${NET_GLOBAL}/${NET_PRE_HOOK}"  "running global pre-hook stop ..."
+         ;;
+
+         cluster)
+            run_hook stop "${NET_CLUSTER}/${NET_PRE_HOOK}" "running cluster pre-hook stop ..."
+         ;;
+
+         local)
+            run_hook stop "${NET_LOCAL}/${NET_PRE_HOOK}"   "running local pre-hook stop ..."
+         ;;
+
+         *)
+            echo "Unknown pre-hook order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   # run network
+   for LEVEL in ${NET_ORDER_DOWN};do
+      case "${LEVEL}" in
+         builtin)
+            stop_builtin
+         ;;
+
+         global)
+            run_net "${NET_GLOBAL}/${NET_NET_DOWN}"  "stopping global network ..."
+         ;;
+
+         cluster)
+            run_net "${NET_CLUSTER}/${NET_NET_DOWN}" "stopping cluster network ..."
+         ;;
+
+         local)
+            run_net "${NET_LOCAL}/${NET_NET_DOWN}"   "stopping local network ..."
+         ;;
+
+         *)
+            echo "Unknown network up order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   # run post-hooks
+   for LEVEL in ${NET_ORDER_POST};do
+      case "${LEVEL}" in
+         builtin)
+         ;;
+
+         global)
+            run_hook stop "${NET_GLOBAL}/${NET_POST_HOOK}"  "running global post-hook stop ..."
+         ;;
+
+         cluster)
+            run_hook stop "${NET_CLUSTER}/${NET_POST_HOOK}" "running cluster post-hook stop ..."
+         ;;
+
+         local)
+            run_hook stop "${NET_LOCAL}/${NET_POST_HOOK}"   "running local post-hook stop ..."
+         ;;
+
+         *)
+            echo "Unknown post-hook order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   return 0
+}
+
+
+stop_builtin()
+{
    # disabling forwarding
    echo "disabling forwarding..."
    echo 0 > /proc/sys/net/ipv4/ip_forward
@@ -166,6 +411,14 @@ stop()
    /sbin/modprobe -r 8021q   > /dev/null 2>&1
    /sbin/modprobe -r bonding > /dev/null 2>&1
    /sbin/modprobe -r sit     > /dev/null 2>&1
+
+   return 0;
+}
+
+
+version()
+{
+   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (${PROGRAM_NAME})"
 }
 
 
@@ -173,14 +426,63 @@ stop()
 ### MAIN ###
 ############
 
-echo "${PACKAGE_NAME} ${PACKAGE_VERSION}" | $LOGGER 2>&1
+# sets options from configuration file
+NET_LOCAL="$(      config_option network_dir      "${NET_LOCAL}" )"
+NET_CLUSTER="$(    config_option cluster_dir      "${NET_LOCAL}/cluster.d" )"
+NET_GLOBAL="$(     config_option global_dir       "${NET_LOCAL}/global.d" )"
+NET_QUIET="$(      config_option quiet            "${NET_QUIET}"          A-Z a-z )"
+NET_VERBOSE="$(    config_option verbose          "${NET_VERBOSE}"        A-Z a-z )"
+NET_NET_UP="$(     config_option net_up_script    "${NET_NET_UP}" )"
+NET_NET_DOWN="$(   config_option net_down_script  "${NET_NET_DOWN}" )"
+NET_PRE_HOOK="$(   config_option pre_hook_script  "${NET_PRE_HOOK}" )"
+NET_POST_HOOK="$(  config_option post_hook_script "${NET_POST_HOOK}" )"
+NET_ORDER_PRE="$(  config_option order_prehook    "${NET_ORDER_PRE}"      A-Z a-z )"
+NET_ORDER_POST="$( config_option order_posthook   "${NET_ORDER_POST}"     A-Z a-z )"
+NET_ORDER_UP="$(   config_option order_up         "${NET_ORDER_UP}"       A-Z a-z )"
+NET_ORDER_DOWN="$( config_option order_down       "${NET_ORDER_DOWN}"     A-Z a-z )"
+
+
+echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (${PROGRAM_NAME})" | $LOGGER 2>&1
 case "$1" in
+   -h|--help)
+      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
+      echo "       ${PROGRAM_NAME} [ -h | --help ]"
+      echo "       ${PROGRAM_NAME} [ -v | --version ]"
+      echo ""
+   ;;
+
+   -v|--version)
+      version
+   ;;
+
+   'checkconfig')
+      checkconfig || { echo "configuration error"; exit 1; }
+   ;;
+
    'start') # "start" brings up all configured interfaces:
    start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
    stop 2>&1 | $LOGGER
+   ;;
+
+   'showconfig')
+      version
+      echo "Active Configuration:"
+      echo "   network_dir       ${NET_LOCAL}"
+      echo "   cluster_dir       ${NET_CLUSTER}"
+      echo "   global_dir        ${NET_GLOBAL}"
+      echo "   quiet             ${NET_QUIET}"
+      echo "   verbose           ${NET_VERBOSE}"
+      echo "   net_up_script     ${NET_NET_UP}"
+      echo "   net_down_script   ${NET_NET_DOWN}"
+      echo "   pre_hook_script   ${NET_PRE_HOOK}"
+      echo "   post_hook_script  ${NET_POST_HOOK}"
+      echo "   order_prehook     ${NET_ORDER_PRE}"
+      echo "   order_posthook    ${NET_ORDER_POST}"
+      echo "   order_up          ${NET_ORDER_UP}"
+      echo "   order_down        ${NET_ORDER_DOWN}"
    ;;
 
    'restart') # "restart" restarts the network:
