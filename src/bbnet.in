@@ -45,7 +45,7 @@ export PATH
 NET_CONF=@sysconfdir@/bbnet.conf
 
 
-NET_LOCAL=@sysconfdir@/network.d/
+NET_LOCAL=@sysconfdir@/network.d
 NET_QUIET=no
 NET_VERBOSE=no
 NET_NET_UP="net-up"
@@ -418,7 +418,7 @@ stop_builtin()
 
 version()
 {
-   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (${PROGRAM_NAME})"
+   echo "Bindle Binaries Linux Networking ${PACKAGE_VERSION} (bbfw)"
 }
 
 
@@ -442,7 +442,6 @@ NET_ORDER_UP="$(   config_option order_up         "${NET_ORDER_UP}"       A-Z a-
 NET_ORDER_DOWN="$( config_option order_down       "${NET_ORDER_DOWN}"     A-Z a-z )"
 
 
-echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (${PROGRAM_NAME})" | $LOGGER 2>&1
 case "$1" in
    -h|--help)
       echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
@@ -460,11 +459,13 @@ case "$1" in
    ;;
 
    'start') # "start" brings up all configured interfaces:
-   start 2>&1 | $LOGGER
+      version    | $LOGGER
+      start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
-   stop 2>&1 | $LOGGER
+      version   | $LOGGER
+      stop 2>&1 | $LOGGER
    ;;
 
    'showconfig')
@@ -483,17 +484,20 @@ case "$1" in
       echo "   order_posthook    ${NET_ORDER_POST}"
       echo "   order_up          ${NET_ORDER_UP}"
       echo "   order_down        ${NET_ORDER_DOWN}"
+      echo ""
    ;;
 
    'restart') # "restart" restarts the network:
-   stop 2>&1 | $LOGGER
-   sleep 2
-   start 2>&1 | $LOGGER
-   exit 0
+      version    | $LOGGER
+      stop 2>&1  | $LOGGER
+      sleep 2
+      start 2>&1 | $LOGGER
+      exit 0
    ;;
 
    *) # The default is to bring up all configured interfaces:
-   start 2>&1 | $LOGGER
+      version    | $LOGGER
+      start 2>&1 | $LOGGER
    ;;
 esac
 
