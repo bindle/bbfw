@@ -110,6 +110,7 @@ EXTRA_DIST				= \
 					  src/firewall.d/rules-example \
 					  src/firewall.d/rules4-example \
 					  src/firewall.d/rules6-example \
+					  src/init.d/bbfw.firewall.in \
 					  src/openrc/bbfw.firewall.in \
 					  src/slackware/rc.firewall.in \
 					  src/systemd/bbfw.firewall.service.in
@@ -124,9 +125,9 @@ CLEANFILES				= \
 					  $(sbin_SCRIPTS) \
 					  $(slackrcd_SCRIPTS) \
 					  src/firewall.bbfw \
+					  src/init.d/bbfw.firewall \
 					  src/slackware/rc.firewall \
 					  src/slackware/rc.firewall.new \
-					  src/slackware/bbfw.firewall \
 					  src/systemd/bbfw.firewall.service \
 					  src/openrc/bbfw.firewall \
 					  @PACKAGE_TARNAME@-*.tar.* \
@@ -159,7 +160,7 @@ if ENABLE_OPENRC
 initd_SCRIPTS				+= src/openrc/bbfw.firewall
 endif
 if ENABLE_INITD
-initd_SCRIPTS				+= src/slackware/bbfw.firewall
+initd_SCRIPTS				+= src/init.d/bbfw.firewall
 endif
 if ENABLE_SYSTEMD
 systemd_DATA				+= src/systemd/bbfw.firewall.service
@@ -194,8 +195,8 @@ src/slackware/rc.firewall: Makefile src/slackware/rc.firewall.in
 src/slackware/rc.firewall.new: src/slackware/rc.firewall
 	@$(do_copy_fn)
 
-src/slackware/bbfw.firewall: src/slackware/rc.firewall
-	@$(do_copy_fn)
+src/init.d/bbfw.firewall: Makefile src/init.d/bbfw.firewall.in
+	@$(do_subst_fn)
 
 src/systemd/bbfw.firewall.service: src/systemd/bbfw.firewall.service.in
 	@$(do_subst_fn)
