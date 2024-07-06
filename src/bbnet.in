@@ -427,6 +427,29 @@ target_show()
 }
 
 
+target_showconfig()
+{
+   version
+   echo "Active Configuration:"
+   echo "   configuration     ${NET_CONF}"
+   echo "   network_dir       ${NET_LOCAL}"
+   echo "   cluster_dir       ${NET_CLUSTER}"
+   echo "   global_dir        ${NET_GLOBAL}"
+   echo "   quiet             ${NET_QUIET}"
+   echo "   verbose           ${NET_VERBOSE}"
+   echo "   net_up_script     ${NET_NET_UP}"
+   echo "   net_down_script   ${NET_NET_DOWN}"
+   echo "   pre_hook_script   ${NET_PRE_HOOK}"
+   echo "   post_hook_script  ${NET_POST_HOOK}"
+   echo "   order_prehook     ${NET_ORDER_PRE}"
+   echo "   order_posthook    ${NET_ORDER_POST}"
+   echo "   order_up          ${NET_ORDER_UP}"
+   echo "   order_down        ${NET_ORDER_DOWN}"
+   echo ""
+   return 0;
+}
+
+
 # Function to start the network:
 target_start()
 {
@@ -525,23 +548,7 @@ case "$1" in
    ;;
 
    'showconfig')
-      version
-      echo "Active Configuration:"
-      echo "   configuration     ${NET_CONF}"
-      echo "   network_dir       ${NET_LOCAL}"
-      echo "   cluster_dir       ${NET_CLUSTER}"
-      echo "   global_dir        ${NET_GLOBAL}"
-      echo "   quiet             ${NET_QUIET}"
-      echo "   verbose           ${NET_VERBOSE}"
-      echo "   net_up_script     ${NET_NET_UP}"
-      echo "   net_down_script   ${NET_NET_DOWN}"
-      echo "   pre_hook_script   ${NET_PRE_HOOK}"
-      echo "   post_hook_script  ${NET_POST_HOOK}"
-      echo "   order_prehook     ${NET_ORDER_PRE}"
-      echo "   order_posthook    ${NET_ORDER_POST}"
-      echo "   order_up          ${NET_ORDER_UP}"
-      echo "   order_down        ${NET_ORDER_DOWN}"
-      echo ""
+      target_showconfig;
    ;;
 
    'restart') # "restart" restarts the network:
