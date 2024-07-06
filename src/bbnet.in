@@ -205,7 +205,7 @@ target_show()
 
 
 # Function to start the network:
-start()
+target_start()
 {
    # run pre-hooks
    for LEVEL in ${NET_ORDER_PRE};do
@@ -517,7 +517,7 @@ case "$1" in
 
    'start') # "start" brings up all configured interfaces:
       version    | $LOGGER
-      start 2>&1 | $LOGGER
+      target_start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
@@ -553,7 +553,7 @@ case "$1" in
       version    | $LOGGER
       target_stop 2>&1  | $LOGGER
       sleep 2
-      start 2>&1 | $LOGGER
+      target_start 2>&1 | $LOGGER
       exit 0
    ;;
 
