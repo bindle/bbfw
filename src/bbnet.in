@@ -129,7 +129,7 @@ do_hook()
          global)  do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
          cluster) do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
          local)   do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
-         *)       echo "Unknown pre-hook order \"${LEVEL}\""; return 1; ;;
+         *)       echo "Unknown ${HOOK_TYPE} order \"${NET_LEVEL}\""; return 1; ;;
       esac
    done
 
