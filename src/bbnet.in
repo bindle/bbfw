@@ -537,38 +537,14 @@ NET_ORDER_DOWN="$( config_option order_down       "${NET_ORDER_DOWN}"     A-Z a-
 
 
 case "$1" in
-   -h|--help)
-      target_usage
-   ;;
-
-   -v|--version)
-      target_version
-   ;;
-
-   'dump')
-      target_show
-   ;;
-
-   'start') # "start" brings up all configured interfaces:
-      target_start 2>&1 | $LOGGER
-   ;;
-
-   'stop') # "stop" takes down all configured interfaces:
-      target_stop 2>&1 | $LOGGER
-   ;;
-
-   'show')
-      target_show
-   ;;
-
-   'showconfig')
-      target_showconfig;
-   ;;
-
-   'restart') # "restart" restarts the network:
-      target_restart 2>&1  | $LOGGER
-      exit 0
-   ;;
+   -h|--help)     target_usage         ;;
+   -v|--version)  target_version       ;;
+   'dump')        target_show          ;;
+   'start')       target_start         2>&1 | $LOGGER ;;
+   'stop')        target_stop          2>&1 | $LOGGER ;;
+   'show')        target_show          ;;
+   'showconfig')  target_showconfig;   ;;
+   'restart')     target_restart       2>&1  | $LOGGER ;;
 
    *) # The default is to bring up all configured interfaces:
       target_usage | $LOGGER 1>&2
