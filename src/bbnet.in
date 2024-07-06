@@ -218,6 +218,108 @@ do_start_builtin()
 }
 
 
+do_stop()
+{
+   # run network
+   for LEVEL in ${NET_ORDER_DOWN};do
+      case "${LEVEL}" in
+         builtin)
+            do_stop_builtin
+         ;;
+
+         global)
+            run_net "${NET_GLOBAL}/${NET_NET_DOWN}"  "stopping global network ..."
+         ;;
+
+         cluster)
+            run_net "${NET_CLUSTER}/${NET_NET_DOWN}" "stopping cluster network ..."
+         ;;
+
+         local)
+            run_net "${NET_LOCAL}/${NET_NET_DOWN}"   "stopping local network ..."
+         ;;
+
+         *)
+            echo "Unknown network up order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   return 0;
+}
+
+
+do_stop_builtin()
+{
+   # disabling forwarding
+   echo "disabling forwarding..."
+   echo 0 > /proc/sys/net/ipv4/ip_forward
+   echo 0 >  /proc/sys/net/ipv6/conf/all/forwarding
+
+
+   # Routes
+   echo "removing routes..."
+   /usr/sbin/ip -6 route flush all
+   /usr/sbin/ip -4 route flush all
+
+
+   # delete interfaces
+   for NETTYPE in vlan ipvlan macvlan macvtap dummy veth bond;do
+      for NETDEV in $(list_links ${NETTYPE});do
+         print_down "${NETDEV}"
+         /usr/sbin/ip -4 addr flush dev ${NETDEV}
+         /usr/sbin/ip -6 addr flush dev ${NETDEV}
+         /usr/sbin/ip link set ${NETDEV} down > /dev/null
+         /usr/sbin/ip link del dev ${NETDEV} type ${NETTYPE}
+      done
+   done
+
+
+   # delete vrfs
+   for NETDEV in $(list_links vrf);do
+      print_down "${NETDEV}"
+      TABLE=$(/usr/sbin/ip -d link show ${NETDEV} type vrf |grep 'vrf table' |awk '{print$3}')
+      /usr/sbin/ip link del dev ${NETDEV} type vrf
+      /usr/sbin/ip route flush table ${TABLE}
+   done
+
+
+   # delete tunnels
+   for NETDEV in $(/usr/sbin/ip tunnel show |cut -d: -f1);do
+      print_down "${NETDEV}"
+      /usr/sbin/ip -4 addr flush dev ${NETDEV}
+      /usr/sbin/ip -6 addr flush dev ${NETDEV}
+      /usr/sbin/ip    link set   dev ${NETDEV} down
+      /usr/sbin/ip    tun  del       ${NETDEV}
+   done
+
+
+   # down all network interfaces
+   for NETDEV in $(cut -d: -f1 /proc/net/dev |egrep  'eth' |sort) lo;do
+      print_down "${NETDEV}"
+      /usr/sbin/ip -4 addr flush dev ${NETDEV}
+      /usr/sbin/ip -6 addr flush dev ${NETDEV}
+      /usr/sbin/ip    link set   dev ${NETDEV} down
+   done
+
+
+   # Interface: lo
+   print_up "lo"
+   /usr/sbin/ip link set lo up              > /dev/null 2>&1
+   /usr/sbin/ip addr add 127.0.0.1/8 dev lo > /dev/null 2>&1
+   /usr/sbin/ip addr add ::1         dev lo > /dev/null 2>&1
+
+
+   # removes modules
+   echo "unloading modules..."
+   /sbin/modprobe -r 8021q   > /dev/null 2>&1
+   /sbin/modprobe -r bonding > /dev/null 2>&1
+   /sbin/modprobe -r sit     > /dev/null 2>&1
+
+   return 0;
+}
+
+
 print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
 print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
 
@@ -322,105 +424,12 @@ target_stop()
    do_hook stop pre-hook "${NET_ORDER_PRE}" || return 1;
 
    # run network
-   for LEVEL in ${NET_ORDER_DOWN};do
-      case "${LEVEL}" in
-         builtin)
-            stop_builtin
-         ;;
-
-         global)
-            run_net "${NET_GLOBAL}/${NET_NET_DOWN}"  "stopping global network ..."
-         ;;
-
-         cluster)
-            run_net "${NET_CLUSTER}/${NET_NET_DOWN}" "stopping cluster network ..."
-         ;;
-
-         local)
-            run_net "${NET_LOCAL}/${NET_NET_DOWN}"   "stopping local network ..."
-         ;;
-
-         *)
-            echo "Unknown network up order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_stop || return 1;
 
    # run post-hooks
    do_hook stop post-hook "${NET_ORDER_PRE}" || return 1;
 
    return 0
-}
-
-
-stop_builtin()
-{
-   # disabling forwarding
-   echo "disabling forwarding..."
-   echo 0 > /proc/sys/net/ipv4/ip_forward
-   echo 0 >  /proc/sys/net/ipv6/conf/all/forwarding
-
-
-   # Routes
-   echo "removing routes..."
-   /usr/sbin/ip -6 route flush all
-   /usr/sbin/ip -4 route flush all
-
-
-   # delete interfaces
-   for NETTYPE in vlan ipvlan macvlan macvtap dummy veth bond;do
-      for NETDEV in $(list_links ${NETTYPE});do
-         print_down "${NETDEV}"
-         /usr/sbin/ip -4 addr flush dev ${NETDEV}
-         /usr/sbin/ip -6 addr flush dev ${NETDEV}
-         /usr/sbin/ip link set ${NETDEV} down > /dev/null
-         /usr/sbin/ip link del dev ${NETDEV} type ${NETTYPE}
-      done
-   done
-
-
-   # delete vrfs
-   for NETDEV in $(list_links vrf);do
-      print_down "${NETDEV}"
-      TABLE=$(/usr/sbin/ip -d link show ${NETDEV} type vrf |grep 'vrf table' |awk '{print$3}')
-      /usr/sbin/ip link del dev ${NETDEV} type vrf
-      /usr/sbin/ip route flush table ${TABLE}
-   done
-
-
-   # delete tunnels
-   for NETDEV in $(/usr/sbin/ip tunnel show |cut -d: -f1);do
-      print_down "${NETDEV}"
-      /usr/sbin/ip -4 addr flush dev ${NETDEV}
-      /usr/sbin/ip -6 addr flush dev ${NETDEV}
-      /usr/sbin/ip    link set   dev ${NETDEV} down
-      /usr/sbin/ip    tun  del       ${NETDEV}
-   done
-
-
-   # down all network interfaces
-   for NETDEV in $(cut -d: -f1 /proc/net/dev |egrep  'eth' |sort) lo;do
-      print_down "${NETDEV}"
-      /usr/sbin/ip -4 addr flush dev ${NETDEV}
-      /usr/sbin/ip -6 addr flush dev ${NETDEV}
-      /usr/sbin/ip    link set   dev ${NETDEV} down
-   done
-
-
-   # Interface: lo
-   print_up "lo"
-   /usr/sbin/ip link set lo up              > /dev/null 2>&1
-   /usr/sbin/ip addr add 127.0.0.1/8 dev lo > /dev/null 2>&1
-   /usr/sbin/ip addr add ::1         dev lo > /dev/null 2>&1
-
-
-   # removes modules
-   echo "unloading modules..."
-   /sbin/modprobe -r 8021q   > /dev/null 2>&1
-   /sbin/modprobe -r bonding > /dev/null 2>&1
-   /sbin/modprobe -r sit     > /dev/null 2>&1
-
-   return 0;
 }
 
 
