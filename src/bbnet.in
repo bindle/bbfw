@@ -416,6 +416,16 @@ stop_builtin()
 }
 
 
+usage()
+{
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
+   echo "       ${PROGRAM_NAME} [ -h | --help ]"
+   echo "       ${PROGRAM_NAME} [ -v | --version ]"
+   echo ""
+   return 0;
+}
+
+
 version()
 {
    echo "Bindle Binaries Linux Networking ${PACKAGE_VERSION} (bbfw)"
@@ -444,10 +454,7 @@ NET_ORDER_DOWN="$( config_option order_down       "${NET_ORDER_DOWN}"     A-Z a-
 
 case "$1" in
    -h|--help)
-      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
-      echo "       ${PROGRAM_NAME} [ -h | --help ]"
-      echo "       ${PROGRAM_NAME} [ -v | --version ]"
-      echo ""
+      usage
    ;;
 
    -v|--version)
@@ -456,6 +463,11 @@ case "$1" in
 
    'checkconfig')
       checkconfig || { echo "configuration error"; exit 1; }
+   ;;
+
+   'dump')
+      version   | $LOGGER
+      dump 2>&1 | $LOGGER
    ;;
 
    'start') # "start" brings up all configured interfaces:
@@ -496,8 +508,8 @@ case "$1" in
    ;;
 
    *) # The default is to bring up all configured interfaces:
-      version    | $LOGGER
-      start 2>&1 | $LOGGER
+      usage | $LOGGER 1>&2
+      exit 1;
    ;;
 esac
 

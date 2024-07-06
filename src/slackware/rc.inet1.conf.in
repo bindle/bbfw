@@ -33,5 +33,8 @@ if test ! -f @sbindir@/bbnet;then
    exit 1
 fi
 
-. @sbindir@/bbnet
+BBNET_ACTION="${1:-start}"
+shift 1;
+
+@sbindir@/bbnet ${1:-BBNET_ACTION} "${@}"
 
