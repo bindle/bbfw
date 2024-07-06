@@ -116,26 +116,60 @@ config_option()
 }
 
 
-print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
-print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
-
-
-run_hook()
+do_hook()
 {
-   TYPE="${1}"
-   FILE="${2}"
-   DESC="${3}"
+   HOOK_TARGET="${1}"
+   HOOK_TYPE="${2}"
+   HOOK_ORDER="${3}"
 
-   if test ! -x "${FILE}";then
+   # run pre-hooks
+   for HOOK_LEVEL in ${HOOK_ORDER};do
+      case "${HOOK_LEVEL}" in
+         builtin) ;;
+         global)  do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
+         cluster) do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
+         local)   do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
+         *)       echo "Unknown pre-hook order \"${LEVEL}\""; return 1; ;;
+      esac
+   done
+
+   return 0;
+}
+
+
+do_hook_run()
+{
+   HOOK_TARGET="${1}"
+   HOOK_TYPE="${2}"
+   HOOK_LEVEL="${3}"
+
+   case "${HOOK_LEVEL}" in
+      'global')  HOOK_LEVEL_DIR="${NET_GLOBAL}";;
+      'cluster') HOOK_LEVEL_DIR="${NET_CLUSTER}";;
+      'local')   HOOK_LEVEL_DIR="${NET_LOCAL}";;
+      *) return 0;;
+   esac
+
+   case "${HOOK_TYPE}" in
+      'pre-hook')  HOOK_SCRIPT="${HOOK_LEVEL_DIR}/${NET_PRE_HOOK}";;
+      'post-hook') HOOK_SCRIPT="${HOOK_LEVEL_DIR}/${NET_POST_HOOK}";;
+      *) return 0;;
+   esac
+
+   if test ! -x "${HOOK_SCRIPT}";then
       return 0;
    fi
 
-   if test ! -z "${DESC}" && test "${NET_QUIET}" != "xno";then
-      echo "${DESC}"
+   if test "${NET_QUIET}" != "xyes";then
+      echo "running ${HOOK_LEVEL} ${HOOK_TYPE} ${HOOK_TARGET} ..."
    fi
 
-   ${FILE} ${TYPE}
+   ${HOOK_SCRIPT} ${HOOK_TARGET}; return $?
 }
+
+
+print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
+print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
 
 
 run_net()
@@ -208,28 +242,7 @@ target_show()
 target_start()
 {
    # run pre-hooks
-   for LEVEL in ${NET_ORDER_PRE};do
-      case "${LEVEL}" in
-         builtin)
-         ;;
-
-         global)
-            run_hook start "${NET_GLOBAL}/${NET_PRE_HOOK}"  "running global pre-hook start ..."
-         ;;
-
-         cluster)
-            run_hook start "${NET_CLUSTER}/${NET_PRE_HOOK}" "running cluster pre-hook start ..."
-         ;;
-
-         local)
-            run_hook start "${NET_LOCAL}/${NET_PRE_HOOK}"   "running local pre-hook start ..."
-         ;;
-
-         *)
-            echo "Unknown pre-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_hook start pre-hook "${NET_ORDER_PRE}" || return 1;
 
    # run network
    for LEVEL in ${NET_ORDER_UP};do
@@ -257,28 +270,7 @@ target_start()
    done
 
    # run post-hooks
-   for LEVEL in ${NET_ORDER_POST};do
-      case "${LEVEL}" in
-         builtin)
-         ;;
-
-         global)
-            run_hook start "${NET_GLOBAL}/${NET_POST_HOOK}"  "running global post-hook start ..."
-         ;;
-
-         cluster)
-            run_hook start "${NET_CLUSTER}/${NET_POST_HOOK}" "running cluster post-hook start ..."
-         ;;
-
-         local)
-            run_hook start "${NET_LOCAL}/${NET_POST_HOOK}"   "running local post-hook start ..."
-         ;;
-
-         *)
-            echo "Unknown post-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_hook start post-hook "${NET_ORDER_PRE}" || return 1;
 
    return 0
 }
@@ -318,28 +310,7 @@ list_links()
 target_stop()
 {
    # run pre-hooks
-   for LEVEL in ${NET_ORDER_PRE};do
-      case "${LEVEL}" in
-         builtin)
-         ;;
-
-         global)
-            run_hook stop "${NET_GLOBAL}/${NET_PRE_HOOK}"  "running global pre-hook stop ..."
-         ;;
-
-         cluster)
-            run_hook stop "${NET_CLUSTER}/${NET_PRE_HOOK}" "running cluster pre-hook stop ..."
-         ;;
-
-         local)
-            run_hook stop "${NET_LOCAL}/${NET_PRE_HOOK}"   "running local pre-hook stop ..."
-         ;;
-
-         *)
-            echo "Unknown pre-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_hook stop pre-hook "${NET_ORDER_PRE}" || return 1;
 
    # run network
    for LEVEL in ${NET_ORDER_DOWN};do
@@ -367,28 +338,7 @@ target_stop()
    done
 
    # run post-hooks
-   for LEVEL in ${NET_ORDER_POST};do
-      case "${LEVEL}" in
-         builtin)
-         ;;
-
-         global)
-            run_hook stop "${NET_GLOBAL}/${NET_POST_HOOK}"  "running global post-hook stop ..."
-         ;;
-
-         cluster)
-            run_hook stop "${NET_CLUSTER}/${NET_POST_HOOK}" "running cluster post-hook stop ..."
-         ;;
-
-         local)
-            run_hook stop "${NET_LOCAL}/${NET_POST_HOOK}"   "running local post-hook stop ..."
-         ;;
-
-         *)
-            echo "Unknown post-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_hook stop post-hook "${NET_ORDER_PRE}" || return 1;
 
    return 0
 }
