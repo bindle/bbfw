@@ -155,7 +155,7 @@ run_net()
 }
 
 
-show()
+target_show()
 {
    echo "addresses:";
    {
@@ -512,7 +512,7 @@ case "$1" in
 
    'dump')
       version
-      show
+      target_show
    ;;
 
    'start') # "start" brings up all configured interfaces:
@@ -527,7 +527,7 @@ case "$1" in
 
    'show')
       version
-      show
+      target_show
    ;;
 
    'showconfig')
