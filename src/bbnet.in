@@ -168,6 +168,56 @@ do_hook_run()
 }
 
 
+do_start()
+{
+   # run network
+   for LEVEL in ${NET_ORDER_UP};do
+      case "${LEVEL}" in
+         builtin)
+            do_start_builtin
+         ;;
+
+         global)
+            run_net "${NET_GLOBAL}/${NET_NET_UP}"  "starting global network ..."
+         ;;
+
+         cluster)
+            run_net "${NET_CLUSTER}/${NET_NET_UP}" "starting cluster network ..."
+         ;;
+
+         local)
+            run_net "${NET_LOCAL}/${NET_NET_UP}"   "starting local network ..."
+         ;;
+
+         *)
+            echo "Unknown network up order \"${LEVEL}\""
+         ;;
+      esac
+   done
+
+   return 0;
+}
+
+
+do_start_builtin()
+{
+   echo "starting builtin network ..."
+
+   # Load Kernel Modules
+   echo "loading modules..."
+   /sbin/modprobe ipv6    > /dev/null 2>&1
+   /sbin/modprobe 8021q   > /dev/null 2>&1
+
+   # Interface: lo
+   print_up "lo"
+   /usr/sbin/ip link set lo up              > /dev/null 2>&1
+   /usr/sbin/ip addr add 127.0.0.1/8 dev lo > /dev/null 2>&1
+   /usr/sbin/ip addr add ::1         dev lo > /dev/null 2>&1
+
+   return 0;
+}
+
+
 print_down() { /usr/bin/printf "setting %-13s%s down\n" "${1}"; };
 print_up()   { /usr/bin/printf "setting %-13s%s up\n"   "${1}"; };
 
@@ -245,53 +295,12 @@ target_start()
    do_hook start pre-hook "${NET_ORDER_PRE}" || return 1;
 
    # run network
-   for LEVEL in ${NET_ORDER_UP};do
-      case "${LEVEL}" in
-         builtin)
-            start_builtin
-         ;;
-
-         global)
-            run_net "${NET_GLOBAL}/${NET_NET_UP}"  "starting global network ..."
-         ;;
-
-         cluster)
-            run_net "${NET_CLUSTER}/${NET_NET_UP}" "starting cluster network ..."
-         ;;
-
-         local)
-            run_net "${NET_LOCAL}/${NET_NET_UP}"   "starting local network ..."
-         ;;
-
-         *)
-            echo "Unknown network up order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_start || return 1;
 
    # run post-hooks
    do_hook start post-hook "${NET_ORDER_PRE}" || return 1;
 
    return 0
-}
-
-
-start_builtin()
-{
-   echo "starting builtin network ..."
-
-   # Load Kernel Modules
-   echo "loading modules..."
-   /sbin/modprobe ipv6    > /dev/null 2>&1
-   /sbin/modprobe 8021q   > /dev/null 2>&1
-
-   # Interface: lo
-   print_up "lo"
-   /usr/sbin/ip link set lo up              > /dev/null 2>&1
-   /usr/sbin/ip addr add 127.0.0.1/8 dev lo > /dev/null 2>&1
-   /usr/sbin/ip addr add ::1         dev lo > /dev/null 2>&1
-
-   return 0;
 }
 
 
