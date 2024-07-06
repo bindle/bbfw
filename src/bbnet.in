@@ -168,6 +168,16 @@ do_hook_run()
 }
 
 
+do_restart()
+{
+   do_stop || return 1;
+   sleep 2;
+   do_start || return 1;
+
+   return 0:
+}
+
+
 do_start()
 {
    # run network
@@ -352,6 +362,22 @@ run_net()
 }
 
 
+# Function to restart the network:
+target_restart()
+{
+   # run pre-hooks
+   do_hook restart pre-hook "${NET_ORDER_PRE}" || return 1;
+
+   # run network
+   do_restart || return 1;
+
+   # run post-hooks
+   do_hook restart post-hook "${NET_ORDER_POST}" || return 1;
+
+   return 0
+}
+
+
 target_show()
 {
    echo "addresses:";
@@ -411,7 +437,7 @@ target_start()
    do_start || return 1;
 
    # run post-hooks
-   do_hook start post-hook "${NET_ORDER_PRE}" || return 1;
+   do_hook start post-hook "${NET_ORDER_POST}" || return 1;
 
    return 0
 }
@@ -427,7 +453,7 @@ target_stop()
    do_stop || return 1;
 
    # run post-hooks
-   do_hook stop post-hook "${NET_ORDER_PRE}" || return 1;
+   do_hook stop post-hook "${NET_ORDER_POST}" || return 1;
 
    return 0
 }
@@ -520,9 +546,7 @@ case "$1" in
 
    'restart') # "restart" restarts the network:
       version    | $LOGGER
-      target_stop 2>&1  | $LOGGER
-      sleep 2
-      target_start 2>&1 | $LOGGER
+      target_restop 2>&1  | $LOGGER
       exit 0
    ;;
 
