@@ -482,7 +482,7 @@ target_stop()
 }
 
 
-usage()
+target_usage()
 {
    echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | showconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
@@ -520,7 +520,7 @@ NET_ORDER_DOWN="$( config_option order_down       "${NET_ORDER_DOWN}"     A-Z a-
 
 case "$1" in
    -h|--help)
-      usage
+      target_usage
    ;;
 
    -v|--version)
@@ -558,7 +558,7 @@ case "$1" in
    ;;
 
    *) # The default is to bring up all configured interfaces:
-      usage | $LOGGER 1>&2
+      target_usage | $LOGGER 1>&2
       exit 1;
    ;;
 esac
