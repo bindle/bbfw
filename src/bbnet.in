@@ -265,7 +265,7 @@ do_stop_builtin()
 
    # delete interfaces
    for NETTYPE in vlan ipvlan macvlan macvtap dummy veth bond;do
-      for NETDEV in $(list_links ${NETTYPE});do
+      for NETDEV in $(do_stop_builtin_list ${NETTYPE});do
          print_down "${NETDEV}"
          /usr/sbin/ip -4 addr flush dev ${NETDEV}
          /usr/sbin/ip -6 addr flush dev ${NETDEV}
@@ -276,7 +276,7 @@ do_stop_builtin()
 
 
    # delete vrfs
-   for NETDEV in $(list_links vrf);do
+   for NETDEV in $(do_stop_builtin_list vrf);do
       print_down "${NETDEV}"
       TABLE=$(/usr/sbin/ip -d link show ${NETDEV} type vrf |grep 'vrf table' |awk '{print$3}')
       /usr/sbin/ip link del dev ${NETDEV} type vrf
@@ -317,6 +317,17 @@ do_stop_builtin()
    /sbin/modprobe -r sit     > /dev/null 2>&1
 
    return 0;
+}
+
+
+do_stop_builtin_list()
+{
+   test -z "${1}" && return 0
+   TYPE="${1}"
+   /usr/sbin/ip -br link show type ${TYPE} \
+      |awk '{print$1}' \
+      |cut -d@ -f1 \
+      |sort -n
 }
 
 
@@ -403,17 +414,6 @@ target_start()
    do_hook start post-hook "${NET_ORDER_PRE}" || return 1;
 
    return 0
-}
-
-
-list_links()
-{
-   test -z "${1}" && return 0
-   TYPE="${1}"
-   /usr/sbin/ip -br link show type ${TYPE} \
-      |awk '{print$1}' \
-      |cut -d@ -f1 \
-      |sort -n
 }
 
 
