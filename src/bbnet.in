@@ -533,6 +533,7 @@ case "$1" in
    'showconfig')
       version
       echo "Active Configuration:"
+      echo "   configuration     ${NET_CONF}"
       echo "   network_dir       ${NET_LOCAL}"
       echo "   cluster_dir       ${NET_CLUSTER}"
       echo "   global_dir        ${NET_GLOBAL}"

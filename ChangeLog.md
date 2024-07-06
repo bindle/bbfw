@@ -6,6 +6,7 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
   - bbnet: changing default behavior to display usage
   - bbnet: removing broken action 'checkconfig'
   - bbnet: adding 'show' action
+  - bbnet: updating output of 'showconfig'
 
 0.24
   - bbnet: fixing systemd unit file
