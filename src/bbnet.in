@@ -155,6 +155,55 @@ run_net()
 }
 
 
+show()
+{
+   echo "addresses:";
+   {
+      ip -br addr
+      if test $? -ne 0; then
+         ip addr
+      fi
+      if test $? -ne 0; then
+         ifconfig -a |egrep '^[^[:space:]]|^[[:space:]]{1,}inet6{0,1}[[:space:]]'
+      fi
+   } 2> /dev/null | sed -e 's/^/   /g'
+   echo ""
+
+   echo "IPv4 routes:"
+   {
+   ip -4 route
+   if test $? -ne 0; then
+      netstat -rn -f inet
+   fi
+   } 2> /dev/null | sed -e 's/^/   /g'
+   echo ""
+
+   echo "IPv6 routes:"
+   {
+      ip -6 route
+      if test $? -ne 0; then
+         netstat -rn -f inet6
+      fi
+   } 2> /dev/null | sed -e 's/^/   /g'
+   echo ""
+
+   echo "forwarding:"
+   case "x$(cat /proc/sys/net/ipv4/ip_forward 2> /dev/null)" in
+      x0) echo "   IPv4 Forwarding: enabled";;
+      x1) echo "   IPv4 Forwarding: disabled";;
+      *)  echo "   IPv4 Forwarding: unknown";;
+   esac
+   case "x$(cat /proc/sys/net/ipv6/conf/all/forwarding 2> /dev/null)" in
+      x0) echo "   IPv6 Forwarding: enabled";;
+      x1) echo "   IPv6 Forwarding: disabled";;
+      *)  echo "   IPv6 Forwarding: unknown";;
+   esac
+   echo ""
+
+   return 0;
+}
+
+
 # Function to start the network:
 start()
 {
@@ -462,8 +511,8 @@ case "$1" in
    ;;
 
    'dump')
-      version   | $LOGGER
-      dump 2>&1 | $LOGGER
+      version
+      show
    ;;
 
    'start') # "start" brings up all configured interfaces:
@@ -474,6 +523,11 @@ case "$1" in
    'stop') # "stop" takes down all configured interfaces:
       version   | $LOGGER
       stop 2>&1 | $LOGGER
+   ;;
+
+   'show')
+      version
+      show
    ;;
 
    'showconfig')

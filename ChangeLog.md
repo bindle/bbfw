@@ -4,7 +4,8 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
 0.25
   - bbnet: changing default behavior to display usage
-  - bbnet: removing broken action checkconfig
+  - bbnet: removing broken action 'checkconfig'
+  - bbnet: adding 'show' action
 
 0.24
   - bbnet: fixing systemd unit file
