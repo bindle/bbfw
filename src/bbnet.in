@@ -418,7 +418,7 @@ stop_builtin()
 
 usage()
 {
-   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | showconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
    echo "       ${PROGRAM_NAME} [ -v | --version ]"
    echo ""
@@ -459,10 +459,6 @@ case "$1" in
 
    -v|--version)
       version
-   ;;
-
-   'checkconfig')
-      checkconfig || { echo "configuration error"; exit 1; }
    ;;
 
    'dump')
