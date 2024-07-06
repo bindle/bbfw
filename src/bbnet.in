@@ -174,7 +174,7 @@ do_restart()
    sleep 2;
    do_start || return 1;
 
-   return 0:
+   return 0;
 }
 
 
@@ -553,7 +553,7 @@ case "$1" in
 
    'restart') # "restart" restarts the network:
       version    | $LOGGER
-      target_restop 2>&1  | $LOGGER
+      target_restart 2>&1  | $LOGGER
       exit 0
    ;;
 
