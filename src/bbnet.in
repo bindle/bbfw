@@ -81,6 +81,100 @@ fi
 # FUNCTIONS #
 #############
 
+config_check()
+{
+   if test ! -f "${NET_CONF}";then
+      return 0;
+   fi
+
+   CONFIG_OK=yes
+
+   {
+      # check for duplicate options
+      OPTS=""
+      OPTS="${OPTS} cluster_dir"
+      OPTS="${OPTS} global_dir"
+      OPTS="${OPTS} net_down_script"
+      OPTS="${OPTS} net_up_script"
+      OPTS="${OPTS} network_dir"
+      OPTS="${OPTS} order_down"
+      OPTS="${OPTS} order_posthook"
+      OPTS="${OPTS} order_prehook"
+      OPTS="${OPTS} order_sync"
+      OPTS="${OPTS} order_up"
+      OPTS="${OPTS} post_hook_script"
+      OPTS="${OPTS} pre_hook_script"
+      OPTS="${OPTS} quiet"
+      OPTS="${OPTS} sync_methods"
+      OPTS="${OPTS} sync_restarts"
+      OPTS="${OPTS} sync_script"
+      OPTS="${OPTS} verbose"
+      for OPT in ${OPTS}; do
+         config_option "${OPT}" > /dev/null
+         if test ${?} -ne 0;then
+         echo "config error: duplicate config entry for '${OPT}'"
+            CONFIG_OK=no
+         fi
+      done
+
+      # check boolean options
+      OPTS=""
+      OPTS="${OPTS} quiet"
+      OPTS="${OPTS} sync_restarts"
+      OPTS="${OPTS} verbose"
+      for OPT in ${OPTS}; do
+         config_option "${OPT}" |egrep -i '^yes$|^no$|^$' > /dev/null
+         if test ${?} -ne 0;then
+            echo "config error: invalid config value for '${OPT}'"
+            CONFIG_OK=no
+         fi
+      done
+
+      # checks for network directory
+      if test ! -d "${NET_LOCAL}";then
+         echo "error: network directory not found or does not exist"
+         CONFIG_OK=no
+      fi
+
+      # check order options
+      OPTS=""
+      OPTS="${OPTS} order_down"
+      OPTS="${OPTS} order_posthook"
+      OPTS="${OPTS} order_prehook"
+      OPTS="${OPTS} order_up"
+      OPTS="${OPTS} order_sync"
+      for OPT in ${OPTS}; do
+         TMP_BUILTIN=0
+         TMP_GLOBAL=0
+         TMP_CLUSTER=0
+         TMP_LOCAL=0
+         for VAL in $(config_option ${OPT} "builtin" A-Z a-z); do
+            case "${VAL}" in
+               builtin) TMP_BUILTIN=$((${TMP_BUILTIN}+1)) ;;
+               global)  TMP_GLOBAL=$((${TMP_GLOBAL}+1)) ;;
+               cluster) TMP_CLUSTER=$((${TMP_CLUSTER}+1)) ;;
+               local)   TMP_LOCAL=$((${TMP_LOCAL}+1)) ;;
+               *)       echo "config error: unknown value '${VAL}' for order in '${OPT}'"
+                        CONFIG_OK=no
+                        ;;
+            esac
+         done
+      done
+
+   } 1>&2
+
+   if test "x${CONFIG_OK}" == "xno";then
+      return 1
+   fi
+
+   if test "x${NET_QUIET}" != "xyes";then
+      echo "config ok"
+   fi
+
+   return 0
+}
+
+
 config_option()
 {
    if test ! -f "${NET_CONF}";then
@@ -474,7 +568,6 @@ target_show()
 target_showconfig()
 {
    do_version
-   config_verify
    echo "Active Configuration:"
    echo "   configuration     ${NET_CONF}"
    echo "   network_dir       ${NET_LOCAL}"
@@ -491,6 +584,13 @@ target_showconfig()
    echo "   order_up          ${NET_ORDER_UP}"
    echo "   order_down        ${NET_ORDER_DOWN}"
    echo ""
+   NET_QUIET=yes config_check > /dev/null 2> /dev/null
+   if test $? -ne 0; then
+      echo "Configuration Errors:"
+      config_check 2>&1 |sed -e 's/^/   /g'
+      echo ""
+      return 1;
+   fi
    return 0;
 }
 
@@ -583,7 +683,7 @@ case "$1" in
    'start')       target_start         2>&1 | $LOGGER ;;
    'stop')        target_stop          2>&1 | $LOGGER ;;
    'show')        target_show          ;;
-   'showconfig')  target_showconfig;   ;;
+   'showconfig')  target_showconfig    || exit 1 ;;
    'restart')     target_restart       2>&1  | $LOGGER ;;
 
    *) # The default is to bring up all configured interfaces:
