@@ -521,19 +521,19 @@ target_version()
 ############
 
 # sets options from configuration file
-NET_LOCAL="$(      config_option network_dir      "${NET_LOCAL}" )"
-NET_CLUSTER="$(    config_option cluster_dir      "${NET_LOCAL}/cluster.d" )"
-NET_GLOBAL="$(     config_option global_dir       "${NET_LOCAL}/global.d" )"
-NET_QUIET="$(      config_option quiet            "${NET_QUIET}"          A-Z a-z )"
-NET_VERBOSE="$(    config_option verbose          "${NET_VERBOSE}"        A-Z a-z )"
-NET_NET_UP="$(     config_option net_up_script    "${NET_NET_UP}" )"
-NET_NET_DOWN="$(   config_option net_down_script  "${NET_NET_DOWN}" )"
-NET_PRE_HOOK="$(   config_option pre_hook_script  "${NET_PRE_HOOK}" )"
-NET_POST_HOOK="$(  config_option post_hook_script "${NET_POST_HOOK}" )"
-NET_ORDER_PRE="$(  config_option order_prehook    "${NET_ORDER_PRE}"      A-Z a-z )"
-NET_ORDER_POST="$( config_option order_posthook   "${NET_ORDER_POST}"     A-Z a-z )"
-NET_ORDER_UP="$(   config_option order_up         "${NET_ORDER_UP}"       A-Z a-z )"
-NET_ORDER_DOWN="$( config_option order_down       "${NET_ORDER_DOWN}"     A-Z a-z )"
+NET_LOCAL="$(          config_option network_dir       "${NET_LOCAL}" )"
+NET_CLUSTER="$(        config_option cluster_dir       "${NET_LOCAL}/cluster.d" )"
+NET_GLOBAL="$(         config_option global_dir        "${NET_LOCAL}/global.d" )"
+NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
+NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
+NET_NET_UP="$(         config_option net_up_script     "${NET_NET_UP}" )"
+NET_NET_DOWN="$(       config_option net_down_script   "${NET_NET_DOWN}" )"
+NET_PRE_HOOK="$(       config_option pre_hook_script   "${NET_PRE_HOOK}" )"
+NET_POST_HOOK="$(      config_option post_hook_script  "${NET_POST_HOOK}" )"
+NET_ORDER_PRE="$(      config_option order_prehook     "${NET_ORDER_PRE}"       A-Z a-z )"
+NET_ORDER_POST="$(     config_option order_posthook    "${NET_ORDER_POST}"      A-Z a-z )"
+NET_ORDER_UP="$(       config_option order_up          "${NET_ORDER_UP}"        A-Z a-z )"
+NET_ORDER_DOWN="$(     config_option order_down        "${NET_ORDER_DOWN}"      A-Z a-z )"
 
 
 case "$1" in
