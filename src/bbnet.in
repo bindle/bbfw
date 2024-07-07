@@ -116,6 +116,36 @@ config_option()
 }
 
 
+config_verify()
+{
+   # quiet option
+   if test "x${NET_QUIET}" == "xno";then
+      NET_QUIET=no
+   elif test "x${NET_QUIET}" != "xyes";then
+      echo "invalid value for option 'quiet'" |$LOGGER
+      return 1
+   fi
+
+   # verbose option
+   if test "x${NET_VERBOSE}" == "xno";then
+      NET_VERBOSE=no
+   elif test "x${NET_VERBOSE}" != "xyes";then
+      echo "invalid value for option 'verbose'" |$LOGGER
+      return 1
+   fi
+
+   # sync restarts option
+   if test "x${NET_SYNC_RESTARTS}" == "xno";then
+      NET_SYNC_RESTARTS=no
+   elif test "x${NET_SYNC_RESTARTS}" != "xyes";then
+      echo "invalid value for 'sync_restarts'" |$LOGGER
+      return 1
+   fi
+
+   return 0
+}
+
+
 do_hook()
 {
    HOOK_TARGET="${1}"
@@ -374,6 +404,9 @@ target_restart()
    # show version
    do_version
 
+   # minimal config check
+   config_verify || return 1;
+
    # run pre-hooks
    do_hook restart pre-hook "${NET_ORDER_PRE}" || return 1;
 
@@ -441,6 +474,7 @@ target_show()
 target_showconfig()
 {
    do_version
+   config_verify
    echo "Active Configuration:"
    echo "   configuration     ${NET_CONF}"
    echo "   network_dir       ${NET_LOCAL}"
@@ -467,6 +501,9 @@ target_start()
    # show version
    do_version
 
+   # minimal config check
+   config_verify || return 1;
+
    # run pre-hooks
    do_hook start pre-hook "${NET_ORDER_PRE}" || return 1;
 
@@ -485,6 +522,9 @@ target_stop()
 {
    # show version
    do_version
+
+   # minimal config check
+   config_verify || return 1;
 
    # run pre-hooks
    do_hook stop pre-hook "${NET_ORDER_PRE}" || return 1;
