@@ -167,10 +167,6 @@ config_check()
       return 1
    fi
 
-   if test "x${NET_QUIET}" != "xyes";then
-      echo "config ok"
-   fi
-
    return 0
 }
 
@@ -492,6 +488,17 @@ run_net()
 }
 
 
+target_checkconfig()
+{
+   config_check
+   if test $? -eq 0; then
+      echo "config ok"
+   fi
+
+   return 0;
+}
+
+
 # Function to restart the network:
 target_restart()
 {
@@ -584,7 +591,7 @@ target_showconfig()
    echo "   order_up          ${NET_ORDER_UP}"
    echo "   order_down        ${NET_ORDER_DOWN}"
    echo ""
-   NET_QUIET=yes config_check > /dev/null 2> /dev/null
+   config_check > /dev/null 2> /dev/null
    if test $? -ne 0; then
       echo "Configuration Errors:"
       config_check 2>&1 |sed -e 's/^/   /g'
@@ -641,7 +648,7 @@ target_stop()
 
 target_usage()
 {
-   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | showconfig ]"
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | showconfig | checkconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
    echo "       ${PROGRAM_NAME} [ -v | --version ]"
    echo ""
@@ -679,6 +686,7 @@ NET_ORDER_DOWN="$(     config_option order_down        "${NET_ORDER_DOWN}"      
 case "$1" in
    -h|--help)     target_usage         ;;
    -v|--version)  target_version       ;;
+   'checkconfig') target_checkconfig   || exit 1 ;;
    'dump')        target_show          ;;
    'start')       target_start         2>&1 | $LOGGER ;;
    'stop')        target_stop          2>&1 | $LOGGER ;;
