@@ -648,7 +648,7 @@ target_stop()
 
 target_usage()
 {
-   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | showconfig | checkconfig ]"
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | show | showconfig | checkconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
    echo "       ${PROGRAM_NAME} [ -v | --version ]"
    echo ""
@@ -687,7 +687,6 @@ case "$1" in
    -h|--help)     target_usage         ;;
    -v|--version)  target_version       ;;
    'checkconfig') target_checkconfig   || exit 1 ;;
-   'dump')        target_show          ;;
    'start')       target_start         2>&1 | $LOGGER ;;
    'stop')        target_stop          2>&1 | $LOGGER ;;
    'show')        target_show          ;;
