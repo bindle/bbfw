@@ -7,6 +7,7 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
   - bbnet: removing broken action 'checkconfig'
   - bbnet: adding 'show' action
   - bbnet: updating output of 'showconfig'
+  - bbnet: refactoring pre and post hook processing
 
 0.24
   - bbnet: fixing systemd unit file
