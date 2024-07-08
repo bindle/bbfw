@@ -100,14 +100,10 @@ config_check()
       OPTS="${OPTS} order_down"
       OPTS="${OPTS} order_posthook"
       OPTS="${OPTS} order_prehook"
-      OPTS="${OPTS} order_sync"
       OPTS="${OPTS} order_up"
       OPTS="${OPTS} post_hook_script"
       OPTS="${OPTS} pre_hook_script"
       OPTS="${OPTS} quiet"
-      OPTS="${OPTS} sync_methods"
-      OPTS="${OPTS} sync_restarts"
-      OPTS="${OPTS} sync_script"
       OPTS="${OPTS} verbose"
       for OPT in ${OPTS}; do
          config_option "${OPT}" > /dev/null
@@ -120,7 +116,6 @@ config_check()
       # check boolean options
       OPTS=""
       OPTS="${OPTS} quiet"
-      OPTS="${OPTS} sync_restarts"
       OPTS="${OPTS} verbose"
       for OPT in ${OPTS}; do
          config_option "${OPT}" |egrep -i '^yes$|^no$|^$' > /dev/null
@@ -142,7 +137,6 @@ config_check()
       OPTS="${OPTS} order_posthook"
       OPTS="${OPTS} order_prehook"
       OPTS="${OPTS} order_up"
-      OPTS="${OPTS} order_sync"
       for OPT in ${OPTS}; do
          TMP_BUILTIN=0
          TMP_GLOBAL=0
@@ -221,14 +215,6 @@ config_verify()
       NET_VERBOSE=no
    elif test "x${NET_VERBOSE}" != "xyes";then
       echo "invalid value for option 'verbose'" |$LOGGER
-      return 1
-   fi
-
-   # sync restarts option
-   if test "x${NET_SYNC_RESTARTS}" == "xno";then
-      NET_SYNC_RESTARTS=no
-   elif test "x${NET_SYNC_RESTARTS}" != "xyes";then
-      echo "invalid value for 'sync_restarts'" |$LOGGER
       return 1
    fi
 
