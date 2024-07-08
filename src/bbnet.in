@@ -153,6 +153,22 @@ config_check()
                         ;;
             esac
          done
+         if test ${TMP_BUILTIN} -gt 1;then
+            echo "config error: duplicate level 'builtin' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_GLOBAL} -gt 1;then
+            echo "config error: duplicate level 'global' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_CLUSTER} -gt 1;then
+            echo "config error: duplicate level 'cluster' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_LOCAL} -gt 1;then
+            echo "config error: duplicate level 'local' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
       done
 
    } 1>&2
