@@ -52,10 +52,10 @@ NET_NET_UP="net-up"
 NET_NET_DOWN="net-down"
 NET_PRE_HOOK="pre-hook"
 NET_POST_HOOK="post-hook"
-NET_ORDER_PRE="builtin global cluster local"
-NET_ORDER_POST="builtin global cluster local"
-NET_ORDER_UP="builtin global cluster local"
-NET_ORDER_DOWN="builtin global cluster local"
+NET_ORDER_PRE="builtin global apps cluster local"
+NET_ORDER_POST="builtin global apps cluster local"
+NET_ORDER_UP="builtin global apps cluster local"
+NET_ORDER_DOWN="local cluster apps global builtin"
 
 
 ###########
@@ -80,6 +80,53 @@ fi
 #############
 # FUNCTIONS #
 #############
+
+app_findfile()
+{
+   if test ! -d "${NET_APPS}"; then
+      return 0;
+   fi
+   find -L \
+      ${NET_APPS}/ \
+      -mindepth 2 \
+      -maxdepth 2 \
+      -type f \
+      -name "${1}" \
+      2> /dev/null;
+   return 0;
+}
+
+
+app_list()
+{
+   for APPDIR in $(app_listdir); do
+      basename "${APPDIR}";
+   done
+   return;
+}
+
+
+app_listdir()
+{
+   if test ! -d "${NET_APPS}"; then
+      return 0;
+   fi
+   find -L \
+      ${NET_APPS}/ \
+      -type d \
+      -mindepth 1 \
+      -maxdepth 1 \
+      2> /dev/null \
+      |sed -e 's:/\{1,\}$::g';
+   return 0;
+}
+
+
+app_name()
+{
+   basename "$(dirname "${1}")"
+}
+
 
 config_check()
 {
@@ -138,12 +185,14 @@ config_check()
       OPTS="${OPTS} order_prehook"
       OPTS="${OPTS} order_up"
       for OPT in ${OPTS}; do
+         TMP_APPS=0
          TMP_BUILTIN=0
          TMP_GLOBAL=0
          TMP_CLUSTER=0
          TMP_LOCAL=0
          for VAL in $(config_option ${OPT} "builtin" A-Z a-z); do
             case "${VAL}" in
+               apps)    TMP_APPS=$((${TMP_APPS}+1)) ;;
                builtin) TMP_BUILTIN=$((${TMP_BUILTIN}+1)) ;;
                global)  TMP_GLOBAL=$((${TMP_GLOBAL}+1)) ;;
                cluster) TMP_CLUSTER=$((${TMP_CLUSTER}+1)) ;;
@@ -153,6 +202,10 @@ config_check()
                         ;;
             esac
          done
+         if test ${TMP_APPS} -gt 1;then
+            echo "config error: duplicate level 'apps' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
          if test ${TMP_BUILTIN} -gt 1;then
             echo "config error: duplicate level 'builtin' for order in '${OPT}'"
             CONFIG_OK=no
@@ -247,6 +300,7 @@ do_hook()
    # run pre-hooks
    for HOOK_LEVEL in ${HOOK_ORDER};do
       case "${HOOK_LEVEL}" in
+         apps)    do_hook_apps "${HOOK_TARGET}" "${HOOK_TYPE}" ;;
          builtin) ;;
          global)  do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
          cluster) do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
@@ -259,13 +313,28 @@ do_hook()
 }
 
 
+do_hook_apps()
+{
+   HOOK_TARGET="${1}"
+   HOOK_TYPE="${2}"
+
+   for TMP_APP in $(app_list); do
+      do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" apps "${TMP_APP}"
+   done
+
+   return 0;
+}
+
+
 do_hook_run()
 {
    HOOK_TARGET="${1}"
    HOOK_TYPE="${2}"
    HOOK_LEVEL="${3}"
+   HOOK_APP="${4}"
 
    case "${HOOK_LEVEL}" in
+      'apps')    HOOK_LEVEL_DIR="${NET_APPS}/${HOOK_APP}";;
       'global')  HOOK_LEVEL_DIR="${NET_GLOBAL}";;
       'cluster') HOOK_LEVEL_DIR="${NET_CLUSTER}";;
       'local')   HOOK_LEVEL_DIR="${NET_LOCAL}";;
@@ -283,6 +352,9 @@ do_hook_run()
    fi
 
    if test "${NET_QUIET}" != "xyes";then
+      if test ! -z "${HOOK_APP}"; then
+         HOOK_LEVEL="${HOOK_LEVEL}/${HOOK_APP}"
+      fi
       echo "running ${HOOK_LEVEL} ${HOOK_TYPE} ${HOOK_TARGET} ..."
    fi
 
@@ -305,6 +377,12 @@ do_start()
    # run network
    for LEVEL in ${NET_ORDER_UP};do
       case "${LEVEL}" in
+         apps)
+            for FILE in $( app_findfile ${NET_NET_UP} ); do
+               run_net "${FILE}" "starting app network (App: $(app_name ${FILE})) ..."
+            done
+         ;;
+
          builtin)
             do_start_builtin
          ;;
@@ -355,6 +433,12 @@ do_stop()
    # run network
    for LEVEL in ${NET_ORDER_DOWN};do
       case "${LEVEL}" in
+         apps)
+            for FILE in $( app_findfile ${NET_NET_DOWN} ); do
+               run_net "${FILE}" "stopping app network (App: $(app_name ${FILE})) ..."
+            done
+         ;;
+
          builtin)
             do_stop_builtin
          ;;
@@ -582,6 +666,7 @@ target_showconfig()
    echo "   network_dir       ${NET_LOCAL}"
    echo "   cluster_dir       ${NET_CLUSTER}"
    echo "   global_dir        ${NET_GLOBAL}"
+   echo "   apps_dir          ${NET_APPS}"
    echo "   quiet             ${NET_QUIET}"
    echo "   verbose           ${NET_VERBOSE}"
    echo "   net_up_script     ${NET_NET_UP}"
@@ -673,6 +758,7 @@ target_version()
 NET_LOCAL="$(          config_option network_dir       "${NET_LOCAL}" )"
 NET_CLUSTER="$(        config_option cluster_dir       "${NET_LOCAL}/cluster.d" )"
 NET_GLOBAL="$(         config_option global_dir        "${NET_LOCAL}/global.d" )"
+NET_APPS="$(           config_option apps_dir          "${NET_LOCAL}/apps.d" )"
 NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
 NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
 NET_NET_UP="$(         config_option net_up_script     "${NET_NET_UP}" )"

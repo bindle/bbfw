@@ -46,6 +46,12 @@
 # global_dir = @sysconfdir@/network.d/global.d
 
 
+#   The `qpps_dir` option overrides the default directory used to store
+#   application directories with network scripts and hooks.  Uncomment the
+#   line below to change the default location of the network scripts.
+# qpps_dir = @sysconfdir@/network.d/apps.d
+
+
 #   The `quiet` option surpresses normal output of bbfw.  To enable quiet mode,
 #   uncomment the line below and change the value to 'yes'.
 # quiet = no
@@ -94,28 +100,28 @@
 #   executed.  To modify the order in which pre-hooks are executed, uncomment
 #   the line below and modify the order of the key words.  See above for
 #   keyword descriptions.
-# order_prehook = builtin global cluster local
+# order_prehook = builtin global apps cluster local
 
 
 #   The `order_posthook` option defines the order in which post-hooks are
 #   executed.  To modify the order in which post-hooks are executed, uncomment
 #   the line below and modify the order of the key words.  See above for
 #   keyword descriptions.
-# order_posthook = builtin global cluster local
+# order_posthook = builtin global apps cluster local
 
 
 #   The `order_up` option defines the order in which network up scripts are
 #   executed.  To modify the order in which post-hooks are executed, uncomment
 #   the line below and modify the order of the key words.  See above for
 #   keyword descriptions.
-# order_up = builtin global cluster local
+# order_up = builtin global apps cluster local
 
 
 #   The `order_down` option defines the order in which network down scripts
 #   are executed.  To modify the order in which post-hooks are executed,
 #   uncomment the line below and modify the order of the key words.  See above
 #   for keyword descriptions.
-# order_down = builtin global cluster local
+# order_down = local cluster apps global builtin
 
 
 # end of configuration

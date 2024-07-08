@@ -9,6 +9,7 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
   - bbnet: updating output of 'showconfig'
   - bbnet: refactoring pre and post hook processing
   - bbnet: adding 'checkconfig' option
+  - bbnet: adding initial support for app scripts
 
 0.24
   - bbnet: fixing systemd unit file
