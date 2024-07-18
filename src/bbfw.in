@@ -300,12 +300,17 @@ name_appfile()
 
 find_appfile()
 {
+   if test ! -d "${FW_PREFIX}/apps.d"; then
+      return 0;
+   fi
    find -L \
-      ${FW_PREFIX}/apps.d/ \
-      -regextype posix-extended \
-      -regex "^${FW_PREFIX}/apps.d/[-.a-zA-Z0-9]+[./]${1}$" \
+      "${FW_PREFIX}/apps.d" \
+      -mindepth 2 \
+      -maxdepth 2 \
       -type f \
-      2> /dev/null
+      -name "${1}" \
+      2> /dev/null;
+   return 0;
 }
 
 
