@@ -618,6 +618,16 @@ stop() {
 }
 
 
+target_usage()
+{
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
+   echo "       ${PROGRAM_NAME} [ -h | --help ]"
+   echo "       ${PROGRAM_NAME} [ -v | --version ]"
+   echo ""
+   return 0;
+}
+
+
 target_version()
 {
    do_version
@@ -642,10 +652,7 @@ FW_ORDER_IPSETS="$(   config_option order_ipsets     "${FW_ORDER_IPSETS}"   A-Z 
 
 case "$1" in
    -h|--help)
-      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
-      echo "       ${PROGRAM_NAME} [ -h | --help ]"
-      echo "       ${PROGRAM_NAME} [ -v | --version ]"
-      echo ""
+      target_usage;
    ;;
 
    -v|--version)
@@ -679,12 +686,9 @@ case "$1" in
       start 2>&1 | $LOGGER
    ;;
 
-   *) # The default is to bring up all configured interfaces:
-      echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
-      echo "       ${PROGRAM_NAME} [ -h | --help ]"
-      echo "       ${PROGRAM_NAME} [ -v | --version ]"
-      echo ""
-   ;;
+   *) target_usage | $LOGGER 1>&2;
+      exit 1;
+      ;;
 esac
 
 # End of scripts
