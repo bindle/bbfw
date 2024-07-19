@@ -310,7 +310,7 @@ config_verify()
       x)    FW_QUIET=""   ;;
       xno)  FW_QUIET=""   ;;
       xyes) FW_QUIET="-q" ;;
-      *)    echo "invalid value for option 'verbose'" |$LOGGER;
+      *)    echo "invalid value for option 'quiet'" |$LOGGER;
             return 1;
             ;;
    esac
@@ -320,7 +320,7 @@ config_verify()
       x)    FW_VERBOSE=""   ;;
       xno)  FW_VERBOSE=""   ;;
       xyes) FW_VERBOSE="-v" ;;
-      *)    echo "invalid value for option 'quiet'" |$LOGGER;
+      *)    echo "invalid value for option 'verbose'" |$LOGGER;
             return 1;
             ;;
    esac
