@@ -6,6 +6,8 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
   - bbfw: updating find_appfiles() for portability
   - bbfw: adding 'showconfig' option
   - bbfw: refactoring config check functions
+  - bbfw: refactoring hook functions
+  - bbfw: refactoring to follow structure of bbnet
 
 0.25
   - bbnet: changing default behavior to display usage
