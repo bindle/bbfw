@@ -718,18 +718,17 @@ FW_ORDER_IPSETS="$(   config_option order_ipsets     "${FW_ORDER_IPSETS}"   A-Z 
 
 
 case "$1" in
-   -h|--help)        target_usage         ;;
-   -v|--version)     target_version       ;;
-   'dump')           target_dump          ;;
-   'checkconfig')    target_checkconfig   || exit 1;;
-   'start')          target_start         2>&1 | $LOGGER ;;
-   'stop')           target_stop          2>&1 | $LOGGER ;;
-   'showconfig')     target_showconfig    || exit 1;;
-   'restart')        target_restart       2>&1  | $LOGGER ;;
-
-   *) target_usage | $LOGGER 1>&2;
-      exit 1;
-      ;;
+   -h|--help)        target_usage                          ;;
+   -v|--version)     target_version                        ;;
+   'dump')           target_dump                           ;;
+   'checkconfig')    target_checkconfig        || exit 1   ;;
+   'start')          target_start         2>&1 |  $LOGGER  ;;
+   'stop')           target_stop          2>&1 |  $LOGGER  ;;
+   'showconfig')     target_showconfig         || exit 1   ;;
+   'restart')        target_restart       2>&1 |  $LOGGER  ;;
+   *)                target_usage              |  $LOGGER 1>&2;
+                     exit 1;
+                     ;;
 esac
 
 # End of scripts
