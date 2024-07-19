@@ -127,6 +127,15 @@ app_findfile()
 }
 
 
+app_list()
+{
+   for APPDIR in $(app_listdir); do
+      basename "${APPDIR}";
+   done
+   return;
+}
+
+
 app_listdir()
 {
    if test ! -d "${FW_PREFIX}/apps.d"; then
