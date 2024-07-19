@@ -651,13 +651,8 @@ FW_ORDER_IPSETS="$(   config_option order_ipsets     "${FW_ORDER_IPSETS}"   A-Z 
 
 
 case "$1" in
-   -h|--help)
-      target_usage;
-   ;;
-
-   -v|--version)
-      target_version
-   ;;
+   -h|--help)        target_usage         ;;
+   -v|--version)     target_version       ;;
 
    'dump')
       dump
