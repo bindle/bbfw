@@ -328,6 +328,13 @@ conftest()
 }
 
 
+do_version()
+{
+   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
+   return 0;
+}
+
+
 dump()
 {
    ipset list |sed -e "s/^/ipset: /g"
@@ -611,9 +618,10 @@ stop() {
 }
 
 
-version()
+target_version()
 {
-   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)"
+   do_version
+   return 0;
 }
 
 
@@ -641,7 +649,7 @@ case "$1" in
    ;;
 
    -v|--version)
-      version
+      target_version
    ;;
 
    'dump')
@@ -653,19 +661,19 @@ case "$1" in
    ;;
 
    'start') # "start" brings up all configured interfaces:
-      version    | $LOGGER
+      do_version | $LOGGER
       conftest  || exit 1
       start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
-      version    | $LOGGER
+      do_version | $LOGGER
       conftest  || exit 1
       stop  2>&1 | $LOGGER
    ;;
 
    'restart') # "restart" restarts the network:
-      version    | $LOGGER
+      do_version | $LOGGER
       conftest  || exit 1
       stop  2>&1 | $LOGGER
       start 2>&1 | $LOGGER
