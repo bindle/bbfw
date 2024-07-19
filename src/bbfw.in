@@ -177,81 +177,86 @@ config_check()
    CONFIG_OK=yes
 
    {
-      for OPT in order_prehook order_posthook order_ipsets order_iptables;do
-         # checks for duplicates
-         config_option ${OPT} > /dev/null
-         if test $? -ne 0;then
-            echo "config error: duplicate config entry for '${OPT}'"
+      # check for duplicate options
+      OPTS=""
+      OPTS="${OPTS} firewall_dir"
+      OPTS="${OPTS} quiet"
+      OPTS="${OPTS} verbose"
+      OPTS="${OPTS} order_prehook"
+      OPTS="${OPTS} order_posthook"
+      OPTS="${OPTS} order_iptables"
+      OPTS="${OPTS} order_ipsets"
+      for OPT in ${OPTS}; do
+         config_option "${OPT}" > /dev/null
+         if test ${?} -ne 0;then
+         echo "config error: duplicate config entry for '${OPT}'"
             CONFIG_OK=no
-         fi
-
-         # checks for invalid values
-         TMP_GLOBAL=no
-         TMP_LOCAL=no
-         TMP_CLUSTER=no
-         TMP_APPS=no
-         OPTVALS="$(config_option ${OPT} "global local apps cluster" A-Z a-z)"
-         for VAL in ${OPTVALS};do
-            case "${VAL}" in
-               global)  TMP_GLOBAL=YES ;;
-               local)   TMP_LOCAL=YES ;;
-               cluster) TMP_CLUSTER=YES ;;
-               apps)    TMP_APPS=YES ;;
-               *)
-                  echo "config error: unknown level order in '${OPT}'"
-                  CONFIG_OK=no
-               ;;
-            esac
-         done
-         if test "${TMP_GLOBAL}" == "no";then
-            echo "config warning: option '${OPT}' does not have 'global' level"
-         fi
-         if test "${TMP_LOCAL}" == "no";then
-            echo "config warning: option '${OPT}' does not have 'local' level"
-         fi
-         if test "${TMP_CLUSTER}" == "no";then
-            echo "config warning: option '${OPT}' does not have 'cluster' level"
-         fi
-         if test "${TMP_APPS}" == "no";then
-            echo "config warning: option '${OPT}' does not have 'apps' level"
          fi
       done
 
-      # checks verbose option
-      config_option verbose |egrep -i '^yes$|^no$|^$' > /dev/null
-      TMPSTATUS=( ${PIPESTATUS[@]} )
-      if test ${TMPSTATUS[0]} -ne 0;then
-         echo "config error: duplicate config entry for 'verbose'"
-         CONFIG_OK=no
-      elif test ${TMPSTATUS[1]} -ne 0;then
-         echo "config error: invalid config value for 'verbose'"
-         CONFIG_OK=no
-      fi
+      # check boolean options
+      OPTS=""
+      OPTS="${OPTS} quiet"
+      OPTS="${OPTS} verbose"
+      for OPT in ${OPTS}; do
+         config_option "${OPT}" |egrep -i '^yes$|^no$|^$' > /dev/null
+         if test ${?} -ne 0;then
+            echo "config error: invalid config value for '${OPT}'"
+            CONFIG_OK=no
+         fi
+      done
 
-      # checks quiet option
-      config_option quiet |egrep -i '^yes$|^no$|^$' > /dev/null
-      TMPSTATUS=( ${PIPESTATUS[@]} )
-      if test ${TMPSTATUS[0]} -ne 0;then
-         echo "config error: duplicate config entry for 'quiet'"
-         CONFIG_OK=no
-      elif test ${TMPSTATUS[1]} -ne 0;then
-         echo "config error: invalid config value for 'quiet'"
-         CONFIG_OK=no
-      fi
-
-      # checks firewall_dir option
-      config_option firewall_dir |egrep -i '^yes$|^no$|^$' > /dev/null
-      TMPSTATUS=( ${PIPESTATUS[@]} )
-      if test ${TMPSTATUS[0]} -ne 0;then
-         echo "config error: duplicate config entry for 'quiet'"
-         CONFIG_OK=no
-      fi
-
-      # checks for firewall directory
+      # checks for network directory
       if test ! -d "${FW_PREFIX}";then
-         echo "error: firewall directory not found"
+         echo "error: firewall directory not found or does not exist"
          CONFIG_OK=no
       fi
+
+      # check order options
+      OPTS=""
+      OPTS="${OPTS} order_prehook"
+      OPTS="${OPTS} order_posthook"
+      OPTS="${OPTS} order_iptables"
+      OPTS="${OPTS} order_ipsets"
+      for OPT in ${OPTS}; do
+         TMP_APPS=0
+         TMP_BUILTIN=0
+         TMP_GLOBAL=0
+         TMP_CLUSTER=0
+         TMP_LOCAL=0
+         for VAL in $(config_option ${OPT} "builtin" A-Z a-z); do
+            case "${VAL}" in
+               apps)    TMP_APPS=$((${TMP_APPS}+1)) ;;
+               builtin) TMP_BUILTIN=$((${TMP_BUILTIN}+1)) ;;
+               global)  TMP_GLOBAL=$((${TMP_GLOBAL}+1)) ;;
+               cluster) TMP_CLUSTER=$((${TMP_CLUSTER}+1)) ;;
+               local)   TMP_LOCAL=$((${TMP_LOCAL}+1)) ;;
+               *)       echo "config error: unknown value '${VAL}' for order in '${OPT}'"
+                        CONFIG_OK=no
+                        ;;
+            esac
+         done
+         if test ${TMP_APPS} -gt 1;then
+            echo "config error: duplicate level 'apps' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_BUILTIN} -gt 1;then
+            echo "config error: duplicate level 'builtin' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_GLOBAL} -gt 1;then
+            echo "config error: duplicate level 'global' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_CLUSTER} -gt 1;then
+            echo "config error: duplicate level 'cluster' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_LOCAL} -gt 1;then
+            echo "config error: duplicate level 'local' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+      done
 
    } 1>&2
 
