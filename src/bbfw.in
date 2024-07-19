@@ -303,25 +303,27 @@ config_option()
 }
 
 
-conftest()
+config_verify()
 {
    # quiet option
-   if test "x${FW_QUIET}" == "xno";then
-      unset FW_QUIET
-   elif test "x${FW_QUIET}" != "xyes";then
-      echo "invalid value for option 'quiet'" |$LOGGER
-      return 1
-   fi
+   case "x${FW_QUIET}" in
+      x)    FW_QUIET=""   ;;
+      xno)  FW_QUIET=""   ;;
+      xyes) FW_QUIET="-q" ;;
+      *)    echo "invalid value for option 'verbose'" |$LOGGER;
+            return 1;
+            ;;
+   esac
 
    # verbose option
-   if test "x${FW_VERBOSE}" == "xno";then
-      unset FW_VERBOSE
-   elif test "x${FW_VERBOSE}" != "xyes";then
-      echo "invalid value for verbose 'quiet'" |$LOGGER
-      return 1
-   else
-      FW_VERBOSE=-v
-   fi
+   case "x${FW_VERBOSE}" in
+      x)    FW_VERBOSE=""   ;;
+      xno)  FW_VERBOSE=""   ;;
+      xyes) FW_VERBOSE="-v" ;;
+      *)    echo "invalid value for option 'quiet'" |$LOGGER;
+            return 1;
+            ;;
+   esac
 
    return 0
 }
@@ -405,7 +407,7 @@ do_hook_run()
       return 0;
    fi
 
-   if test "${FW_QUIET}" != "xyes";then
+   if test ! -z "${FW_QUIET}"; then
       if test ! -z "${HOOK_APP}"; then
          HOOK_LEVEL="${HOOK_LEVEL}/${HOOK_APP}"
       fi
@@ -433,7 +435,7 @@ load()
       return 0;
    fi
 
-   if test ! -z "${DESC}" && test -z "${FW_QUIET}";then
+   if test ! -z "${DESC}" && test ! -z "${FW_QUIET}";then
       echo "${DESC}"
    fi
 
@@ -535,7 +537,7 @@ stop() {
 
    # flushes iptables
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
-      if test -z "${FW_QUIET}";then
+      if test ! -z "${FW_QUIET}";then
          echo "Flushing rules from ${TABLE} table (IPv4)"
       fi
       for CHAIN in $(iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
@@ -549,7 +551,7 @@ stop() {
 
    # flushes ip6tables
    for TABLE in $(ip6tables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
-      if test -z "${FW_QUIET}";then
+      if test ! -z "${FW_QUIET}";then
          echo "Flushing rules from ${TABLE} table (IPv6)"
       fi
       for CHAIN in $(ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
@@ -562,7 +564,7 @@ stop() {
    done 2> /dev/null
 
    # flushes ipsets
-   if test -z "${FW_QUIET}";then
+   if test ! -z "${FW_QUIET}";then
       echo "Destroying all IP sets ..."
    fi
    for SET in $(ipset save |grep '^create' |grep ' list:' |awk '{print$2}');do
@@ -663,13 +665,13 @@ case "$1" in
 
    'start') # "start" brings up all configured interfaces:
       do_version | $LOGGER
-      conftest  || exit 1
+      config_verify  || exit 1
       start 2>&1 | $LOGGER
    ;;
 
    'stop') # "stop" takes down all configured interfaces:
       do_version | $LOGGER
-      conftest  || exit 1
+      config_verify  || exit 1
       stop  2>&1 | $LOGGER
    ;;
 
@@ -677,7 +679,7 @@ case "$1" in
 
    'restart') # "restart" restarts the network:
       do_version | $LOGGER
-      conftest  || exit 1
+      config_verify  || exit 1
       stop  2>&1 | $LOGGER
       start 2>&1 | $LOGGER
    ;;
