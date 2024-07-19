@@ -418,41 +418,8 @@ do_hook_run()
 }
 
 
-do_version()
+do_start()
 {
-   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
-   return 0;
-}
-
-
-load()
-{
-   TYPE="${1}"
-   FILE="${2}"
-   DESC="${3}"
-
-   if test ! -f "${FILE}";then
-      return 0;
-   fi
-
-   if test ! -z "${DESC}" && test ! -z "${FW_QUIET}";then
-      echo "${DESC}"
-   fi
-
-   case "${TYPE}" in
-      'ipset')     clean_file ${FILE} |ipset -! restore;;
-      'iptables')  clean_file ${FILE} |iptables-restore -n ${FW_VERBOSE};;
-      'ip6tables') clean_file ${FILE} |ip6tables-restore -n ${FW_VERBOSE};;
-      *) ;;
-   esac
-}
-
-
-# Function to start the network:
-start() {
-   # run pre-hooks
-   do_hook start pre-hook "${FW_ORDER_PRE}" || return 1;
-
    # create IP sets
    for LEVEL in ${FW_ORDER_IPSETS};do
       case "${LEVEL}" in
@@ -522,6 +489,47 @@ start() {
          ;;
       esac
    done
+
+   return 0;
+}
+
+
+do_version()
+{
+   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
+   return 0;
+}
+
+
+load()
+{
+   TYPE="${1}"
+   FILE="${2}"
+   DESC="${3}"
+
+   if test ! -f "${FILE}";then
+      return 0;
+   fi
+
+   if test ! -z "${DESC}" && test ! -z "${FW_QUIET}";then
+      echo "${DESC}"
+   fi
+
+   case "${TYPE}" in
+      'ipset')     clean_file ${FILE} |ipset -! restore;;
+      'iptables')  clean_file ${FILE} |iptables-restore -n ${FW_VERBOSE};;
+      'ip6tables') clean_file ${FILE} |ip6tables-restore -n ${FW_VERBOSE};;
+      *) ;;
+   esac
+}
+
+
+# Function to start the network:
+start() {
+   # run pre-hooks
+   do_hook start pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   do_start
 
    # run post-hooks
    do_hook start post-hook "${FW_ORDER_POST}" || return 1;
