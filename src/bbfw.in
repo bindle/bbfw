@@ -638,9 +638,33 @@ target_dump()
 }
 
 
+target_showconfig()
+{
+   do_version
+   echo "Active Configuration:"
+   echo "   configuration     ${FW_CONF}"
+   echo "   firewall_dir      ${FW_PREFIX}"
+   echo "   quiet             ${FW_QUIET}"
+   echo "   verbose           ${FW_VERBOSE}"
+   echo "   order_prehook     ${FW_ORDER_PRE}"
+   echo "   order_posthook    ${FW_ORDER_POST}"
+   echo "   order_up          ${FW_ORDER_IPTABLES}"
+   echo "   order_down        ${FW_ORDER_IPSETS}"
+   echo ""
+   config_check > /dev/null 2> /dev/null
+   if test $? -ne 0; then
+      echo "Configuration Errors:"
+      config_check 2>&1 |sed -e 's/^/   /g'
+      echo ""
+      return 1;
+   fi
+   return 0;
+}
+
+
 target_usage()
 {
-   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
    echo "       ${PROGRAM_NAME} [ -v | --version ]"
    echo ""
@@ -687,6 +711,8 @@ case "$1" in
       conftest  || exit 1
       stop  2>&1 | $LOGGER
    ;;
+
+   'showconfig')     target_showconfig    || exit 1;
 
    'restart') # "restart" restarts the network:
       do_version | $LOGGER
