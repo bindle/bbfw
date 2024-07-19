@@ -327,15 +327,9 @@ conftest()
 }
 
 
-do_version()
+do_dump()
 {
-   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
-   return 0;
-}
-
-
-dump()
-{
+   do_version;
    ipset list |sed -e "s/^/ipset: /g"
    echo ""
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
@@ -348,6 +342,13 @@ dump()
       ip6tables -t ${TABLE} -L |sed -e "s/^/ip6tables ${PREFIX} /g"
       echo ""
    done
+}
+
+
+do_version()
+{
+   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
+   return 0;
 }
 
 
@@ -630,6 +631,13 @@ target_checkconfig()
 }
 
 
+target_dump()
+{
+   do_dump;
+   return 0;
+}
+
+
 target_usage()
 {
    echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
@@ -665,11 +673,7 @@ FW_ORDER_IPSETS="$(   config_option order_ipsets     "${FW_ORDER_IPSETS}"   A-Z 
 case "$1" in
    -h|--help)        target_usage         ;;
    -v|--version)     target_version       ;;
-
-   'dump')
-      dump
-   ;;
-
+   'dump')           target_dump          ;;
    'checkconfig')    target_checkconfig   || exit 1;
 
    'start') # "start" brings up all configured interfaces:
