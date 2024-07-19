@@ -423,70 +423,53 @@ do_start()
    # create IP sets
    for LEVEL in ${FW_ORDER_IPSETS};do
       case "${LEVEL}" in
-         global)
-         do_start_load ipset ${FW_PREFIX}/global.d/ipsets          "adding global IP sets"
-         ;;
+         apps)    for FILE in $( app_findfile ipsets );do
+                     do_start_load ipset ${FILE}                     "adding IP sets (App: $(app_name ${FILE})) ..."
+                  done
+                  ;;
 
-         apps)
-         for FILE in $( app_findfile ipsets );do
-            do_start_load ipset ${FILE}                            "adding IP sets (App: $(app_name ${FILE})) ..."
-         done
-         ;;
-
-         cluster)
-         do_start_load ipset ${FW_PREFIX}/cluster.d/ipsets         "adding cluster IP sets"
-         ;;
-
-         local)
-         do_start_load ipset ${FW_PREFIX}/ipsets                   "adding local IP sets"
-         ;;
-
-         *)
-         echo "Unknown ipsets order \"${LEVEL}\""
-         ;;
+         global)  do_start_load ipset ${FW_PREFIX}/global.d/ipsets   "adding global IP sets" ;;
+         cluster) do_start_load ipset ${FW_PREFIX}/cluster.d/ipsets  "adding cluster IP sets" ;;
+         local)   do_start_load ipset ${FW_PREFIX}/ipsets            "adding local IP sets" ;;
+         *)       echo "Unknown ipsets order \"${LEVEL}\"" ;;
       esac
    done
 
    # loads iptables/ip6tables
    for LEVEL in ${FW_ORDER_IPTABLES};do
       case "${LEVEL}" in
-         apps)
-         for FILE in $( app_findfile rules4 );do
-            do_start_load iptables ${FILE}                         "adding IPv4 rules (App: $(app_name ${FILE})) ..."
-         done
-         for FILE in $( app_findfile rules6 );do
-            do_start_load ip6tables ${FILE}                        "adding IPv6 rules (App: $(app_name ${FILE})) ..."
-         done
-         for FILE in $( app_findfile rules );do
-            do_start_load iptables ${FILE}                         "adding IPv4/IPv6 rules (App: $(app_name ${FILE})) ..."
-            do_start_load ip6tables ${FILE}
-         done
-         ;;
+         apps)    for FILE in $( app_findfile rules4 );do
+                     do_start_load iptables ${FILE}                      "adding IPv4 rules (App: $(app_name ${FILE})) ..."
+                  done
+                  for FILE in $( app_findfile rules6 );do
+                     do_start_load ip6tables ${FILE}                     "adding IPv6 rules (App: $(app_name ${FILE})) ..."
+                  done
+                  for FILE in $( app_findfile rules );do
+                     do_start_load iptables ${FILE}                      "adding IPv4/IPv6 rules (App: $(app_name ${FILE})) ..."
+                     do_start_load ip6tables ${FILE}
+                  done
+                  ;;
 
-         local)
-         do_start_load iptables  ${FW_PREFIX}/rules4               "adding IPv4 local rules"
-         do_start_load ip6tables ${FW_PREFIX}/rules6               "adding IPv6 local rules"
-         do_start_load iptables  ${FW_PREFIX}/rules                "adding IPv4/IPv6 local rules"
-         do_start_load ip6tables ${FW_PREFIX}/rules
-         ;;
+         local)   do_start_load iptables  ${FW_PREFIX}/rules4            "adding IPv4 local rules"
+                  do_start_load ip6tables ${FW_PREFIX}/rules6            "adding IPv6 local rules"
+                  do_start_load iptables  ${FW_PREFIX}/rules             "adding IPv4/IPv6 local rules"
+                  do_start_load ip6tables ${FW_PREFIX}/rules
+                  ;;
 
-         cluster)
-         do_start_load iptables  ${FW_PREFIX}/cluster.d/rules4     "adding IPv4 cluster rules"
-         do_start_load ip6tables ${FW_PREFIX}/cluster.d/rules6     "adding IPv6 cluster rules"
-         do_start_load iptables  ${FW_PREFIX}/cluster.d/rules      "adding IPv4/IPv6 cluster rules"
-         do_start_load ip6tables ${FW_PREFIX}/cluster.d/rules
-         ;;
+         cluster) do_start_load iptables  ${FW_PREFIX}/cluster.d/rules4  "adding IPv4 cluster rules"
+                  do_start_load ip6tables ${FW_PREFIX}/cluster.d/rules6  "adding IPv6 cluster rules"
+                  do_start_load iptables  ${FW_PREFIX}/cluster.d/rules   "adding IPv4/IPv6 cluster rules"
+                  do_start_load ip6tables ${FW_PREFIX}/cluster.d/rules
+                  ;;
 
-         global)
-         do_start_load iptables  ${FW_PREFIX}/global.d/rules4      "adding IPv4 global rules"
-         do_start_load ip6tables ${FW_PREFIX}/global.d/rules6      "adding IPv6 global rules"
-         do_start_load iptables  ${FW_PREFIX}/global.d/rules       "adding IPv4/IPv6 global rules"
-         do_start_load ip6tables ${FW_PREFIX}/global.d/rules
-         ;;
+         global)  do_start_load iptables  ${FW_PREFIX}/global.d/rules4   "adding IPv4 global rules"
+                  do_start_load ip6tables ${FW_PREFIX}/global.d/rules6   "adding IPv6 global rules"
+                  do_start_load iptables  ${FW_PREFIX}/global.d/rules    "adding IPv4/IPv6 global rules"
+                  do_start_load ip6tables ${FW_PREFIX}/global.d/rules
+                  ;;
 
-         *)
-         echo "Unknown iptables order \"${LEVEL}\""
-         ;;
+         *)       echo "Unknown iptables order \"${LEVEL}\""
+                  ;;
       esac
    done
 
