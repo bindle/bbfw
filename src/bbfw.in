@@ -524,20 +524,6 @@ load()
 }
 
 
-# Function to start the network:
-start() {
-   # run pre-hooks
-   do_hook start pre-hook "${FW_ORDER_PRE}" || return 1;
-
-   do_start
-
-   # run post-hooks
-   do_hook start post-hook "${FW_ORDER_POST}" || return 1;
-
-   return 0;
-}
-
-
 # Function to stop the network:
 stop() {
    # run pre-hooks
@@ -633,6 +619,27 @@ target_showconfig()
 }
 
 
+target_start()
+{
+   # show version
+   do_version
+
+   # minimal config check
+   config_verify  || return 1
+
+   # run pre-hooks
+   do_hook start pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   # start firewall
+   do_start || return 1;
+
+   # run post-hooks
+   do_hook start post-hook "${FW_ORDER_POST}" || return 1;
+
+   return 0;
+}
+
+
 target_usage()
 {
    echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
@@ -670,12 +677,7 @@ case "$1" in
    -v|--version)     target_version       ;;
    'dump')           target_dump          ;;
    'checkconfig')    target_checkconfig   || exit 1;;
-
-   'start') # "start" brings up all configured interfaces:
-      do_version | $LOGGER
-      config_verify  || exit 1
-      start 2>&1 | $LOGGER
-   ;;
+   'start')          target_start         2>&1 | $LOGGER ;;
 
    'stop') # "stop" takes down all configured interfaces:
       do_version | $LOGGER
