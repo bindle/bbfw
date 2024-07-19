@@ -407,7 +407,7 @@ do_hook_run()
       return 0;
    fi
 
-   if test ! -z "${FW_QUIET}"; then
+   if test -z "${FW_QUIET}"; then
       if test ! -z "${HOOK_APP}"; then
          HOOK_LEVEL="${HOOK_LEVEL}/${HOOK_APP}"
       fi
@@ -498,7 +498,7 @@ do_stop()
 {
    # flushes iptables
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
-      if test ! -z "${FW_QUIET}";then
+      if test -z "${FW_QUIET}";then
          echo "Flushing rules from ${TABLE} table (IPv4)"
       fi
       for CHAIN in $(iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
@@ -512,7 +512,7 @@ do_stop()
 
    # flushes ip6tables
    for TABLE in $(ip6tables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
-      if test ! -z "${FW_QUIET}";then
+      if test -z "${FW_QUIET}";then
          echo "Flushing rules from ${TABLE} table (IPv6)"
       fi
       for CHAIN in $(ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep -v ' - ' |cut -d\  -f1);do
@@ -525,7 +525,7 @@ do_stop()
    done 2> /dev/null
 
    # flushes ipsets
-   if test ! -z "${FW_QUIET}";then
+   if test -z "${FW_QUIET}";then
       echo "Destroying all IP sets ..."
    fi
    for SET in $(ipset save |grep '^create' |grep ' list:' |awk '{print$2}');do
@@ -556,7 +556,7 @@ load()
       return 0;
    fi
 
-   if test ! -z "${DESC}" && test ! -z "${FW_QUIET}";then
+   if test ! -z "${DESC}" && test -z "${FW_QUIET}";then
       echo "${DESC}"
    fi
 
