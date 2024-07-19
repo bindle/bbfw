@@ -264,7 +264,6 @@ config_check()
       return 1
    fi
 
-   echo "config ok"
    return 0
 }
 
@@ -618,6 +617,19 @@ stop() {
 }
 
 
+target_checkconfig()
+{
+   config_check
+   if test $? -eq 0; then
+      echo "config ok"
+   else
+      return 1;
+   fi
+
+   return 0;
+}
+
+
 target_usage()
 {
    echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig ]"
@@ -658,9 +670,7 @@ case "$1" in
       dump
    ;;
 
-   'checkconfig')
-      config_check || { echo "configuration error"; exit 1; }
-   ;;
+   'checkconfig')    target_checkconfig   || exit 1;
 
    'start') # "start" brings up all configured interfaces:
       do_version | $LOGGER
