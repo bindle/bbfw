@@ -691,7 +691,7 @@ case "$1" in
       do_version | $LOGGER
       config_verify  || exit 1
       stop  2>&1 | $LOGGER
-      start 2>&1 | $LOGGER
+      target_start 2>&1 | $LOGGER
    ;;
 
    *) target_usage | $LOGGER 1>&2;
