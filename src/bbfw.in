@@ -589,6 +589,36 @@ target_dump()
 }
 
 
+target_restart()
+{
+   # show version
+   do_version
+
+   # minimal config check
+   config_verify  || return 1
+
+   # run pre-hooks
+   do_hook stop pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   # stop firewall
+   do_stop || return 1;
+
+   # run post-hooks
+   do_hook stop post-hook "${FW_ORDER_POST}" || return 1;
+
+   # run pre-hooks
+   do_hook start pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   # start firewall
+   do_start || return 1;
+
+   # run post-hooks
+   do_hook start post-hook "${FW_ORDER_POST}" || return 1;
+
+   return 0;
+}
+
+
 target_showconfig()
 {
    do_version
@@ -695,13 +725,7 @@ case "$1" in
    'start')          target_start         2>&1 | $LOGGER ;;
    'stop')           target_stop          2>&1 | $LOGGER ;;
    'showconfig')     target_showconfig    || exit 1;;
-
-   'restart') # "restart" restarts the network:
-      do_version | $LOGGER
-      config_verify  || exit 1
-      target_stop  2>&1 | $LOGGER
-      target_start 2>&1 | $LOGGER
-   ;;
+   'restart')        target_restart       2>&1  | $LOGGER ;;
 
    *) target_usage | $LOGGER 1>&2;
       exit 1;
