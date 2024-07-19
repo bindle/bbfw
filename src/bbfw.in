@@ -111,6 +111,22 @@ fi
 # FUNCTIONS #
 #############
 
+app_findfile()
+{
+   if test ! -d "${FW_PREFIX}/apps.d"; then
+      return 0;
+   fi
+   find -L \
+      "${FW_PREFIX}/apps.d" \
+      -mindepth 2 \
+      -maxdepth 2 \
+      -type f \
+      -name "${1}" \
+      2> /dev/null;
+   return 0;
+}
+
+
 clean_file()
 {
    DIRTY_FILE="${1}"
@@ -298,22 +314,6 @@ name_appfile()
 }
 
 
-find_appfile()
-{
-   if test ! -d "${FW_PREFIX}/apps.d"; then
-      return 0;
-   fi
-   find -L \
-      "${FW_PREFIX}/apps.d" \
-      -mindepth 2 \
-      -maxdepth 2 \
-      -type f \
-      -name "${1}" \
-      2> /dev/null;
-   return 0;
-}
-
-
 run_hook()
 {
    TYPE="${1}"
@@ -365,7 +365,7 @@ start() {
          ;;
 
          apps)
-         for FILE in $( find_appfile pre-hook );do
+         for FILE in $( app_findfile pre-hook );do
             run_hook start ${FILE}                        "running app pre-hook start (App: $(name_appfile ${FILE})) ..."
          done
          ;;
@@ -392,7 +392,7 @@ start() {
          ;;
 
          apps)
-         for FILE in $( find_appfile ipsets );do
+         for FILE in $( app_findfile ipsets );do
             load ipset ${FILE}                            "adding IP sets (App: $(name_appfile ${FILE})) ..."
          done
          ;;
@@ -415,13 +415,13 @@ start() {
    for LEVEL in ${FW_ORDER_IPTABLES};do
       case "${LEVEL}" in
          apps)
-         for FILE in $( find_appfile rules4 );do
+         for FILE in $( app_findfile rules4 );do
             load iptables ${FILE}                         "adding IPv4 rules (App: $(name_appfile ${FILE})) ..."
          done
-         for FILE in $( find_appfile rules6 );do
+         for FILE in $( app_findfile rules6 );do
             load ip6tables ${FILE}                        "adding IPv6 rules (App: $(name_appfile ${FILE})) ..."
          done
-         for FILE in $( find_appfile rules );do
+         for FILE in $( app_findfile rules );do
             load iptables ${FILE}                         "adding IPv4/IPv6 rules (App: $(name_appfile ${FILE})) ..."
             load ip6tables ${FILE}
          done
@@ -462,7 +462,7 @@ start() {
          ;;
 
          apps)
-         for FILE in $( find_appfile post-hook );do
+         for FILE in $( app_findfile post-hook );do
             run_hook start ${FILE}                        "running app post-hook start (App: $(name_appfile ${FILE})) ..."
          done
          ;;
@@ -493,7 +493,7 @@ stop() {
          ;;
 
          apps)
-         for FILE in $( find_appfile pre-hook );do
+         for FILE in $( app_findfile pre-hook );do
             run_hook stop ${FILE}                         "running app pre-hook stop (App: $(name_appfile ${FILE})) ..."
          done
          ;;
@@ -559,7 +559,7 @@ stop() {
          ;;
 
          apps)
-         for FILE in $( find_appfile post-hook );do
+         for FILE in $( app_findfile post-hook );do
             run_hook stop ${FILE}                        "running app post-hook stop (App: $(name_appfile ${FILE})) ..."
          done
          ;;
