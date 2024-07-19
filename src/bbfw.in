@@ -127,6 +127,22 @@ app_findfile()
 }
 
 
+app_listdir()
+{
+   if test ! -d "${FW_PREFIX}/apps.d"; then
+      return 0;
+   fi
+   find -L \
+      "${FW_PREFIX}/apps.d" \
+      -type d \
+      -mindepth 1 \
+      -maxdepth 1 \
+      2> /dev/null \
+      |sed -e 's:/\{1,\}$::g';
+   return 0;
+}
+
+
 clean_file()
 {
    DIRTY_FILE="${1}"
