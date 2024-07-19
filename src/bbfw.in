@@ -345,12 +345,6 @@ dump()
 }
 
 
-name_appfile()
-{
-   basename "$(dirname "${1}")"
-}
-
-
 run_hook()
 {
    TYPE="${1}"
@@ -403,7 +397,7 @@ start() {
 
          apps)
          for FILE in $( app_findfile pre-hook );do
-            run_hook start ${FILE}                        "running app pre-hook start (App: $(name_appfile ${FILE})) ..."
+            run_hook start ${FILE}                        "running app pre-hook start (App: $(app_name ${FILE})) ..."
          done
          ;;
 
@@ -430,7 +424,7 @@ start() {
 
          apps)
          for FILE in $( app_findfile ipsets );do
-            load ipset ${FILE}                            "adding IP sets (App: $(name_appfile ${FILE})) ..."
+            load ipset ${FILE}                            "adding IP sets (App: $(app_name ${FILE})) ..."
          done
          ;;
 
@@ -453,13 +447,13 @@ start() {
       case "${LEVEL}" in
          apps)
          for FILE in $( app_findfile rules4 );do
-            load iptables ${FILE}                         "adding IPv4 rules (App: $(name_appfile ${FILE})) ..."
+            load iptables ${FILE}                         "adding IPv4 rules (App: $(app_name ${FILE})) ..."
          done
          for FILE in $( app_findfile rules6 );do
-            load ip6tables ${FILE}                        "adding IPv6 rules (App: $(name_appfile ${FILE})) ..."
+            load ip6tables ${FILE}                        "adding IPv6 rules (App: $(app_name ${FILE})) ..."
          done
          for FILE in $( app_findfile rules );do
-            load iptables ${FILE}                         "adding IPv4/IPv6 rules (App: $(name_appfile ${FILE})) ..."
+            load iptables ${FILE}                         "adding IPv4/IPv6 rules (App: $(app_name ${FILE})) ..."
             load ip6tables ${FILE}
          done
          ;;
@@ -500,7 +494,7 @@ start() {
 
          apps)
          for FILE in $( app_findfile post-hook );do
-            run_hook start ${FILE}                        "running app post-hook start (App: $(name_appfile ${FILE})) ..."
+            run_hook start ${FILE}                        "running app post-hook start (App: $(app_name ${FILE})) ..."
          done
          ;;
 
@@ -531,7 +525,7 @@ stop() {
 
          apps)
          for FILE in $( app_findfile pre-hook );do
-            run_hook stop ${FILE}                         "running app pre-hook stop (App: $(name_appfile ${FILE})) ..."
+            run_hook stop ${FILE}                         "running app pre-hook stop (App: $(app_name ${FILE})) ..."
          done
          ;;
 
@@ -597,7 +591,7 @@ stop() {
 
          apps)
          for FILE in $( app_findfile post-hook );do
-            run_hook stop ${FILE}                        "running app post-hook stop (App: $(name_appfile ${FILE})) ..."
+            run_hook stop ${FILE}                        "running app post-hook stop (App: $(app_name ${FILE})) ..."
          done
          ;;
 
