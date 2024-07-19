@@ -272,20 +272,24 @@ config_option()
 config_verify()
 {
    # quiet option
-   if test "x${NET_QUIET}" == "xno";then
-      NET_QUIET=no
-   elif test "x${NET_QUIET}" != "xyes";then
-      echo "invalid value for option 'quiet'" |$LOGGER
-      return 1
-   fi
+   case "x${NET_QUIET}" in
+      x)    NET_QUIET="no"   ;;
+      xno)  NET_QUIET="no"   ;;
+      xyes) NET_QUIET="yes"  ;;
+      *)    echo "invalid value for option 'quiet'" |$LOGGER;
+            return 1;
+            ;;
+   esac
 
    # verbose option
-   if test "x${NET_VERBOSE}" == "xno";then
-      NET_VERBOSE=no
-   elif test "x${NET_VERBOSE}" != "xyes";then
-      echo "invalid value for option 'verbose'" |$LOGGER
-      return 1
-   fi
+   case "x${NET_VERBOSE}" in
+      x)    NET_VERBOSE="no"  ;;
+      xno)  NET_VERBOSE="no"  ;;
+      xyes) NET_VERBOSE="yes" ;;
+      *)    echo "invalid value for option 'verbose'" |$LOGGER;
+            return 1;
+            ;;
+   esac
 
    return 0
 }
