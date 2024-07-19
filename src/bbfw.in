@@ -345,28 +345,81 @@ do_dump()
 }
 
 
-do_version()
+do_hook()
 {
-   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
+   HOOK_TARGET="${1}"
+   HOOK_TYPE="${2}"
+   HOOK_ORDER="${3}"
+
+   # run pre-hooks
+   for HOOK_LEVEL in ${HOOK_ORDER};do
+      case "${HOOK_LEVEL}" in
+         apps)    do_hook_apps "${HOOK_TARGET}" "${HOOK_TYPE}" ;;
+         builtin) ;;
+         global)  do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
+         cluster) do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
+         local)   do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
+         *)       echo "Unknown ${HOOK_TYPE} order \"${HOOK_LEVEL}\""; return 1; ;;
+      esac
+   done
+
    return 0;
 }
 
 
-run_hook()
+do_hook_apps()
 {
-   TYPE="${1}"
-   FILE="${2}"
-   DESC="${3}"
+   HOOK_TARGET="${1}"
+   HOOK_TYPE="${2}"
 
-   if test ! -x "${FILE}";then
+   for TMP_APP in $(app_list); do
+      do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" apps "${TMP_APP}"
+   done
+
+   return 0;
+}
+
+
+do_hook_run()
+{
+   HOOK_TARGET="${1}"
+   HOOK_TYPE="${2}"
+   HOOK_LEVEL="${3}"
+   HOOK_APP="${4}"
+
+   case "${HOOK_LEVEL}" in
+      'apps')    HOOK_LEVEL_DIR="${FW_PREFIX}/apps.d/${HOOK_APP}";;
+      'global')  HOOK_LEVEL_DIR="${FW_PREFIX}/global.d";;
+      'cluster') HOOK_LEVEL_DIR="${FW_PREFIX}/cluster.d";;
+      'local')   HOOK_LEVEL_DIR="${FW_PREFIX}";;
+      *) return 0;;
+   esac
+
+   case "${HOOK_TYPE}" in
+      'pre-hook')  HOOK_SCRIPT="${HOOK_LEVEL_DIR}/pre-hook";;
+      'post-hook') HOOK_SCRIPT="${HOOK_LEVEL_DIR}/post-hook";;
+      *) return 0;;
+   esac
+
+   if test ! -x "${HOOK_SCRIPT}";then
       return 0;
    fi
 
-   if test ! -z "${DESC}" && test -z "${FW_QUIET}";then
-      echo "${DESC}"
+   if test "${FW_QUIET}" != "xyes";then
+      if test ! -z "${HOOK_APP}"; then
+         HOOK_LEVEL="${HOOK_LEVEL}/${HOOK_APP}"
+      fi
+      echo "running ${HOOK_LEVEL} ${HOOK_TYPE} ${HOOK_TARGET} ..."
    fi
 
-   ${FILE} ${TYPE}
+   ${HOOK_SCRIPT} ${HOOK_TARGET}; return $?
+}
+
+
+do_version()
+{
+   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
+   return 0;
 }
 
 
@@ -396,31 +449,7 @@ load()
 # Function to start the network:
 start() {
    # run pre-hooks
-   for LEVEL in ${FW_ORDER_PRE};do
-      case "${LEVEL}" in
-         global)
-         run_hook start ${FW_PREFIX}/global.d/pre-hook    "running global pre-hook start ..."
-         ;;
-
-         apps)
-         for FILE in $( app_findfile pre-hook );do
-            run_hook start ${FILE}                        "running app pre-hook start (App: $(app_name ${FILE})) ..."
-         done
-         ;;
-
-         cluster)
-         run_hook start ${FW_PREFIX}/cluster.d/pre-hook   "running cluster pre-hook start ..."
-         ;;
-
-         local)
-         run_hook start ${FW_PREFIX}/pre-hook             "running local pre-hook start ..."
-         ;;
-
-         *)
-         echo "Unknown pre-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_hook start pre-hook "${FW_ORDER_PRE}" || return 1;
 
    # create IP sets
    for LEVEL in ${FW_ORDER_IPSETS};do
@@ -493,62 +522,16 @@ start() {
    done
 
    # run post-hooks
-   for LEVEL in ${FW_ORDER_POST};do
-      case "${LEVEL}" in
-         global)
-         run_hook start ${FW_PREFIX}/global.d/post-hook   "running global post-hook start ..."
-         ;;
+   do_hook start post-hook "${FW_ORDER_POST}" || return 1;
 
-         apps)
-         for FILE in $( app_findfile post-hook );do
-            run_hook start ${FILE}                        "running app post-hook start (App: $(app_name ${FILE})) ..."
-         done
-         ;;
-
-         cluster)
-         run_hook start ${FW_PREFIX}/cluster.d/post-hook  "running cluster post-hook start ..."
-         ;;
-
-         local)
-         run_hook start ${FW_PREFIX}/post-hook            "running local post-hook start ..."
-         ;;
-
-         *)
-         echo "Unknown post-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   return 0;
 }
 
 
 # Function to stop the network:
 stop() {
    # run pre-hooks
-   for LEVEL in ${FW_ORDER_PRE};do
-      case "${LEVEL}" in
-         global)
-         run_hook stop ${FW_PREFIX}/global.d/pre-hook     "running global pre-hook stop ..."
-         ;;
-
-         apps)
-         for FILE in $( app_findfile pre-hook );do
-            run_hook stop ${FILE}                         "running app pre-hook stop (App: $(app_name ${FILE})) ..."
-         done
-         ;;
-
-         cluster)
-         run_hook stop ${FW_PREFIX}/cluster.d/pre-hook    "running cluster pre-hook stop ..."
-         ;;
-
-         local)
-         run_hook stop ${FW_PREFIX}/pre-hook              "running local pre-hook stop ..."
-         ;;
-
-         *)
-         echo "Unknown pre-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   do_hook stop pre-hook "${FW_ORDER_PRE}" || return 1;
 
    # flushes iptables
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
@@ -590,31 +573,9 @@ stop() {
    done
 
    # run post-hooks
-   for LEVEL in ${FW_ORDER_POST};do
-      case "${LEVEL}" in
-         global)
-         run_hook stop ${FW_PREFIX}/global.d/post-hook   "running global post-hook stop ..."
-         ;;
+   do_hook stop post-hook "${FW_ORDER_POST}" || return 1;
 
-         apps)
-         for FILE in $( app_findfile post-hook );do
-            run_hook stop ${FILE}                        "running app post-hook stop (App: $(app_name ${FILE})) ..."
-         done
-         ;;
-
-         cluster)
-         run_hook stop ${FW_PREFIX}/cluster.d/post-hook  "running cluster post-hook stop ..."
-         ;;
-
-         local)
-         run_hook stop ${FW_PREFIX}/post-hook            "running local post-hook stop ..."
-         ;;
-
-         *)
-         echo "Unknown post-hook order \"${LEVEL}\""
-         ;;
-      esac
-   done
+   return 0;
 }
 
 
