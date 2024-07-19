@@ -494,41 +494,8 @@ do_start()
 }
 
 
-do_version()
+do_stop()
 {
-   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
-   return 0;
-}
-
-
-load()
-{
-   TYPE="${1}"
-   FILE="${2}"
-   DESC="${3}"
-
-   if test ! -f "${FILE}";then
-      return 0;
-   fi
-
-   if test ! -z "${DESC}" && test ! -z "${FW_QUIET}";then
-      echo "${DESC}"
-   fi
-
-   case "${TYPE}" in
-      'ipset')     clean_file ${FILE} |ipset -! restore;;
-      'iptables')  clean_file ${FILE} |iptables-restore -n ${FW_VERBOSE};;
-      'ip6tables') clean_file ${FILE} |ip6tables-restore -n ${FW_VERBOSE};;
-      *) ;;
-   esac
-}
-
-
-# Function to stop the network:
-stop() {
-   # run pre-hooks
-   do_hook stop pre-hook "${FW_ORDER_PRE}" || return 1;
-
    # flushes iptables
    for TABLE in $(iptables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
       if test ! -z "${FW_QUIET}";then
@@ -567,6 +534,48 @@ stop() {
    for SET in $(ipset save |grep '^create' |awk '{print$2}');do
       ipset destroy "${SET}"
    done
+
+   return 0;
+}
+
+
+do_version()
+{
+   echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
+   return 0;
+}
+
+
+load()
+{
+   TYPE="${1}"
+   FILE="${2}"
+   DESC="${3}"
+
+   if test ! -f "${FILE}";then
+      return 0;
+   fi
+
+   if test ! -z "${DESC}" && test ! -z "${FW_QUIET}";then
+      echo "${DESC}"
+   fi
+
+   case "${TYPE}" in
+      'ipset')     clean_file ${FILE} |ipset -! restore;;
+      'iptables')  clean_file ${FILE} |iptables-restore -n ${FW_VERBOSE};;
+      'ip6tables') clean_file ${FILE} |ip6tables-restore -n ${FW_VERBOSE};;
+      *) ;;
+   esac
+}
+
+
+# Function to stop the network:
+stop() {
+   # run pre-hooks
+   do_hook stop pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   # clear firewall rules
+   do_stop || return 1;
 
    # run post-hooks
    do_hook stop post-hook "${FW_ORDER_POST}" || return 1;
