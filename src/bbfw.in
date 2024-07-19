@@ -569,21 +569,6 @@ load()
 }
 
 
-# Function to stop the network:
-stop() {
-   # run pre-hooks
-   do_hook stop pre-hook "${FW_ORDER_PRE}" || return 1;
-
-   # clear firewall rules
-   do_stop || return 1;
-
-   # run post-hooks
-   do_hook stop post-hook "${FW_ORDER_POST}" || return 1;
-
-   return 0;
-}
-
-
 target_checkconfig()
 {
    config_check
@@ -649,6 +634,27 @@ target_start()
 }
 
 
+target_stop()
+{
+   # show version
+   do_version
+
+   # minimal config check
+   config_verify  || return 1
+
+   # run pre-hooks
+   do_hook stop pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   # clear firewall rules
+   do_stop || return 1;
+
+   # run post-hooks
+   do_hook stop post-hook "${FW_ORDER_POST}" || return 1;
+
+   return 0;
+}
+
+
 target_usage()
 {
    echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
@@ -687,19 +693,13 @@ case "$1" in
    'dump')           target_dump          ;;
    'checkconfig')    target_checkconfig   || exit 1;;
    'start')          target_start         2>&1 | $LOGGER ;;
-
-   'stop') # "stop" takes down all configured interfaces:
-      do_version | $LOGGER
-      config_verify  || exit 1
-      stop  2>&1 | $LOGGER
-   ;;
-
+   'stop')           target_stop          2>&1 | $LOGGER ;;
    'showconfig')     target_showconfig    || exit 1;;
 
    'restart') # "restart" restarts the network:
       do_version | $LOGGER
       config_verify  || exit 1
-      stop  2>&1 | $LOGGER
+      target_stop  2>&1 | $LOGGER
       target_start 2>&1 | $LOGGER
    ;;
 
