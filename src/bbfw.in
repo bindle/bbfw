@@ -698,7 +698,7 @@ case "$1" in
    -h|--help)        target_usage         ;;
    -v|--version)     target_version       ;;
    'dump')           target_dump          ;;
-   'checkconfig')    target_checkconfig   || exit 1;
+   'checkconfig')    target_checkconfig   || exit 1;;
 
    'start') # "start" brings up all configured interfaces:
       do_version | $LOGGER
@@ -712,7 +712,7 @@ case "$1" in
       stop  2>&1 | $LOGGER
    ;;
 
-   'showconfig')     target_showconfig    || exit 1;
+   'showconfig')     target_showconfig    || exit 1;;
 
    'restart') # "restart" restarts the network:
       do_version | $LOGGER
