@@ -83,11 +83,11 @@ fi
 
 app_findfile()
 {
-   if test ! -d "${NET_APPS}"; then
+   if test ! -d "${NET_DIR}/apps.d"; then
       return 0;
    fi
    find -L \
-      ${NET_APPS}/ \
+      ${NET_DIR}/apps.d/ \
       -mindepth 2 \
       -maxdepth 2 \
       -type f \
@@ -108,11 +108,11 @@ app_list()
 
 app_listdir()
 {
-   if test ! -d "${NET_APPS}"; then
+   if test ! -d "${NET_DIR}/apps.d"; then
       return 0;
    fi
    find -L \
-      ${NET_APPS}/ \
+      ${NET_DIR}/apps.d/ \
       -type d \
       -mindepth 1 \
       -maxdepth 1 \
@@ -336,7 +336,7 @@ do_hook_run()
    HOOK_APP="${4}"
 
    case "${HOOK_LEVEL}" in
-      'apps')    HOOK_LEVEL_DIR="${NET_APPS}/${HOOK_APP}";;
+      'apps')    HOOK_LEVEL_DIR="${NET_DIR}/apps.d/${HOOK_APP}";;
       'global')  HOOK_LEVEL_DIR="${NET_DIR}/global.d";;
       'cluster') HOOK_LEVEL_DIR="${NET_DIR}/cluster.d";;
       'local')   HOOK_LEVEL_DIR="${NET_DIR}";;
@@ -666,7 +666,6 @@ target_showconfig()
    echo "Active Configuration:"
    echo "   configuration     ${NET_CONF}"
    echo "   network_dir       ${NET_DIR}"
-   echo "   apps_dir          ${NET_APPS}"
    echo "   quiet             ${NET_QUIET}"
    echo "   verbose           ${NET_VERBOSE}"
    echo "   net_up_script     ${NET_NET_UP}"
@@ -756,7 +755,6 @@ target_version()
 
 # sets options from configuration file
 NET_DIR="$(            config_option network_dir       "${NET_DIR}" )"
-NET_APPS="$(           config_option apps_dir          "${NET_DIR}/apps.d" )"
 NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
 NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
 NET_NET_UP="$(         config_option net_up_script     "${NET_NET_UP}" )"

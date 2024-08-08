@@ -34,12 +34,6 @@
 # network_dir = @sysconfdir@/network.d    
 
 
-#   The `qpps_dir` option overrides the default directory used to store
-#   application directories with network scripts and hooks.  Uncomment the
-#   line below to change the default location of the network scripts.
-# qpps_dir = @sysconfdir@/network.d/apps.d
-
-
 #   The `quiet` option surpresses normal output of bbfw.  To enable quiet mode,
 #   uncomment the line below and change the value to 'yes'.
 # quiet = no
@@ -79,6 +73,7 @@
 #   the following keywords:
 #
 #   global  - files within %{network_dir}/global.d/
+#   apps    - files within %{network_dir}/apps.d/<appname>.d/
 #   cluster - files within %{network_dir}/cluster.d/
 #   local   - files within %{network_dir}/
 #   builtin - built-in routines
