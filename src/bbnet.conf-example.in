@@ -45,12 +45,6 @@
 # verbose = yes
 
 
-#   The `net_up_script` option overrides the name of the script used to bring
-#   the network interfaces up.  This is to provide backwards support for
-#   systems using the up/down scripts from bindleadmin.
-# net_up_script = net-up
-
-
 #   The `net_down_script` option overrides the name of the script used to
 #   bring the network interfaces down.  This is to provide backwards support
 #   for systems using the up/down scripts from bindleadmin.

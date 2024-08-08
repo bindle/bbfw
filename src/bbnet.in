@@ -48,7 +48,6 @@ NET_CONF=@sysconfdir@/bbnet.conf
 NET_DIR=@sysconfdir@/network.d
 NET_QUIET=no
 NET_VERBOSE=no
-NET_NET_UP="net-up"
 NET_NET_DOWN="net-down"
 NET_PRE_HOOK="pre-hook"
 NET_POST_HOOK="post-hook"
@@ -140,7 +139,6 @@ config_check()
       # check for duplicate options
       OPTS=""
       OPTS="${OPTS} net_down_script"
-      OPTS="${OPTS} net_up_script"
       OPTS="${OPTS} network_dir"
       OPTS="${OPTS} order_down"
       OPTS="${OPTS} order_posthook"
@@ -380,7 +378,7 @@ do_start()
    for LEVEL in ${NET_ORDER_UP};do
       case "${LEVEL}" in
          apps)
-            for FILE in $( app_findfile ${NET_NET_UP} ); do
+            for FILE in $( app_findfile net-up ); do
                run_net "${FILE}" "starting app network (App: $(app_name ${FILE})) ..."
             done
          ;;
@@ -390,15 +388,15 @@ do_start()
          ;;
 
          global)
-            run_net "${NET_DIR}/global.d/${NET_NET_UP}"  "starting global network ..."
+            run_net "${NET_DIR}/global.d/net-up"  "starting global network ..."
          ;;
 
          cluster)
-            run_net "${NET_DIR}/cluster.d/${NET_NET_UP}" "starting cluster network ..."
+            run_net "${NET_DIR}/cluster.d/net-up" "starting cluster network ..."
          ;;
 
          local)
-            run_net "${NET_DIR}/${NET_NET_UP}"   "starting local network ..."
+            run_net "${NET_DIR}/net-up"   "starting local network ..."
          ;;
 
          *)
@@ -668,7 +666,6 @@ target_showconfig()
    echo "   network_dir       ${NET_DIR}"
    echo "   quiet             ${NET_QUIET}"
    echo "   verbose           ${NET_VERBOSE}"
-   echo "   net_up_script     ${NET_NET_UP}"
    echo "   net_down_script   ${NET_NET_DOWN}"
    echo "   pre_hook_script   ${NET_PRE_HOOK}"
    echo "   post_hook_script  ${NET_POST_HOOK}"
@@ -757,7 +754,6 @@ target_version()
 NET_DIR="$(            config_option network_dir       "${NET_DIR}" )"
 NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
 NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
-NET_NET_UP="$(         config_option net_up_script     "${NET_NET_UP}" )"
 NET_NET_DOWN="$(       config_option net_down_script   "${NET_NET_DOWN}" )"
 NET_PRE_HOOK="$(       config_option pre_hook_script   "${NET_PRE_HOOK}" )"
 NET_POST_HOOK="$(      config_option post_hook_script  "${NET_POST_HOOK}" )"
