@@ -45,12 +45,6 @@
 # verbose = yes
 
 
-#   The `net_down_script` option overrides the name of the script used to
-#   bring the network interfaces down.  This is to provide backwards support
-#   for systems using the up/down scripts from bindleadmin.
-# net_down_script = net-down
-
-
 #   The `pre_hook_script` option overrides the name of the pre-hook script
 #   which is run prior to bringing the network interfaces up or down.
 #   Uncomment the line below to change the default pre-hook name.

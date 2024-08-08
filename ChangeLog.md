@@ -4,7 +4,7 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
 0.27
   - bbnet: removing options apps_dir, network_dir, and global_dir
-  - bbnet: removing option net_up_script
+  - bbnet: removing options net_up_script and net_down_script
 
 0.26
   - bbfw: updating find_appfiles() for portability
