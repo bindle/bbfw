@@ -45,12 +45,6 @@
 # verbose = yes
 
 
-#   The `post_hook_script` option overrides the name of the psot-hook script
-#   which is run after bringing the network interfaces up or down.  Uncomment
-#   the line below to change the default post-hook name.
-# post_hook_script = post-hook
-
-
 #   Options which specify order of executions of network scripts and hooks use
 #   the following keywords:
 #
