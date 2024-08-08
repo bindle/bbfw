@@ -139,7 +139,6 @@ config_check()
    {
       # check for duplicate options
       OPTS=""
-      OPTS="${OPTS} global_dir"
       OPTS="${OPTS} net_down_script"
       OPTS="${OPTS} net_up_script"
       OPTS="${OPTS} network_dir"
@@ -338,7 +337,7 @@ do_hook_run()
 
    case "${HOOK_LEVEL}" in
       'apps')    HOOK_LEVEL_DIR="${NET_APPS}/${HOOK_APP}";;
-      'global')  HOOK_LEVEL_DIR="${NET_GLOBAL}";;
+      'global')  HOOK_LEVEL_DIR="${NET_DIR}/global.d";;
       'cluster') HOOK_LEVEL_DIR="${NET_DIR}/cluster.d";;
       'local')   HOOK_LEVEL_DIR="${NET_DIR}";;
       *) return 0;;
@@ -391,7 +390,7 @@ do_start()
          ;;
 
          global)
-            run_net "${NET_GLOBAL}/${NET_NET_UP}"  "starting global network ..."
+            run_net "${NET_DIR}/global.d/${NET_NET_UP}"  "starting global network ..."
          ;;
 
          cluster)
@@ -447,7 +446,7 @@ do_stop()
          ;;
 
          global)
-            run_net "${NET_GLOBAL}/${NET_NET_DOWN}"  "stopping global network ..."
+            run_net "${NET_DIR}/global.d/${NET_NET_DOWN}"  "stopping global network ..."
          ;;
 
          cluster)
@@ -667,7 +666,6 @@ target_showconfig()
    echo "Active Configuration:"
    echo "   configuration     ${NET_CONF}"
    echo "   network_dir       ${NET_DIR}"
-   echo "   global_dir        ${NET_GLOBAL}"
    echo "   apps_dir          ${NET_APPS}"
    echo "   quiet             ${NET_QUIET}"
    echo "   verbose           ${NET_VERBOSE}"
@@ -758,7 +756,6 @@ target_version()
 
 # sets options from configuration file
 NET_DIR="$(            config_option network_dir       "${NET_DIR}" )"
-NET_GLOBAL="$(         config_option global_dir        "${NET_DIR}/global.d" )"
 NET_APPS="$(           config_option apps_dir          "${NET_DIR}/apps.d" )"
 NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
 NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
