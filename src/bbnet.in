@@ -48,7 +48,6 @@ NET_CONF=@sysconfdir@/bbnet.conf
 NET_DIR=@sysconfdir@/network.d
 NET_QUIET=no
 NET_VERBOSE=no
-NET_PRE_HOOK="pre-hook"
 NET_POST_HOOK="post-hook"
 NET_ORDER_PRE="builtin global apps cluster local"
 NET_ORDER_POST="builtin global apps cluster local"
@@ -143,7 +142,6 @@ config_check()
       OPTS="${OPTS} order_prehook"
       OPTS="${OPTS} order_up"
       OPTS="${OPTS} post_hook_script"
-      OPTS="${OPTS} pre_hook_script"
       OPTS="${OPTS} quiet"
       OPTS="${OPTS} verbose"
       for OPT in ${OPTS}; do
@@ -340,7 +338,7 @@ do_hook_run()
    esac
 
    case "${HOOK_TYPE}" in
-      'pre-hook')  HOOK_SCRIPT="${HOOK_LEVEL_DIR}/${NET_PRE_HOOK}";;
+      'pre-hook')  HOOK_SCRIPT="${HOOK_LEVEL_DIR}/pre-hook";;
       'post-hook') HOOK_SCRIPT="${HOOK_LEVEL_DIR}/${NET_POST_HOOK}";;
       *) return 0;;
    esac
@@ -664,7 +662,6 @@ target_showconfig()
    echo "   network_dir       ${NET_DIR}"
    echo "   quiet             ${NET_QUIET}"
    echo "   verbose           ${NET_VERBOSE}"
-   echo "   pre_hook_script   ${NET_PRE_HOOK}"
    echo "   post_hook_script  ${NET_POST_HOOK}"
    echo "   order_prehook     ${NET_ORDER_PRE}"
    echo "   order_posthook    ${NET_ORDER_POST}"
@@ -751,7 +748,6 @@ target_version()
 NET_DIR="$(            config_option network_dir       "${NET_DIR}" )"
 NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
 NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
-NET_PRE_HOOK="$(       config_option pre_hook_script   "${NET_PRE_HOOK}" )"
 NET_POST_HOOK="$(      config_option post_hook_script  "${NET_POST_HOOK}" )"
 NET_ORDER_PRE="$(      config_option order_prehook     "${NET_ORDER_PRE}"       A-Z a-z )"
 NET_ORDER_POST="$(     config_option order_posthook    "${NET_ORDER_POST}"      A-Z a-z )"

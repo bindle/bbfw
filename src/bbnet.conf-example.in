@@ -45,12 +45,6 @@
 # verbose = yes
 
 
-#   The `pre_hook_script` option overrides the name of the pre-hook script
-#   which is run prior to bringing the network interfaces up or down.
-#   Uncomment the line below to change the default pre-hook name.
-# pre_hook_script = pre-hook
-
-
 #   The `post_hook_script` option overrides the name of the psot-hook script
 #   which is run after bringing the network interfaces up or down.  Uncomment
 #   the line below to change the default post-hook name.
