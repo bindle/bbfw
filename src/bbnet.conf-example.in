@@ -73,7 +73,7 @@
 #   the following keywords:
 #
 #   global  - files within %{network_dir}/global.d/
-#   apps    - files within %{network_dir}/apps.d/<appname>.d/
+#   apps    - files within %{network_dir}/apps.d/%{app}/
 #   cluster - files within %{network_dir}/cluster.d/
 #   local   - files within %{network_dir}/
 #   builtin - built-in routines
