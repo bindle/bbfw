@@ -45,7 +45,7 @@ export PATH
 NET_CONF=@sysconfdir@/bbnet.conf
 
 
-NET_LOCAL=@sysconfdir@/network.d
+NET_DIR=@sysconfdir@/network.d
 NET_QUIET=no
 NET_VERBOSE=no
 NET_NET_UP="net-up"
@@ -173,7 +173,7 @@ config_check()
       done
 
       # checks for network directory
-      if test ! -d "${NET_LOCAL}";then
+      if test ! -d "${NET_DIR}";then
          echo "error: network directory not found or does not exist"
          CONFIG_OK=no
       fi
@@ -341,7 +341,7 @@ do_hook_run()
       'apps')    HOOK_LEVEL_DIR="${NET_APPS}/${HOOK_APP}";;
       'global')  HOOK_LEVEL_DIR="${NET_GLOBAL}";;
       'cluster') HOOK_LEVEL_DIR="${NET_CLUSTER}";;
-      'local')   HOOK_LEVEL_DIR="${NET_LOCAL}";;
+      'local')   HOOK_LEVEL_DIR="${NET_DIR}";;
       *) return 0;;
    esac
 
@@ -400,7 +400,7 @@ do_start()
          ;;
 
          local)
-            run_net "${NET_LOCAL}/${NET_NET_UP}"   "starting local network ..."
+            run_net "${NET_DIR}/${NET_NET_UP}"   "starting local network ..."
          ;;
 
          *)
@@ -456,7 +456,7 @@ do_stop()
          ;;
 
          local)
-            run_net "${NET_LOCAL}/${NET_NET_DOWN}"   "stopping local network ..."
+            run_net "${NET_DIR}/${NET_NET_DOWN}"   "stopping local network ..."
          ;;
 
          *)
@@ -667,7 +667,7 @@ target_showconfig()
    do_version
    echo "Active Configuration:"
    echo "   configuration     ${NET_CONF}"
-   echo "   network_dir       ${NET_LOCAL}"
+   echo "   network_dir       ${NET_DIR}"
    echo "   cluster_dir       ${NET_CLUSTER}"
    echo "   global_dir        ${NET_GLOBAL}"
    echo "   apps_dir          ${NET_APPS}"
@@ -759,10 +759,10 @@ target_version()
 ############
 
 # sets options from configuration file
-NET_LOCAL="$(          config_option network_dir       "${NET_LOCAL}" )"
-NET_CLUSTER="$(        config_option cluster_dir       "${NET_LOCAL}/cluster.d" )"
-NET_GLOBAL="$(         config_option global_dir        "${NET_LOCAL}/global.d" )"
-NET_APPS="$(           config_option apps_dir          "${NET_LOCAL}/apps.d" )"
+NET_DIR="$(            config_option network_dir       "${NET_DIR}" )"
+NET_CLUSTER="$(        config_option cluster_dir       "${NET_DIR}/cluster.d" )"
+NET_GLOBAL="$(         config_option global_dir        "${NET_DIR}/global.d" )"
+NET_APPS="$(           config_option apps_dir          "${NET_DIR}/apps.d" )"
 NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
 NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
 NET_NET_UP="$(         config_option net_up_script     "${NET_NET_UP}" )"
