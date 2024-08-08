@@ -2,6 +2,9 @@
 Bindle Binaries Linux Firewall
 Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
+0.27
+  - bbnet: removing option network_dir
+
 0.26
   - bbfw: updating find_appfiles() for portability
   - bbfw: adding 'showconfig' option

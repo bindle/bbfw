@@ -34,12 +34,6 @@
 # network_dir = @sysconfdir@/network.d    
 
 
-#   The `cluster_dir` option overrides the default directory used to store
-#   cluster network scripts and hooks.  Uncomment the line below to
-#   change the default location of the network scripts.
-# cluster_dir = @sysconfdir@/network.d/cluster.d
-
-
 #   The `global_dir` option overrides the default directory used to store
 #   global network scripts and hooks.  Uncomment the line below to
 #   change the default location of the network scripts.
@@ -91,7 +85,7 @@
 #   the following keywords:
 #
 #   global  - files within %{global_dir}/
-#   cluster - files within %{cluster_dir}/
+#   cluster - files within %{network_dir}/cluster.d/
 #   local   - files within %{network_dir}/
 #   builtin - built-in routines
 
