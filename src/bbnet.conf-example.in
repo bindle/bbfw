@@ -98,7 +98,7 @@
 #   configured on an individual directory will be used.  Configuring multiple
 #   synchronization methods in the same directory are not supported.
 #
-#   Placing a file named `.sync_disabled` in the directory to disable
+#   Placing a file named `.sync_disabled` in the directory will disable
 #   synchronization for an individual directory.
 #
 #   The following synchronization methods are supported:
@@ -135,7 +135,7 @@
 
 #   The `sync_on_start` option determines wether synchronization is
 #   performed before the network is started. To disable synchronization before
-#   starting the network, uncomment the line below and change the #   value to
+#   starting the network, uncomment the line below and change the value to
 #   'yes'.
 # sync_on_start = no
 
