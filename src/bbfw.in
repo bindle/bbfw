@@ -207,7 +207,7 @@ config_check()
       done
 
       # check numeric options
-      OPTS="" 
+      OPTS=""
       for OPT in ${OPTS}; do
          config_option "${OPT}" |egrep '^([0-9]{1,5}){0,1}$' > /dev/null
          if test ${?} -ne 0;then
