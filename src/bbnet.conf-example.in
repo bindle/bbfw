@@ -53,6 +53,7 @@
 #   cluster - files within %{network_dir}/cluster.d/
 #   local   - files within %{network_dir}/
 #   builtin - built-in routines
+#   none    - does nothing, can be used to disable feature
 
 
 #   The `order_prehook` option defines the order in which pre-hooks are

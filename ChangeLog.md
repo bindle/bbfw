@@ -6,6 +6,7 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
   - bbnet: removing options apps_dir, network_dir, and global_dir
   - bbnet: removing options net_up_script and net_down_script
   - bbnet: removing options pre_hook_script and post_hook_script
+  - bbnet: adding ability to disable a feature by setting the order to none
 
 0.26
   - bbfw: updating find_appfiles() for portability
