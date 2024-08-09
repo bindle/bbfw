@@ -631,6 +631,7 @@ do_sync_dir()
          git)     do_sync_method_git    && return 0;;
          rsync)   do_sync_method_rsync  && return 0;;
          script)  do_sync_method_script && return 0;;
+         none)    ;;
          *)       echo "unknown: ${SYNC_DESC}"; ;;
       esac
    done
