@@ -224,6 +224,7 @@ config_check()
          TMP_GLOBAL=0
          TMP_CLUSTER=0
          TMP_LOCAL=0
+         TMP_NONE=0
          for VAL in $(config_option ${OPT} "builtin" A-Z a-z); do
             case "${VAL}" in
                apps)    TMP_APPS=$((${TMP_APPS}+1)) ;;
@@ -231,6 +232,7 @@ config_check()
                global)  TMP_GLOBAL=$((${TMP_GLOBAL}+1)) ;;
                cluster) TMP_CLUSTER=$((${TMP_CLUSTER}+1)) ;;
                local)   TMP_LOCAL=$((${TMP_LOCAL}+1)) ;;
+               none)    TMP_NONE=$((${TMP_NONE}+1)) ;;
                *)       echo "config error: unknown value '${VAL}' for order in '${OPT}'"
                         CONFIG_OK=no
                         ;;
@@ -254,6 +256,10 @@ config_check()
          fi
          if test ${TMP_LOCAL} -gt 1;then
             echo "config error: duplicate level 'local' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_NONE} -gt 1;then
+            echo "config error: duplicate level 'none' for order in '${OPT}'"
             CONFIG_OK=no
          fi
       done
@@ -361,6 +367,7 @@ do_hook()
          global)  do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
          cluster) do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
          local)   do_hook_run "${HOOK_TARGET}" "${HOOK_TYPE}" "${HOOK_LEVEL}" ;;
+         none)    ;;
          *)       echo "Unknown ${HOOK_TYPE} order \"${HOOK_LEVEL}\""; return 1; ;;
       esac
    done
@@ -431,6 +438,7 @@ do_start()
          global)  do_start_load ipset ${FW_PREFIX}/global.d/ipsets   "adding global IP sets" ;;
          cluster) do_start_load ipset ${FW_PREFIX}/cluster.d/ipsets  "adding cluster IP sets" ;;
          local)   do_start_load ipset ${FW_PREFIX}/ipsets            "adding local IP sets" ;;
+         none)    ;;
          *)       echo "Unknown ipsets order \"${LEVEL}\"" ;;
       esac
    done
@@ -467,6 +475,8 @@ do_start()
                   do_start_load iptables  ${FW_PREFIX}/global.d/rules    "adding IPv4/IPv6 global rules"
                   do_start_load ip6tables ${FW_PREFIX}/global.d/rules
                   ;;
+
+         none)    ;;
 
          *)       echo "Unknown iptables order \"${LEVEL}\""
                   ;;

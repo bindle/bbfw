@@ -52,6 +52,7 @@
 #   apps    - files within %{firewall_dir}/apps.d/%{app}/
 #   cluster - files within %{firewall_dir}/cluster.d/
 #   local   - files within %{firewall_dir}/
+#   none    - does nothing, can be used to disable feature
 #
 #   Types of files are always processed in the following order:
 #

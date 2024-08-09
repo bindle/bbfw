@@ -3,6 +3,7 @@ Bindle Binaries Linux Firewall
 Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
 0.27
+  - bbfw: adding ability to disable a feature by setting the order to none
   - bbnet: removing options apps_dir, network_dir, and global_dir
   - bbnet: removing options net_up_script and net_down_script
   - bbnet: removing options pre_hook_script and post_hook_script
