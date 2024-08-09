@@ -162,6 +162,16 @@ config_check()
          fi
       done
 
+      # check numeric options
+      OPTS=""
+      for OPT in ${OPTS}; do
+         config_option "${OPT}" |egrep '^([0-9]{1,5}){0,1}$' > /dev/null
+         if test ${?} -ne 0;then
+            echo "config error: invalid config value for '${OPT}'"
+            CONFIG_OK=no
+         fi
+      done
+
       # checks for network directory
       if test ! -d "${NET_DIR}";then
          echo "error: network directory not found or does not exist"
