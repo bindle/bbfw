@@ -84,4 +84,60 @@
 # order_down = local cluster apps global builtin
 
 
+#   The `order_sync` option defines the order in which network files are
+#   synchronized.  To modify the order in which files are synchronized,
+#   uncomment the line below and modify the order of the key words.  See above
+#   for keyword descriptions.  The 'local', 'builtin', and 'none' keywords are
+#   ignored.
+# order_sync = cluster apps global
+
+
+#   The `sync_priority` option defines the order in which synchronization
+#   methods take precedence.  Synchronization will be attempted for global,
+#   cluster, and application directories.  The first method which is
+#   configured on an individual directory will be used.  Configuring multiple
+#   synchronization methods in the same directory are not supported.
+#
+#   Placing a file named `.sync_disabled` in the directory to disable
+#   synchronization for an individual directory.
+#
+#   The following synchronization methods are supported:
+#      git     - Use git to synchronize files.  Looks for %{dir}/.git
+#      rsync   - Use rsync to synchronize files. Set URL in %{dir}/.rsync
+#      script  - Use %{dir}/sync script to synchronize files.
+#      none    - does nothing, can be used to disable synchronization
+#
+#   To modify the order of synchronization precedence, uncomment the line
+#   below and modify the order of the key words.
+# sync_priority = script git rsync
+
+
+#   The `sync_timeout` option defines the synchronization timeout used for
+#   the git and rsync methods.  To modify the synchronization timeout,
+#   uncomment the line below and modify the value.
+# sync_timeout = 60
+
+
+#   The `sync_restarts` option determines wether the network is restarted if a
+#   change is detected during synchronization.  A synchronization script
+#   indicates that files were changed by returning an exit code of 2. To
+#   disable restarting the network when changes are detected, uncomment the
+#   line below and change the value to 'no'.
+# sync_restarts = no
+
+
+#   The `sync_on_restart` option determines wether synchronization is
+#   performed before the network is restarted. To disable synchronization
+#   before restarting the network, uncomment the line below and change the
+#   value to 'no'.
+# sync_on_restart = no
+
+
+#   The `sync_on_start` option determines wether synchronization is
+#   performed before the network is started. To disable synchronization before
+#   starting the network, uncomment the line below and change the #   value to
+#   'yes'.
+# sync_on_start = no
+
+
 # end of configuration
