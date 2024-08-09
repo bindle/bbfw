@@ -1009,19 +1009,19 @@ target_version()
 ############
 
 # sets options from configuration file
-NET_DIR="$(            config_option network_dir       "${NET_DIR}" )"
-NET_QUIET="$(          config_option quiet             "${NET_QUIET}"           A-Z a-z )"
-NET_VERBOSE="$(        config_option verbose           "${NET_VERBOSE}"         A-Z a-z )"
-NET_ORDER_PRE="$(      config_option order_prehook     "${NET_ORDER_PRE}"       A-Z a-z )"
-NET_ORDER_POST="$(     config_option order_posthook    "${NET_ORDER_POST}"      A-Z a-z )"
-NET_ORDER_UP="$(       config_option order_up          "${NET_ORDER_UP}"        A-Z a-z )"
-NET_ORDER_DOWN="$(     config_option order_down        "${NET_ORDER_DOWN}"      A-Z a-z )"
-NET_ORDER_SYNC="$(     config_option order_sync        "${NET_ORDER_SYNC}"      A-Z a-z )"
-NET_SYNC_ON_RESTART="$(config_option sync_on_restart   "${NET_SYNC_ON_RESTART}" A-Z a-z )"
-NET_SYNC_ON_START="$(  config_option sync_on_start     "${NET_SYNC_ON_START}"   A-Z a-z )"
-NET_SYNC_PRIORITY="$(  config_option sync_priority     "${NET_SYNC_PRIORITY}"   A-Z a-z )"
-NET_SYNC_RESTARTS="$(  config_option sync_restarts     "${NET_SYNC_RESTARTS}"   A-Z a-z )"
-NET_SYNC_TIMEOUT="$(   config_option sync_timeout      "${NET_SYNC_TIMEOUT}"    A-Z a-z )"
+NET_DIR="$(              config_option network_dir      "${NET_DIR}" )"
+NET_QUIET="$(            config_option quiet            "${NET_QUIET}"            A-Z a-z )"
+NET_VERBOSE="$(          config_option verbose          "${NET_VERBOSE}"          A-Z a-z )"
+NET_ORDER_PRE="$(        config_option order_prehook    "${NET_ORDER_PRE}"        A-Z a-z )"
+NET_ORDER_POST="$(       config_option order_posthook   "${NET_ORDER_POST}"       A-Z a-z )"
+NET_ORDER_UP="$(         config_option order_up         "${NET_ORDER_UP}"         A-Z a-z )"
+NET_ORDER_DOWN="$(       config_option order_down       "${NET_ORDER_DOWN}"       A-Z a-z )"
+NET_ORDER_SYNC="$(       config_option order_sync       "${NET_ORDER_SYNC}"       A-Z a-z )"
+NET_SYNC_ON_RESTART="$(  config_option sync_on_restart  "${NET_SYNC_ON_RESTART}"  A-Z a-z )"
+NET_SYNC_ON_START="$(    config_option sync_on_start    "${NET_SYNC_ON_START}"    A-Z a-z )"
+NET_SYNC_PRIORITY="$(    config_option sync_priority    "${NET_SYNC_PRIORITY}"    A-Z a-z )"
+NET_SYNC_RESTARTS="$(    config_option sync_restarts    "${NET_SYNC_RESTARTS}"    A-Z a-z )"
+NET_SYNC_TIMEOUT="$(     config_option sync_timeout     "${NET_SYNC_TIMEOUT}"     A-Z a-z )"
 
 
 case "$1" in
