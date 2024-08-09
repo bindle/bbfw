@@ -714,13 +714,13 @@ target_version()
 ############
 
 # sets options from configuration file
-FW_DIR="$(            config_option firewall_dir     "${FW_DIR}" )"
-FW_QUIET="$(          config_option quiet            "${FW_QUIET}"          A-Z a-z )"
-FW_VERBOSE="$(        config_option verbose          "${FW_VERBOSE}"        A-Z a-z )"
-FW_ORDER_PRE="$(      config_option order_prehook    "${FW_ORDER_PRE}"      A-Z a-z )"
-FW_ORDER_POST="$(     config_option order_posthook   "${FW_ORDER_POST}"     A-Z a-z )"
-FW_ORDER_IPTABLES="$( config_option order_iptables   "${FW_ORDER_IPTABLES}" A-Z a-z )"
-FW_ORDER_IPSETS="$(   config_option order_ipsets     "${FW_ORDER_IPSETS}"   A-Z a-z )"
+FW_DIR="$(              config_option firewall_dir     "${FW_DIR}" )"
+FW_QUIET="$(            config_option quiet            "${FW_QUIET}"            A-Z a-z )"
+FW_VERBOSE="$(          config_option verbose          "${FW_VERBOSE}"          A-Z a-z )"
+FW_ORDER_PRE="$(        config_option order_prehook    "${FW_ORDER_PRE}"        A-Z a-z )"
+FW_ORDER_POST="$(       config_option order_posthook   "${FW_ORDER_POST}"       A-Z a-z )"
+FW_ORDER_IPTABLES="$(   config_option order_iptables   "${FW_ORDER_IPTABLES}"   A-Z a-z )"
+FW_ORDER_IPSETS="$(     config_option order_ipsets     "${FW_ORDER_IPSETS}"     A-Z a-z )"
 
 
 case "$1" in
