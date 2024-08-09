@@ -28,20 +28,20 @@
 #   SUCH DAMAGE.
 
 
-#   The `firewall_dir` option overrides the default directory used to store
+#   The `network_dir` option overrides the default directory used to store
 #   host specific network scripts and hooks.  Uncomment the line below to
 #   change the default location of the network scripts.
 # network_dir = @sysconfdir@/network.d    
 
 
-#   The `quiet` option surpresses normal output of bbfw.  To enable quiet mode,
+#   The `quiet` option surpresses normal output of bbnet.  To enable quiet mode,
 #   uncomment the line below and change the value to 'yes'.
 # quiet = no
 
 
 #   The `verbose` option enables verbose output for utilities which support
-#   verbose flags (currently only iptables).  To enable verbose output,
-#   uncomment the line below and change the value to 'yes'.
+#   verbose flags.  To enable verbose output, uncomment the line below and
+#   change the value to 'yes'.
 # verbose = yes
 
 
@@ -59,28 +59,28 @@
 #   The `order_prehook` option defines the order in which pre-hooks are
 #   executed.  To modify the order in which pre-hooks are executed, uncomment
 #   the line below and modify the order of the key words.  See above for
-#   keyword descriptions.
+#   keyword descriptions.  The 'none' keyword is ignored.
 # order_prehook = builtin global apps cluster local
 
 
 #   The `order_posthook` option defines the order in which post-hooks are
 #   executed.  To modify the order in which post-hooks are executed, uncomment
 #   the line below and modify the order of the key words.  See above for
-#   keyword descriptions.
+#   keyword descriptions.  The 'none' keyword is ignored.
 # order_posthook = builtin global apps cluster local
 
 
 #   The `order_up` option defines the order in which network up scripts are
-#   executed.  To modify the order in which post-hooks are executed, uncomment
+#   executed.  To modify the order in which up scripts are executed, uncomment
 #   the line below and modify the order of the key words.  See above for
-#   keyword descriptions.
+#   keyword descriptions. The 'none' keyword is ignored.
 # order_up = builtin global apps cluster local
 
 
 #   The `order_down` option defines the order in which network down scripts
-#   are executed.  To modify the order in which post-hooks are executed,
+#   are executed.  To modify the order in which down scripts are executed,
 #   uncomment the line below and modify the order of the key words.  See above
-#   for keyword descriptions.
+#   for keyword descriptions.  The 'none' keyword is ignored.
 # order_down = local cluster apps global builtin
 
 
