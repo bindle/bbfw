@@ -411,31 +411,15 @@ do_stop()
    # run network
    for LEVEL in ${NET_ORDER_DOWN};do
       case "${LEVEL}" in
-         apps)
-            for FILE in $( app_findfile net-down ); do
-               run_net "${FILE}" "stopping app network (App: $(app_name ${FILE})) ..."
-            done
-         ;;
-
-         builtin)
-            do_stop_builtin
-         ;;
-
-         global)
-            run_net "${NET_DIR}/global.d/net-down"  "stopping global network ..."
-         ;;
-
-         cluster)
-            run_net "${NET_DIR}/cluster.d/net-down" "stopping cluster network ..."
-         ;;
-
-         local)
-            run_net "${NET_DIR}/net-down"   "stopping local network ..."
-         ;;
-
-         *)
-            echo "Unknown network up order \"${LEVEL}\""
-         ;;
+         apps)    for FILE in $( app_findfile net-down ); do
+                     run_net "${FILE}" "stopping app network (App: $(app_name ${FILE})) ..."
+                  done
+                  ;;
+         builtin) do_stop_builtin ;;
+         global)  run_net "${NET_DIR}/global.d/net-down"  "stopping global network ..." ;;
+         cluster) run_net "${NET_DIR}/cluster.d/net-down" "stopping cluster network ..." ;;
+         local)   run_net "${NET_DIR}/net-down"           "stopping local network ..." ;;
+         *)       echo "Unknown network up order \"${LEVEL}\"" ;;
       esac
    done
 
