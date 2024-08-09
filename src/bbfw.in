@@ -86,6 +86,22 @@ FW_ORDER_PRE="global apps cluster local"
 FW_ORDER_POST="global apps cluster local"
 FW_ORDER_IPSETS="global apps cluster local"
 FW_ORDER_IPTABLES="apps local cluster global"
+FW_ORDER_SYNC="cluster apps global"
+FW_SYNC_ON_RESTART=yes
+FW_SYNC_ON_START=no
+FW_SYNC_PRIORITY="script git rsync"
+FW_SYNC_RESTARTS=yes
+FW_SYNC_TIMEOUT=60
+
+
+FW_SYNC_DID_UPDATE=no
+export FW_SYNC_DID_UPDATE
+
+
+GIT_HTTP_LOW_SPEED_LIMIT=1000
+GIT_HTTP_LOW_SPEED_TIME=5
+export GIT_HTTP_LOW_SPEED_LIMIT
+export GIT_HTTP_LOW_SPEED_TIME
 
 
 ###########
@@ -186,6 +202,12 @@ config_check()
       OPTS="${OPTS} order_posthook"
       OPTS="${OPTS} order_iptables"
       OPTS="${OPTS} order_ipsets"
+      OPTS="${OPTS} order_sync"
+      OPTS="${OPTS} sync_on_restart"
+      OPTS="${OPTS} sync_on_start"
+      OPTS="${OPTS} sync_priority"
+      OPTS="${OPTS} sync_restarts"
+      OPTS="${OPTS} sync_timeout"
       for OPT in ${OPTS}; do
          config_option "${OPT}" > /dev/null
          if test ${?} -ne 0;then
@@ -197,6 +219,9 @@ config_check()
       # check boolean options
       OPTS=""
       OPTS="${OPTS} quiet"
+      OPTS="${OPTS} sync_on_restart"
+      OPTS="${OPTS} sync_on_start"
+      OPTS="${OPTS} sync_restarts"
       OPTS="${OPTS} verbose"
       for OPT in ${OPTS}; do
          config_option "${OPT}" |egrep -i '^yes$|^no$|^$' > /dev/null
@@ -208,6 +233,7 @@ config_check()
 
       # check numeric options
       OPTS=""
+      OPTS="${OPTS} sync_timeout"
       for OPT in ${OPTS}; do
          config_option "${OPT}" |egrep '^([0-9]{1,5}){0,1}$' > /dev/null
          if test ${?} -ne 0;then
@@ -228,6 +254,7 @@ config_check()
       OPTS="${OPTS} order_posthook"
       OPTS="${OPTS} order_iptables"
       OPTS="${OPTS} order_ipsets"
+      OPTS="${OPTS} order_sync"
       for OPT in ${OPTS}; do
          TMP_APPS=0
          TMP_BUILTIN=0
@@ -270,6 +297,43 @@ config_check()
          fi
          if test ${TMP_NONE} -gt 1;then
             echo "config error: duplicate level 'none' for order in '${OPT}'"
+            CONFIG_OK=no
+         fi
+      done
+
+      # check sync priority options
+      OPTS=""
+      OPTS="${OPTS} sync_priority"
+      for OPT in ${OPTS}; do
+         TMP_GIT=0
+         TMP_NONE=0
+         TMP_RSYNC=0
+         TMP_SCRIPT=0
+         for VAL in $(config_option ${OPT} "git" A-Z a-z); do
+            case "${VAL}" in
+               git)     TMP_GIT=$((${TMP_GIT}+1)) ;;
+               none)    TMP_NONE=$((${TMP_NONE}+1)) ;;
+               rsync)   TMP_RSYNC=$((${TMP_RSYNC}+1)) ;;
+               script)  TMP_SCRIPT=$((${TMP_SCRIPT}+1)) ;;
+               *)       echo "config error: unknown value '${VAL}' for priority in '${OPT}'"
+                        CONFIG_OK=no
+                        ;;
+            esac
+         done
+         if test ${TMP_GIT} -gt 1;then
+            echo "config error: duplicate priority 'git' in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_NONE} -gt 1;then
+            echo "config error: duplicate priority 'none' in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_RSYNC} -gt 1;then
+            echo "config error: duplicate priority 'rsync' in '${OPT}'"
+            CONFIG_OK=no
+         fi
+         if test ${TMP_SCRIPT} -gt 1;then
+            echo "config error: duplicate priority 'script' in '${OPT}'"
             CONFIG_OK=no
          fi
       done
@@ -567,6 +631,152 @@ do_stop()
 }
 
 
+do_sync()
+{
+   for LEVEL in ${FW_ORDER_SYNC}; do
+      case "${LEVEL}" in
+         apps)    do_sync_dir "${FW_DIR}/apps.d"    "syncing apps root files %s ..." ;
+                  for APP in $( app_list ); do
+                     do_sync_dir "${FW_DIR}/apps.d/${APP}" "syncing app files %s (App: ${APP}) ...";
+                  done;
+                  ;;
+         global)  do_sync_dir "${FW_DIR}/global.d"  "syncing global files %s ..." ;;
+         cluster) do_sync_dir "${FW_DIR}/cluster.d" "syncing cluster files %s ..." ;;
+         builtin) ;;
+         local)   ;;
+         none)    ;;
+         *)       echo "Unknown sync priority \"${PRIORITY}\"" ;;
+      esac
+   done
+
+   export FW_SYNC_DID_UPDATE
+
+   return 0;
+}
+
+
+do_sync_dir()
+{
+   SYNC_DIR="${1}"
+   SYNC_DESC="${2}"
+
+   if test -e "${SYNC_DIR}/.sync_disabled"; then
+      printf "${SYNC_DESC}\n" "disabled";
+      return 0;
+   fi
+
+   for PRIORITY in ${FW_SYNC_PRIORITY}; do
+      case "${PRIORITY}" in
+         git)     do_sync_method_git    && return 0;;
+         rsync)   do_sync_method_rsync  && return 0;;
+         script)  do_sync_method_script && return 0;;
+         none)    ;;
+         *)       echo "unknown: ${SYNC_DESC}"; ;;
+      esac
+   done
+
+   return 0;
+}
+
+
+do_sync_method_git()
+{
+   if test ! -d "${SYNC_DIR}/.git" && test ! -f "${SYNC_DIR}/.git"; then
+      return 1;
+   fi
+
+   printf "${SYNC_DESC}\n" "via git";
+
+   # determine if the timeout util is available
+   TIMEOUT_UTIL="$(which timeout 2> /dev/null)"
+   if test ! -z "${TIMEOUT_UTIL}";then
+      TIMEOUT_UTIL="${TIMEOUT_UTIL} ${FW_SYNC_TIMEOUT}"
+   fi
+
+   # run git
+   (
+      cd ${SYNC_DIR} || return 1;
+
+      URL="$(git remote get-url origin 2>/dev/null)"
+      if test -z "${URL}"; then
+         echo "missing git remote 'origin', not syncing"
+         return 0;
+      fi
+
+      BRANCH="$(git branch |grep '^* ' |awk '{print$2}')"
+      if test -z "${BRANCH}"; then
+         echo "unable to determine git branch, not syncing"
+         return 0;
+      fi
+
+      # fetch remote updates and check for differences
+      ${TIMEOUT_UTIL} git fetch origin || return 0;
+      git diff \
+         --exit-code \
+         origin/${BRANCH} \
+         > /dev/null \
+         2> /dev/null \
+         || FW_SYNC_DID_UPDATE=yes;
+
+      # merge changes
+      git checkout .                                  || return 0;
+      git merge origin/${BRANCH}                      || return 0;
+      git submodule update --init --recursive --merge || return 0;
+   )
+
+   return 0;
+}
+
+
+do_sync_method_rsync()
+{
+   if test ! -r "${SYNC_DIR}/.rsync"; then
+      return 1;
+   fi
+
+   printf "${SYNC_DESC}\n" "via rsync";
+
+   # determine if the timeout util is available
+   TIMEOUT_UTIL="$(which timeout 2> /dev/null)"
+   if test ! -z "${TIMEOUT_UTIL}";then
+      TIMEOUT_UTIL="${TIMEOUT_UTIL} ${FW_SYNC_TIMEOUT}"
+   fi
+
+   RSYNC_URL="$(cat "${SYNC_DIR}/.rsync")"
+   if test -z "${RSYNC_URL}"; then
+      echo "the .rsync file is empty, not syncing"
+      return 0;
+   fi
+
+   # run rsync
+   RSYNC_ARGS="${TIMEOUT_UTIL} rsync -aim --delete --exclude=.rsync"
+   RSYNC_OUTPUT="$(${RSYNC_ARGS} $(RSYNC_URL) ${SYNC_DIR})"
+   if test ! -z "${RSYNC_OUTPUT}"; then
+      FW_SYNC_DID_UPDATE=yes;
+   fi;
+
+   return 0;
+}
+
+
+do_sync_method_script()
+{
+   if test ! -x "${SYNC_DIR}/sync"; then
+      return 1
+   fi
+
+   printf "${SYNC_DESC}\n" "via script";
+   ${SYNC_DIR}/sync
+   case $? in
+      0) return 0;;
+      1) return 1;;
+      2) return 2; FW_SYNC_DID_UPDATE=yes;;
+      *) return 1;;
+   esac
+   return 0;
+}
+
+
 do_version()
 {
    echo "${PACKAGE_NAME} ${PACKAGE_VERSION} (bbfw)";
@@ -602,6 +812,18 @@ target_restart()
    # minimal config check
    config_verify  || return 1
 
+   # sync files before starting network
+   if test "${FW_SYNC_ON_RESTART}" == "yes"; then
+      # run pre-hooks
+      do_hook sync pre-hook "${FW_ORDER_PRE}" || return 1;
+
+      # sync files
+      do_sync || return 1;
+
+      # run post-hooks
+      do_hook sync post-hook "${FW_ORDER_POST}" || return 1;
+   fi
+
    # run pre-hooks
    do_hook stop pre-hook "${FW_ORDER_PRE}" || return 1;
 
@@ -636,6 +858,12 @@ target_showconfig()
    echo "   order_posthook    ${FW_ORDER_POST}"
    echo "   order_up          ${FW_ORDER_IPTABLES}"
    echo "   order_down        ${FW_ORDER_IPSETS}"
+   echo "   order_sync        ${FW_ORDER_SYNC}"
+   echo "   sync_on_restart   ${FW_SYNC_ON_RESTART}"
+   echo "   sync_on_start     ${FW_SYNC_ON_START}"
+   echo "   sync_priority     ${FW_SYNC_PRIORITY}"
+   echo "   sync_restarts     ${FW_SYNC_RESTARTS}"
+   echo "   sync_timeout      ${FW_SYNC_TIMEOUT}"
    echo ""
    config_check > /dev/null 2> /dev/null
    if test $? -ne 0; then
@@ -655,6 +883,18 @@ target_start()
 
    # minimal config check
    config_verify  || return 1
+
+   # sync files before starting network
+   if test "${FW_SYNC_ON_START}" == "yes"; then
+      # run pre-hooks
+      do_hook sync pre-hook "${FW_ORDER_PRE}" || return 1;
+
+      # sync files
+      do_sync || return 1;
+
+      # run post-hooks
+      do_hook sync post-hook "${FW_ORDER_POST}" || return 1;
+   fi
 
    # run pre-hooks
    do_hook start pre-hook "${FW_ORDER_PRE}" || return 1;
@@ -690,9 +930,48 @@ target_stop()
 }
 
 
+# Function to synchronize config files
+target_sync()
+{
+   # show version
+   do_version
+
+   # minimal config check
+   config_verify || return 1;
+
+   # run pre-hooks
+   do_hook sync pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   # sync files
+   do_sync || return 1;
+
+   # run post-hooks
+   do_hook sync post-hook "${FW_ORDER_POST}" || return 1;
+
+   # determines if network should restart
+   if test "${FW_SYNC_RESTARTS}" != "yes"; then
+      return 0;
+   fi
+   if test "${FW_SYNC_DID_UPDATE}" != "yes"; then
+      return 0;
+   fi
+
+   # run pre-hooks
+   do_hook restart pre-hook "${FW_ORDER_PRE}" || return 1;
+
+   # run network
+   do_restart || return 1;
+
+   # run post-hooks
+   do_hook restart post-hook "${FW_ORDER_POST}" || return 1;
+
+   return 0
+}
+
+
 target_usage()
 {
-   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart ]"
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | sync ]"
    echo "       ${PROGRAM_NAME} [ dump | showconfig | checkconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
    echo "       ${PROGRAM_NAME} [ -v | --version ]"
@@ -721,6 +1000,12 @@ FW_ORDER_PRE="$(        config_option order_prehook    "${FW_ORDER_PRE}"        
 FW_ORDER_POST="$(       config_option order_posthook   "${FW_ORDER_POST}"       A-Z a-z )"
 FW_ORDER_IPTABLES="$(   config_option order_iptables   "${FW_ORDER_IPTABLES}"   A-Z a-z )"
 FW_ORDER_IPSETS="$(     config_option order_ipsets     "${FW_ORDER_IPSETS}"     A-Z a-z )"
+FW_ORDER_SYNC="$(       config_option order_sync       "${FW_ORDER_SYNC}"       A-Z a-z )"
+FW_SYNC_ON_RESTART="$(  config_option sync_on_restart  "${FW_SYNC_ON_RESTART}"  A-Z a-z )"
+FW_SYNC_ON_START="$(    config_option sync_on_start    "${FW_SYNC_ON_START}"    A-Z a-z )"
+FW_SYNC_PRIORITY="$(    config_option sync_priority    "${FW_SYNC_PRIORITY}"    A-Z a-z )"
+FW_SYNC_RESTARTS="$(    config_option sync_restarts    "${FW_SYNC_RESTARTS}"    A-Z a-z )"
+FW_SYNC_TIMEOUT="$(     config_option sync_timeout     "${FW_SYNC_TIMEOUT}"     A-Z a-z )"
 
 
 case "$1" in
@@ -731,6 +1016,7 @@ case "$1" in
    'start')          target_start         2>&1 |  $LOGGER  ;;
    'stop')           target_stop          2>&1 |  $LOGGER  ;;
    'showconfig')     target_showconfig         || exit 1   ;;
+   'sync')           target_sync          2>&1 |  $LOGGER  ;;
    'restart')        target_restart       2>&1 |  $LOGGER  ;;
    *)                target_usage              |  $LOGGER 1>&2;
                      exit 1;
