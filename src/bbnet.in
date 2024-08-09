@@ -53,6 +53,7 @@ NET_ORDER_POST="builtin global apps cluster local"
 NET_ORDER_UP="builtin global apps cluster local"
 NET_ORDER_DOWN="local cluster apps global builtin"
 NET_ORDER_SYNC="cluster apps global"
+NET_SYNC_ON_RESTART=yes
 NET_SYNC_PRIORITY="script git rsync"
 NET_SYNC_RESTARTS=yes
 NET_SYNC_TIMEOUT=60
@@ -156,6 +157,7 @@ config_check()
       OPTS="${OPTS} order_sync"
       OPTS="${OPTS} order_up"
       OPTS="${OPTS} quiet"
+      OPTS="${OPTS} sync_on_restart"
       OPTS="${OPTS} sync_priority"
       OPTS="${OPTS} sync_restarts"
       OPTS="${OPTS} sync_timeout"
@@ -171,6 +173,7 @@ config_check()
       # check boolean options
       OPTS=""
       OPTS="${OPTS} quiet"
+      OPTS="${OPTS} sync_on_restart"
       OPTS="${OPTS} sync_restarts"
       OPTS="${OPTS} verbose"
       for OPT in ${OPTS}; do
@@ -778,6 +781,18 @@ target_restart()
    # minimal config check
    config_verify || return 1;
 
+   # sync files before starting network
+   if test "${NET_SYNC_ON_RESTART}" == "yes"; then
+      # run pre-hooks
+      do_hook sync pre-hook "${NET_ORDER_PRE}" || return 1;
+
+      # sync files
+      do_sync || return 1;
+
+      # run post-hooks
+      do_hook sync post-hook "${NET_ORDER_POST}" || return 1;
+   fi
+
    # run pre-hooks
    do_hook restart pre-hook "${NET_ORDER_PRE}" || return 1;
 
@@ -855,6 +870,7 @@ target_showconfig()
    echo "   order_up          ${NET_ORDER_UP}"
    echo "   order_down        ${NET_ORDER_DOWN}"
    echo "   order_sync        ${NET_ORDER_SYNC}"
+   echo "   sync_on_restart   ${NET_SYNC_ON_RESTART}"
    echo "   sync_priority     ${NET_SYNC_PRIORITY}"
    echo "   sync_restarts     ${NET_SYNC_RESTARTS}"
    echo "   sync_timeout      ${NET_SYNC_TIMEOUT}"
@@ -983,6 +999,7 @@ NET_ORDER_POST="$(     config_option order_posthook    "${NET_ORDER_POST}"      
 NET_ORDER_UP="$(       config_option order_up          "${NET_ORDER_UP}"        A-Z a-z )"
 NET_ORDER_DOWN="$(     config_option order_down        "${NET_ORDER_DOWN}"      A-Z a-z )"
 NET_ORDER_SYNC="$(     config_option order_sync        "${NET_ORDER_SYNC}"      A-Z a-z )"
+NET_SYNC_ON_RESTART="$(config_option sync_on_restart   "${NET_SYNC_ON_RESTART}" A-Z a-z )"
 NET_SYNC_PRIORITY="$(  config_option sync_priority     "${NET_SYNC_PRIORITY}"   A-Z a-z )"
 NET_SYNC_RESTARTS="$(  config_option sync_restarts     "${NET_SYNC_RESTARTS}"   A-Z a-z )"
 NET_SYNC_TIMEOUT="$(   config_option sync_timeout      "${NET_SYNC_TIMEOUT}"    A-Z a-z )"
