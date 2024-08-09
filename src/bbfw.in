@@ -692,7 +692,8 @@ target_stop()
 
 target_usage()
 {
-   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | dump | checkconfig | showconfig ]"
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart ]"
+   echo "       ${PROGRAM_NAME} [ dump | showconfig | checkconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
    echo "       ${PROGRAM_NAME} [ -v | --version ]"
    echo ""
