@@ -987,7 +987,8 @@ target_sync()
 
 target_usage()
 {
-   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | show | showconfig | checkconfig ]"
+   echo "Usage: ${PROGRAM_NAME} [ start | stop | restart | sync ]"
+   echo "       ${PROGRAM_NAME} [ show | showconfig | checkconfig ]"
    echo "       ${PROGRAM_NAME} [ -h | --help ]"
    echo "       ${PROGRAM_NAME} [ -v | --version ]"
    echo ""
