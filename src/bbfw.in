@@ -78,7 +78,7 @@ export PATH
 
 
 # determine prefix of conf files
-FW_PREFIX=@sysconfdir@/firewall.d/
+FW_DIR=@sysconfdir@/firewall.d/
 FW_CONF=@sysconfdir@/bbfw.conf
 FW_QUIET=no
 FW_VERBOSE=no
@@ -113,11 +113,11 @@ fi
 
 app_findfile()
 {
-   if test ! -d "${FW_PREFIX}/apps.d"; then
+   if test ! -d "${FW_DIR}/apps.d"; then
       return 0;
    fi
    find -L \
-      "${FW_PREFIX}/apps.d" \
+      "${FW_DIR}/apps.d" \
       -mindepth 2 \
       -maxdepth 2 \
       -type f \
@@ -138,11 +138,11 @@ app_list()
 
 app_listdir()
 {
-   if test ! -d "${FW_PREFIX}/apps.d"; then
+   if test ! -d "${FW_DIR}/apps.d"; then
       return 0;
    fi
    find -L \
-      "${FW_PREFIX}/apps.d" \
+      "${FW_DIR}/apps.d" \
       -type d \
       -mindepth 1 \
       -maxdepth 1 \
@@ -217,7 +217,7 @@ config_check()
       done
 
       # checks for network directory
-      if test ! -d "${FW_PREFIX}";then
+      if test ! -d "${FW_DIR}";then
          echo "error: firewall directory not found or does not exist"
          CONFIG_OK=no
       fi
@@ -407,10 +407,10 @@ do_hook_run()
    HOOK_APP="${4}"
 
    case "${HOOK_LEVEL}" in
-      'apps')    HOOK_LEVEL_DIR="${FW_PREFIX}/apps.d/${HOOK_APP}";;
-      'global')  HOOK_LEVEL_DIR="${FW_PREFIX}/global.d";;
-      'cluster') HOOK_LEVEL_DIR="${FW_PREFIX}/cluster.d";;
-      'local')   HOOK_LEVEL_DIR="${FW_PREFIX}";;
+      'apps')    HOOK_LEVEL_DIR="${FW_DIR}/apps.d/${HOOK_APP}";;
+      'global')  HOOK_LEVEL_DIR="${FW_DIR}/global.d";;
+      'cluster') HOOK_LEVEL_DIR="${FW_DIR}/cluster.d";;
+      'local')   HOOK_LEVEL_DIR="${FW_DIR}";;
       *) return 0;;
    esac
 
@@ -445,9 +445,9 @@ do_start()
                   done
                   ;;
 
-         global)  do_start_load ipset ${FW_PREFIX}/global.d/ipsets   "adding global IP sets" ;;
-         cluster) do_start_load ipset ${FW_PREFIX}/cluster.d/ipsets  "adding cluster IP sets" ;;
-         local)   do_start_load ipset ${FW_PREFIX}/ipsets            "adding local IP sets" ;;
+         global)  do_start_load ipset ${FW_DIR}/global.d/ipsets   "adding global IP sets" ;;
+         cluster) do_start_load ipset ${FW_DIR}/cluster.d/ipsets  "adding cluster IP sets" ;;
+         local)   do_start_load ipset ${FW_DIR}/ipsets            "adding local IP sets" ;;
          none)    ;;
          *)       echo "Unknown ipsets order \"${LEVEL}\"" ;;
       esac
@@ -468,22 +468,22 @@ do_start()
                   done
                   ;;
 
-         local)   do_start_load iptables  ${FW_PREFIX}/rules4            "adding IPv4 local rules"
-                  do_start_load ip6tables ${FW_PREFIX}/rules6            "adding IPv6 local rules"
-                  do_start_load iptables  ${FW_PREFIX}/rules             "adding IPv4/IPv6 local rules"
-                  do_start_load ip6tables ${FW_PREFIX}/rules
+         local)   do_start_load iptables  ${FW_DIR}/rules4            "adding IPv4 local rules"
+                  do_start_load ip6tables ${FW_DIR}/rules6            "adding IPv6 local rules"
+                  do_start_load iptables  ${FW_DIR}/rules             "adding IPv4/IPv6 local rules"
+                  do_start_load ip6tables ${FW_DIR}/rules
                   ;;
 
-         cluster) do_start_load iptables  ${FW_PREFIX}/cluster.d/rules4  "adding IPv4 cluster rules"
-                  do_start_load ip6tables ${FW_PREFIX}/cluster.d/rules6  "adding IPv6 cluster rules"
-                  do_start_load iptables  ${FW_PREFIX}/cluster.d/rules   "adding IPv4/IPv6 cluster rules"
-                  do_start_load ip6tables ${FW_PREFIX}/cluster.d/rules
+         cluster) do_start_load iptables  ${FW_DIR}/cluster.d/rules4  "adding IPv4 cluster rules"
+                  do_start_load ip6tables ${FW_DIR}/cluster.d/rules6  "adding IPv6 cluster rules"
+                  do_start_load iptables  ${FW_DIR}/cluster.d/rules   "adding IPv4/IPv6 cluster rules"
+                  do_start_load ip6tables ${FW_DIR}/cluster.d/rules
                   ;;
 
-         global)  do_start_load iptables  ${FW_PREFIX}/global.d/rules4   "adding IPv4 global rules"
-                  do_start_load ip6tables ${FW_PREFIX}/global.d/rules6   "adding IPv6 global rules"
-                  do_start_load iptables  ${FW_PREFIX}/global.d/rules    "adding IPv4/IPv6 global rules"
-                  do_start_load ip6tables ${FW_PREFIX}/global.d/rules
+         global)  do_start_load iptables  ${FW_DIR}/global.d/rules4   "adding IPv4 global rules"
+                  do_start_load ip6tables ${FW_DIR}/global.d/rules6   "adding IPv6 global rules"
+                  do_start_load iptables  ${FW_DIR}/global.d/rules    "adding IPv4/IPv6 global rules"
+                  do_start_load ip6tables ${FW_DIR}/global.d/rules
                   ;;
 
          none)    ;;
@@ -629,7 +629,7 @@ target_showconfig()
    do_version
    echo "Active Configuration:"
    echo "   configuration     ${FW_CONF}"
-   echo "   firewall_dir      ${FW_PREFIX}"
+   echo "   firewall_dir      ${FW_DIR}"
    echo "   quiet             ${FW_QUIET}"
    echo "   verbose           ${FW_VERBOSE}"
    echo "   order_prehook     ${FW_ORDER_PRE}"
@@ -713,7 +713,7 @@ target_version()
 ############
 
 # sets options from configuration file
-FW_PREFIX="$(         config_option firewall_dir     "${FW_PREFIX}" )"
+FW_DIR="$(            config_option firewall_dir     "${FW_DIR}" )"
 FW_QUIET="$(          config_option quiet            "${FW_QUIET}"          A-Z a-z )"
 FW_VERBOSE="$(        config_option verbose          "${FW_VERBOSE}"        A-Z a-z )"
 FW_ORDER_PRE="$(      config_option order_prehook    "${FW_ORDER_PRE}"      A-Z a-z )"
