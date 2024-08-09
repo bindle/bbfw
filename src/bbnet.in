@@ -371,31 +371,15 @@ do_start()
    # run network
    for LEVEL in ${NET_ORDER_UP};do
       case "${LEVEL}" in
-         apps)
-            for FILE in $( app_findfile net-up ); do
-               run_net "${FILE}" "starting app network (App: $(app_name ${FILE})) ..."
-            done
-         ;;
-
-         builtin)
-            do_start_builtin
-         ;;
-
-         global)
-            run_net "${NET_DIR}/global.d/net-up"  "starting global network ..."
-         ;;
-
-         cluster)
-            run_net "${NET_DIR}/cluster.d/net-up" "starting cluster network ..."
-         ;;
-
-         local)
-            run_net "${NET_DIR}/net-up"   "starting local network ..."
-         ;;
-
-         *)
-            echo "Unknown network up order \"${LEVEL}\""
-         ;;
+         apps)    for FILE in $( app_findfile net-up ); do
+                     run_net "${FILE}" "starting app network (App: $(app_name ${FILE})) ..."
+                  done
+                  ;;
+         builtin) do_start_builtin ;;
+         global)  run_net "${NET_DIR}/global.d/net-up"  "starting global network ..." ;;
+         cluster) run_net "${NET_DIR}/cluster.d/net-up" "starting cluster network ..." ;;
+         local)   run_net "${NET_DIR}/net-up"           "starting local network ..." ;;
+         *)       echo "Unknown network up order \"${LEVEL}\"" ;;
       esac
    done
 
