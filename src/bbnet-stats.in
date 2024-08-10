@@ -1,0 +1,318 @@
+#! /bin/bash
+#
+#   Bindle Binaries Linux Firewall
+#   Copyright (C) 2024 Bindle Binaries <syzdek@bindlebinaries.com>.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of Bindle Binaries nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BINDLE BINARIES BE LIABLE FOR
+#   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+#
+
+###############
+# ENVIRONMENT #
+###############
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+NET_DEBUG=no
+NET_QUIET=no
+NET_VERBOSE=no
+NET_CONTINUE=no
+NET_INTERVAL=10
+#NET_IFACE='(lo|eth[.0-9]{1,})'
+NET_IFACE='.{1,}'
+NET_IFACE_MARK="---"
+
+
+###########
+# LOGGING #
+###########
+
+# sets script/package information
+PROGRAM_NAME="$(basename "${0}")"
+PACKAGE_NAME="$(echo '@PACKAGE_NAME@' |sed -e 's/[@].*[@]//g')"
+PACKAGE_VERSION="$(echo '@PACKAGE_VERSION@' |sed -e 's/[@].*[@]//g')"
+PACKAGE_BUGREPORT="$(echo '@PACKAGE_BUGREPORT@' |sed -e 's/[@].*[@]//g')"
+
+
+# If possible, log events in /var/log/messages:
+if [ -f /var/run/syslogd.pid -a -x logger ]; then
+  LOGGER="logger -s -t ${PROGRAM_NAME}[$$]"
+else # output to stdout/stderr:
+  LOGGER="sed -e s/^/${PROGRAM_NAME}:/g"
+fi
+
+
+#############
+# FUNCTIONS #
+#############
+
+gen_stats()
+{
+   REC="${1}"
+   DEV=$( echo $REC |cut -d: -f1)
+   NAM=$( echo $DEV |tr a-z A-Z |sed -e 's/\./_/g')
+   DAT2=$(echo $REC |cut -d: -f2-5)
+   eval DAT1=\$DEV_${NAM}
+   eval DEV_${NAM}=${DAT2}
+
+   RX_BYTES1=$(echo $DAT1|cut -d: -f1); RX_BYTES2=$(echo $DAT2|cut -d: -f1)
+   TX_BYTES1=$(echo $DAT1|cut -d: -f3); TX_BYTES2=$(echo $DAT2|cut -d: -f3)
+   RX_PCKTS1=$(echo $DAT1|cut -d: -f2); RX_PCKTS2=$(echo $DAT2|cut -d: -f2)
+   TX_PCKTS1=$(echo $DAT1|cut -d: -f4); TX_PCKTS2=$(echo $DAT2|cut -d: -f4)
+
+   RX_BYTES=$(( $(( ${RX_BYTES2} - ${RX_BYTES1} )) / ${NET_INTERVAL} ))
+   TX_BYTES=$(( $(( ${TX_BYTES2} - ${TX_BYTES1} )) / ${NET_INTERVAL} ))
+   RX_PCKTS=$(( $(( ${RX_PCKTS2} - ${RX_PCKTS1} )) / ${NET_INTERVAL} ))
+   TX_PCKTS=$(( $(( ${TX_PCKTS2} - ${TX_PCKTS1} )) / ${NET_INTERVAL} ))
+
+   RX_AVG=0
+   TX_AVG=0
+   if test ${RX_PCKTS} -ne 0; then
+      RX_AVG=$((   ${RX_BYTES} / ${RX_PCKTS} ))
+   fi
+   if test ${TX_PCKTS} -ne 0; then
+      TX_AVG=$((   ${TX_BYTES} / ${TX_PCKTS} ))
+   fi
+
+   RX_BYTES=$(( ${RX_BYTES} * 8 ))
+   TX_BYTES=$(( ${TX_BYTES} * 8 ))
+
+   if test ${RX_BYTES} -ge $((1024*1024*1024)); then
+      RX_BYTES="$((${RX_BYTES} / 1073741824)) Gbps";
+   elif test ${RX_BYTES} -ge $((1024*1024)); then
+      RX_BYTES="$((${RX_BYTES} / 1048576)) Mbps";
+   elif test ${RX_BYTES} -ge 1024; then
+      RX_BYTES="$((${RX_BYTES} / 1024)) Kbps";
+   else
+      RX_BYTES="${RX_BYTES}  bps"
+   fi
+
+   if test ${TX_BYTES} -ge $((1024*1024*1024)); then
+      TX_BYTES="$((${TX_BYTES} / 1073741824)) Gbps";
+   elif test ${TX_BYTES} -ge $((1024*1024)); then
+      TX_BYTES="$((${TX_BYTES} / 1048576)) Mbps";
+   elif test ${TX_BYTES} -ge 1024; then
+      TX_BYTES="$((${TX_BYTES} / 1024)) Kbps";
+   else
+      TX_BYTES="${TX_BYTES}  bps"
+   fi
+
+   print_stats \
+      "${DEV}" \
+      "${RX_BYTES}" \
+      "${TX_BYTES}" \
+      "${RX_PCKTS}" \
+      "${TX_PCKTS}" \
+      "${RX_AVG} bytes" \
+      "${TX_AVG} bytes"
+
+   return 0;
+}
+
+
+iface_stats()
+{
+   tail +3 /proc/net/dev \
+      |egrep "^[[:space:]]{0,}${1}:" \
+      |sed -e 's/://g' \
+      |awk '{print$1":"$2":"$3":"$10":"$11}' \
+      |sort -n
+   return 0;
+}
+
+
+print_stats()
+{
+   if test $# -eq 3; then
+      printf \
+         "%-10s %19s  %17s  %23s\n" \
+         "" \
+         "${1}" \
+         "${2}" \
+         "${3}"
+   else
+      printf \
+         "%-10s %9s %9s  %8s %8s  %11s %11s\n" \
+         "${1}" \
+         "${2}" \
+         "${3}" \
+         "${4}" \
+         "${5}" \
+         "${6}" \
+         "${7}"
+   fi
+   return 0;
+}
+
+
+usage()
+{
+   printf "USAGE: %s [OPTIONS] [ interface ]\n" "${PROGRAM_NAME}"
+   printf "OPTIONS:\n"
+   printf "   -c               continuous reporting \n"
+   printf "   -d, --debug      print debug information\n"
+   printf "   -I iface         interface to poll (default: all interfaces)\n"
+   printf "   -i sec           polling interval (default: ${NET_INTERVAL})\n"
+   printf "   -h, --help       print this help and exit\n"
+   printf "   -q               quiet output\n"
+   printf "   -V, --version    print version number and exit\n"
+   printf "   -v, --verbose    verbose output\n"
+   printf "\n"
+   return 0;
+}
+
+
+############
+### MAIN ###
+############
+
+while test $# -gt 0; do
+   OPT="${1}";
+   shift;
+   case "${OPT}" in
+      --debug) NET_DEBUG=yes;
+               ;;
+
+      --help) usage;
+              exit 0;
+              ;;
+
+      --version) printf "%s v%s\n\n" "${PROGRAM_NAME}" "${PACKAGE_VERSION}";
+                 exit 0;
+                 ;;
+
+      -c) NET_CONTINUE=yes;
+          ;;
+
+      -d) NET_DEBUG=yes;
+          ;;
+
+      -h) usage;
+          exit 0;
+          ;;
+
+      -I) NET_IFACE="${1}";
+          shift;
+          ;;
+
+      -i) NET_INTERVAL="${1}";
+          shift;
+          ;;
+
+      -q) NET_QUIET=yes;
+          NET_VERBOSE=no;
+          ;;
+
+      -V) printf "%s v%s\n\n" "${PROGRAM_NAME}" "${PACKAGE_VERSION}";
+          exit 0;
+          ;;
+
+      -v) NET_VERBOSE=yes;
+          NET_QUIET=no;
+          ;;
+
+      *)  echo "${PROGRAM_NAME}: invalid option -- '${OPT}'"    1>&2;
+          echo "Try '${PROGRAM_NAME} -h' for more information." 1>&2;
+          exit 1;
+          ;;
+   esac
+done
+
+
+# print debug information
+if test ${NET_DEBUG} == yes; then
+   printf "%s v%s\n\n" "${PROGRAM_NAME}" "${PACKAGE_VERSION}";
+   echo "Active Configuration:"
+   echo "   quiet             no"
+   echo "   debug             ${NET_DEBUG}"
+   echo "   quiet             ${NET_QUIET}"
+   echo "   verbose           ${NET_VERBOSE}"
+   echo "   continue          ${NET_CONTINUE}"
+   echo "   interval          ${NET_INTERVAL}"
+   echo "   interface         ${NET_IFACE}"
+   echo " "
+fi
+
+
+# verify input arguments
+echo "${NET_INTERVAL}" |egrep "^[0-9]{1,4}$" > /dev/null 2> /dev/null;
+if test $? -ne 0; then
+   echo "${PROGRAM_NAME}: invalid interval" 1>&2;
+   exit 1;
+fi;
+echo "${NET_IFACE}" |egrep "^[-._a-zA-Z0-9{},]{1,}$" > /dev/null 2> /dev/null;
+if test $? -ne 0; then
+   echo "${PROGRAM_NAME}: invalid interface name" 1>&2;
+   exit 1;
+fi;
+COUNT=$(egrep "^[[:space:]]{0,}${NET_IFACE}:" /proc/net/dev 2> /dev/null |wc -l);
+if test ${COUNT} -eq 0; then
+   echo "${PROGRAM_NAME}: interface not found" 1>&2;
+   exit 1;
+elif test ${COUNT} -eq 1; then
+   NET_IFACE_MARK=""
+else
+   NET_IFACE_MARK="---"
+fi;
+
+
+# store initial record
+for REC in $(iface_stats "${NET_IFACE}");do
+   DEV=$(echo $REC |cut -d: -f1)
+   NAM=$(echo $DEV |tr a-z A-Z |sed -e 's/\./_/g')
+   DAT=$(echo $REC |cut -d: -f2-5)
+   eval DEV_${NAM}=${DAT}
+done
+
+
+# show results
+if test "${NET_QUIET}" == "no"; then
+   print_stats "Data     " "pkt/s   " "Avg Pkt Size "
+   print_stats "Iface" "RX" "TX" "RX" "TX" "RX" "TX"
+fi
+sleep ${NET_INTERVAL}
+for DAT in $(iface_stats "${NET_IFACE}");do
+   gen_stats "${DAT}"
+done
+
+
+# exit if not in continuous mode
+if test -z "${NET_CONTINUE}"; then
+   exit 0;
+fi
+
+
+# enter continuous loop
+while true; do
+   sleep ${NET_INTERVAL}
+   test -z "${NET_IFACE_MARK}" || echo "${NET_IFACE_MARK}";
+   for DAT in $(iface_stats "${NET_IFACE}");do
+      gen_stats "${DAT}"
+   done
+done
+
+
+# End of /etc/rc.d/rc.inet1

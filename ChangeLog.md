@@ -10,6 +10,7 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
   - bbnet: removing options pre_hook_script and post_hook_script
   - bbnet: adding ability to disable a feature by setting the order to none
   - bbnet: adding initial support for file sync via git, rsync, or script
+  - bbnet-stats: adding initial script
 
 0.26
   - bbfw: updating find_appfiles() for portability

@@ -101,6 +101,7 @@ EXTRA_DIST				= \
 					  src/bbfw-log.in \
 					  src/bbfw.conf-example.in \
 					  src/bbnet.in \
+					  src/bbnet-stats.in \
 					  src/bbnet.conf-example.in \
 					  src/firewall.d/global.d/rules-example \
 					  src/firewall.d/global.d/rules4-example \
@@ -196,6 +197,7 @@ endif
 # conditional targets for bbnet
 if ENABLE_NETWORK
 sbin_SCRIPTS				+= src/bbnet
+sbin_SCRIPTS				+= src/bbnet-stats
 if ENABLE_EXAMPLES
 sysconf_DATA				+= src/bbnet.conf-example
 network_DATA				=  src/network.d/net-up-example \
@@ -238,6 +240,9 @@ src/bbfw-log: Makefile src/bbfw-log.in
 	@$(do_subst_fn)
 
 src/bbnet: Makefile src/bbnet.in
+	@$(do_subst_fn)
+
+src/bbnet-stats: Makefile src/bbnet-stats.in
 	@$(do_subst_fn)
 
 src/bbnet.conf-example: Makefile src/bbnet.conf-example.in
