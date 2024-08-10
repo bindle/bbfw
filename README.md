@@ -3,6 +3,9 @@ Bindle Binaries Linux Firewall
 ===========================
 
 
+Copyright (c) 2019,, 2024 David M. Syzdek <david@syzdek.net>.
+All rights reserved.
+
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -29,17 +32,23 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 
-Contents
---------
+Non-technical Overview
+======================
 
-   1. Overview
-   2. Configurations
-   3. Source Code
-   4. Package Maintence Notes
+BBFW is the simple Linux firewall with a 1 to 1 feature match with iptables,
+ip6tables, and ipsets.  As a bonus, the package also includes BBNET, BBFW's
+little networking brother.  BBNET is the simple Linux networking script with
+100% feature polarity with all versions of iproute2. Download now and also
+receive `bbfw-log` and `bbnet-stats` absolutely free. Don't miss out and
+download your copy today while supplies last.
+
+Side affects may include consistent firewall rules accross your organization,
+server clusters with matching firewalls, and the ability to test your firewall
+rules on the CLI using the same syntax as your firewall configurations
 
 
-Overview
-========
+Technical Overview
+==================
 
 This package contains the Bindle Binaries firewall script for Linux
 systems. BBFW allows an administrator to create separate configuration
@@ -129,32 +138,4 @@ Git Branches:
    - next   - changes staged for next release
    - pu     - proposed updates for next release
    - xx/yy+ - branch for testing new changes before merging to 'pu' branch
-
-
-Package Maintence Notes
-=======================
-
-This is a collection of notes for developers to use when maintaining this package.
-
-New Release Checklist:
-
-   - Switch to 'master' branch in Git repository.
-   - Update version in configure.ac.
-   - Update date and version in ChangeLog.
-   - Commit configure.ac and ChangeLog changes to repository.
-   - Create tag in git repository:
-
-           $ git tag -s v${MAJOR}.${MINOR}
-
-   - Push repository to publishing server:
-
-           $ git push --tags origin master:master next:next pu:pu
-
-Creating Source Distribution Archives:
-
-      $ ./configure
-      $ make update
-      $ make distcheck
-      $ make dist-bzip2
-
 
