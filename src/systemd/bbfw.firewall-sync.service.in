@@ -1,0 +1,12 @@
+[Unit]
+Description=Bindle Binaries Linux Firewall Synchronization
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=@sbindir@/bbfw sync
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

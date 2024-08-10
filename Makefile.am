@@ -120,7 +120,9 @@ EXTRA_DIST				= \
 					  src/slackware/rc.firewall.in \
 					  src/slackware/rc.inet1.conf.in \
 					  src/systemd/bbfw.firewall.service.in \
-					  src/systemd/bbfw.network.service.in
+					  src/systemd/bbfw.firewall-sync.service.in \
+					  src/systemd/bbfw.network.service.in \
+					  src/systemd/bbfw.network-sync.service.in
 CLEANFILES				= \
 					  $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -137,7 +139,9 @@ CLEANFILES				= \
 					  src/slackware/rc.firewall \
 					  src/slackware/rc.firewall.new \
 					  src/systemd/bbfw.firewall.service \
+					  src/systemd/bbfw.firewall-sync.service \
 					  src/systemd/bbfw.network.service \
+					  src/systemd/bbfw.network-sync.service \
 					  src/openrc/bbfw.firewall \
 					  src/openrc/bbfw.network \
 					  @PACKAGE_TARNAME@-*.tar.* \
@@ -190,6 +194,7 @@ initd_SCRIPTS				+= src/init.d/bbfw.firewall
 endif
 if ENABLE_SYSTEMD
 systemd_DATA				+= src/systemd/bbfw.firewall.service
+systemd_DATA				+= src/systemd/bbfw.firewall-sync.service
 endif
 endif
 
@@ -214,6 +219,7 @@ initd_SCRIPTS				+= src/init.d/bbfw.network
 endif
 if ENABLE_SYSTEMD
 systemd_DATA				+= src/systemd/bbfw.network.service
+systemd_DATA				+= src/systemd/bbfw.network-sync.service
 endif
 endif
 
@@ -269,7 +275,13 @@ src/init.d/bbfw.network: Makefile src/init.d/bbfw.network.in
 src/systemd/bbfw.firewall.service: src/systemd/bbfw.firewall.service.in
 	@$(do_subst_fn)
 
+src/systemd/bbfw.firewall-sync.service: src/systemd/bbfw.firewall-sync.service.in
+	@$(do_subst_fn)
+
 src/systemd/bbfw.network.service: src/systemd/bbfw.network.service.in
+	@$(do_subst_fn)
+
+src/systemd/bbfw.network-sync.service: src/systemd/bbfw.network-sync.service.in
 	@$(do_subst_fn)
 
 src/openrc/bbfw.firewall: Makefile src/openrc/bbfw.firewall.in
