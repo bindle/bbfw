@@ -2,6 +2,10 @@
 Bindle Binaries Linux Firewall
 Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
+0.28.1
+  - bbfw: fixing generation of slackware init script
+  - bbnet: fixing init script arguments
+
 0.28
   - bbfw: removing suppression of errors when clearing firewall
   - bbfw: updating example config to match default options
