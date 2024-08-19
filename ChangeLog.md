@@ -3,7 +3,7 @@ Bindle Binaries Linux Firewall
 Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
 0.28
-  - bbfw: removing suppression of errors when clearning firewall
+  - bbfw: removing suppression of errors when clearing firewall
   - bbfw: updating example config to match default options
   - bbnet: updating example config to match default options
 
