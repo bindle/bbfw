@@ -36,5 +36,5 @@ fi
 BBNET_ACTION="${1:-start}"
 shift 1;
 
-@sbindir@/bbnet ${1:-BBNET_ACTION} "${@}"
+@sbindir@/bbnet ${BBNET_ACTION} "${@}"
 
