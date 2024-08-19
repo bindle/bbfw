@@ -255,7 +255,7 @@ src/bbnet.conf-example: Makefile src/bbnet.conf-example.in
 	@$(do_subst_dt)
 
 src/slackware/rc.firewall: Makefile src/slackware/rc.firewall.in
-	@$(do_copy_fn)
+	@$(do_subst_dt)
 
 src/slackware/rc.firewall.new: src/slackware/rc.firewall
 	@$(do_copy_fn)
