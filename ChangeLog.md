@@ -4,6 +4,8 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
 0.28
   - bbfw: removing suppression of errors when clearning firewall
+  - bbfw: updating example config to match default options
+  - bbnet: updating example config to match default options
 
 0.27
   - bbfw: adding ability to disable a feature by setting the order to none
