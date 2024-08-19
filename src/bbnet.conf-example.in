@@ -42,7 +42,7 @@
 #   The `verbose` option enables verbose output for utilities which support
 #   verbose flags.  To enable verbose output, uncomment the line below and
 #   change the value to 'yes'.
-# verbose = yes
+# verbose = no
 
 
 #   Options which specify order of executions of network scripts and hooks use
@@ -123,14 +123,14 @@
 #   indicates that files were changed by returning an exit code of 2. To
 #   disable restarting the network when changes are detected, uncomment the
 #   line below and change the value to 'no'.
-# sync_restarts = no
+# sync_restarts = yes
 
 
 #   The `sync_on_restart` option determines wether synchronization is
 #   performed before the network is restarted. To disable synchronization
 #   before restarting the network, uncomment the line below and change the
 #   value to 'no'.
-# sync_on_restart = no
+# sync_on_restart = yes
 
 
 #   The `sync_on_start` option determines wether synchronization is
