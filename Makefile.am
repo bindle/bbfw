@@ -261,7 +261,7 @@ src/slackware/rc.firewall.new: src/slackware/rc.firewall
 	@$(do_copy_fn)
 
 src/slackware/rc.inet1.conf: Makefile src/slackware/rc.inet1.conf.in
-	@$(do_copy_fn)
+	@$(do_subst_fn)
 
 src/slackware/rc.inet1.conf.new: src/slackware/rc.inet1.conf
 	@$(do_copy_fn)

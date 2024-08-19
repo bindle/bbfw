@@ -6,6 +6,7 @@ Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
   - bbfw: removing suppression of errors when clearing firewall
   - bbfw: updating example config to match default options
   - bbnet: updating example config to match default options
+  - bbnet: fixing generation of slackware init script
 
 0.27
   - bbfw: adding ability to disable a feature by setting the order to none
