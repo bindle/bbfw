@@ -2,7 +2,7 @@
 Bindle Binaries Linux Firewall
 Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
-0.28.1
+0.29
   - bbfw: fixing generation of slackware init script
   - bbnet: fixing init script arguments
 
