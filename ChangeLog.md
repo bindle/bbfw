@@ -2,6 +2,9 @@
 Bindle Binaries Linux Firewall
 Copyright (c) 2019, 2021, 2022, 2024 David M. Syzdek <david@syzdek.net>.
 
+0.28
+  - bbfw: removing suppression of errors when clearning firewall
+
 0.27
   - bbfw: adding ability to disable a feature by setting the order to none
   - bbfw: adding initial support for file sync via git, rsync, or script

@@ -600,7 +600,7 @@ do_stop()
       for CHAIN in $(iptables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
          iptables -t ${TABLE} -X ${CHAIN}
       done
-   done 2> /dev/null
+   done
 
    # flushes ip6tables
    for TABLE in $(ip6tables-save  |grep '^*' |sed -e 's/^*//g' |sort);do
@@ -614,7 +614,7 @@ do_stop()
       for CHAIN in $(ip6tables-save -t ${TABLE} |grep '^:' |cut -d: -f2 |grep ' - ' |cut -d\  -f1);do
          ip6tables -t ${TABLE} -X ${CHAIN}
       done
-   done 2> /dev/null
+   done
 
    # flushes ipsets
    if test -z "${FW_QUIET}";then
