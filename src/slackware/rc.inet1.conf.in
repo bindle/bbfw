@@ -38,3 +38,6 @@ shift 1;
 
 @sbindir@/bbnet ${BBNET_ACTION} "${@}"
 
+exit $?
+
+# end of script
